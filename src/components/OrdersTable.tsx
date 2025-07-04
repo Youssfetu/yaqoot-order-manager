@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
@@ -32,83 +32,66 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Programmé'
   ];
 
-  const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.25, 3));
-  };
-
-  const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
-  };
-
-  const handleZoomReset = () => {
-    setZoomLevel(1);
-    setPanOffset({ x: 0, y: 0 });
-  };
-
-  const handleFitToScreen = () => {
-    if (containerRef.current) {
-      const container = containerRef.current;
-      const containerWidth = container.clientWidth;
-      const tableWidth = 800; // minimum table width
-      const fitZoom = Math.min(containerWidth / tableWidth, 1);
-      setZoomLevel(fitZoom);
-      setPanOffset({ x: 0, y: 0 });
-    }
-  };
-
-  // Pan functionality for when zoomed
-  const handlePanStart = (clientX: number, clientY: number) => {
-    if (zoomLevel > 1) {
+  // Touch-based zoom functionality
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      // Pinch zoom start
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) + 
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+      (e.currentTarget as any).initialDistance = distance;
+      (e.currentTarget as any).initialZoom = zoomLevel;
+    } else if (e.touches.length === 1 && zoomLevel > 1) {
+      // Single touch pan start
+      const touch = e.touches[0];
       setIsPanning(true);
-      setPanStart({ x: clientX - panOffset.x, y: clientY - panOffset.y });
+      setPanStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
     }
   };
 
-  const handlePanMove = (clientX: number, clientY: number) => {
-    if (isPanning && zoomLevel > 1) {
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    
+    if (e.touches.length === 2) {
+      // Pinch zoom
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.sqrt(
+        Math.pow(touch2.clientX - touch1.clientX, 2) + 
+        Math.pow(touch2.clientY - touch1.clientY, 2)
+      );
+      
+      const initialDistance = (e.currentTarget as any).initialDistance;
+      const initialZoom = (e.currentTarget as any).initialZoom;
+      
+      if (initialDistance && initialZoom) {
+        const scale = distance / initialDistance;
+        const newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
+        setZoomLevel(newZoom);
+      }
+    } else if (e.touches.length === 1 && isPanning && zoomLevel > 1) {
+      // Single touch pan
+      const touch = e.touches[0];
       const newOffset = {
-        x: clientX - panStart.x,
-        y: clientY - panStart.y
+        x: touch.clientX - panStart.x,
+        y: touch.clientY - panStart.y
       };
       setPanOffset(newOffset);
     }
   };
 
-  const handlePanEnd = () => {
-    setIsPanning(false);
-  };
-
-  // Mouse Events
-  const handleMouseDown = (e: React.MouseEvent) => {
-    handlePanStart(e.clientX, e.clientY);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    handlePanMove(e.clientX, e.clientY);
-  };
-
-  const handleMouseUp = () => {
-    handlePanEnd();
-  };
-
-  // Touch Events
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      const touch = e.touches[0];
-      handlePanStart(touch.clientX, touch.clientY);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      (e.currentTarget as any).initialDistance = null;
+      (e.currentTarget as any).initialZoom = null;
     }
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      e.preventDefault();
-      const touch = e.touches[0];
-      handlePanMove(touch.clientX, touch.clientY);
+    
+    if (e.touches.length === 0) {
+      setIsPanning(false);
     }
-  };
-
-  const handleTouchEnd = () => {
-    handlePanEnd();
   };
 
   const handleCommentChange = (id: string, comment: string) => {
@@ -145,53 +128,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      {/* Google Sheets Style Zoom Controls - Fixed at Top */}
-      <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-300 sticky top-[73px] z-20">
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={handleZoomOut}
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-            disabled={zoomLevel <= 0.5}
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          
-          <span className="text-sm font-medium text-gray-700 min-w-[60px] text-center">
-            {Math.round(zoomLevel * 100)}%
-          </span>
-          
-          <Button
-            onClick={handleZoomIn}
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-            disabled={zoomLevel >= 3}
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={handleZoomReset}
-            variant="outline"
-            size="sm"
-            className="text-xs px-3 h-8"
-          >
-            100%
-          </Button>
-          
-          <Button
-            onClick={handleFitToScreen}
-            variant="outline"
-            size="sm"
-            className="text-xs px-2 h-8"
-          >
-            ملائم للشاشة
-          </Button>
-        </div>
+      {/* Simple zoom level indicator - no buttons */}
+      <div className="flex items-center justify-center p-2 bg-gray-50 border-b border-gray-300 sticky top-[73px] z-20">
+        <span className="text-sm font-medium text-gray-700">
+          مستوى التكبير: {Math.round(zoomLevel * 100)}%
+        </span>
       </div>
 
       {/* Google Sheets Style Table Container */}
@@ -200,12 +141,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         className="w-full h-[calc(100vh-200px)] overflow-hidden border border-gray-300 bg-white relative"
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: zoomLevel > 1 ? 'none' : 'auto'
+          touchAction: 'none'
         }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -319,14 +256,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       )}
 
-      {/* Usage Instructions */}
-      {zoomLevel > 1 && (
-        <div className="p-3 bg-blue-50 border-t border-blue-200 text-center">
-          <p className="text-xs text-blue-700">
-            💡 يمكنك سحب الجدول للتنقل عند التكبير - مثل Google Sheets تماماً
-          </p>
-        </div>
-      )}
+      {/* Touch Instructions */}
+      <div className="p-3 bg-blue-50 border-t border-blue-200 text-center">
+        <p className="text-xs text-blue-700">
+          💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير
+        </p>
+      </div>
     </div>
   );
 };
