@@ -15,9 +15,6 @@ interface OrdersTableProps {
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus }) => {
-  const [editingComment, setEditingComment] = useState<string | null>(null);
-  const [tempComment, setTempComment] = useState('');
-
   const statusOptions = [
     'Nouveau',
     'Confirmé',
@@ -31,20 +28,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Programmé'
   ];
 
-  const handleCommentEdit = (id: string, currentComment: string) => {
-    setEditingComment(id);
-    setTempComment(currentComment);
-  };
-
-  const handleCommentSave = (id: string) => {
-    onUpdateComment(id, tempComment);
-    setEditingComment(null);
-    setTempComment('');
-  };
-
-  const handleCommentCancel = () => {
-    setEditingComment(null);
-    setTempComment('');
+  const handleCommentChange = (id: string, comment: string) => {
+    onUpdateComment(id, comment);
   };
 
   const getStatusBadge = (status: string) => {
@@ -144,48 +129,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </DropdownMenu>
               </TableCell>
 
-              {/* Comment - Editable */}
+              {/* Comment - Direct Input */}
               <TableCell className="text-center px-2 py-1 h-8">
-                {editingComment === order.id ? (
-                  <div className="flex gap-1 items-center">
-                    <Input
-                      value={tempComment}
-                      onChange={(e) => setTempComment(e.target.value)}
-                      className="text-xs h-6 flex-1 px-1 py-0"
-                      placeholder="Commentaire..."
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleCommentSave(order.id);
-                        } else if (e.key === 'Escape') {
-                          handleCommentCancel();
-                        }
-                      }}
-                      autoFocus
-                    />
-                    <div className="flex gap-0.5">
-                      <button
-                        onClick={() => handleCommentSave(order.id)}
-                        className="text-green-600 hover:text-green-800 text-xs px-1 py-0.5 rounded border border-green-300 hover:border-green-400 h-6 w-6 flex items-center justify-center"
-                      >
-                        ✓
-                      </button>
-                      <button
-                        onClick={handleCommentCancel}
-                        className="text-red-600 hover:text-red-800 text-xs px-1 py-0.5 rounded border border-red-300 hover:border-red-400 h-6 w-6 flex items-center justify-center"
-                      >
-                        ✗
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => handleCommentEdit(order.id, order.commentaire)}
-                    className="text-xs text-gray-600 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded h-6 flex items-center justify-center border border-transparent hover:border-gray-300 truncate"
-                    title="Cliquer pour modifier"
-                  >
-                    {order.commentaire || 'Commentaire...'}
-                  </div>
-                )}
+                <Input
+                  value={order.commentaire}
+                  onChange={(e) => handleCommentChange(order.id, e.target.value)}
+                  className="text-xs h-6 w-full px-2 py-1 border-gray-300 focus:border-blue-500"
+                  placeholder="اكتب تعليق..."
+                />
               </TableCell>
             </TableRow>
           ))}
