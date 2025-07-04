@@ -58,22 +58,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       <Table className="w-full text-xs">
         <TableHeader>
           <TableRow className="bg-gray-100 border-b border-gray-400 h-8">
-            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
+            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8 w-20">
               Code
             </TableHead>
-            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
+            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8 w-32">
               Client/Distributeur
             </TableHead>
-            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
+            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8 w-24">
               Numéro
             </TableHead>
-            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
+            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8 w-20">
               Prix
             </TableHead>
-            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
+            <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8 w-24">
               Statut
             </TableHead>
-            <TableHead className="text-center font-bold text-gray-800 px-2 py-1 text-xs h-8">
+            <TableHead className="text-center font-bold text-gray-800 px-2 py-1 text-xs h-8 w-40">
               Commentaire
             </TableHead>
           </TableRow>
@@ -89,27 +89,27 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               )}
             >
               {/* Code */}
-              <TableCell className="text-center font-mono text-xs font-medium text-blue-600 border-r border-gray-300 px-2 py-1 h-8">
+              <TableCell className="text-center font-mono text-xs font-medium text-blue-600 border-r border-gray-300 px-2 py-1 h-8 w-20">
                 {order.code}
               </TableCell>
 
               {/* Vendeur/Client */}
-              <TableCell className="text-center text-xs text-gray-900 border-r border-gray-300 px-2 py-1 h-8">
+              <TableCell className="text-center text-xs text-gray-900 border-r border-gray-300 px-2 py-1 h-8 w-32">
                 {order.vendeur}
               </TableCell>
 
               {/* Number */}
-              <TableCell className="text-center font-mono text-xs text-gray-700 border-r border-gray-300 px-2 py-1 h-8">
+              <TableCell className="text-center font-mono text-xs text-gray-700 border-r border-gray-300 px-2 py-1 h-8 w-24">
                 {order.numero}
               </TableCell>
 
               {/* Price */}
-              <TableCell className="text-center text-xs font-semibold text-green-600 border-r border-gray-300 px-2 py-1 h-8">
+              <TableCell className="text-center text-xs font-semibold text-green-600 border-r border-gray-300 px-2 py-1 h-8 w-20">
                 {order.prix.toFixed(2)}
               </TableCell>
 
               {/* Status - Now with Dropdown */}
-              <TableCell className="text-center border-r border-gray-300 px-2 py-1 h-8">
+              <TableCell className="text-center border-r border-gray-300 px-2 py-1 h-8 w-24">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center justify-center gap-1 hover:bg-gray-100 rounded px-1 py-0.5 w-full">
                     {getStatusBadge(order.statut)}
@@ -129,8 +129,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </DropdownMenu>
               </TableCell>
 
-              {/* Comment - Direct Input */}
-              <TableCell className="text-center px-2 py-1 h-8">
+              {/* Comment - Direct Input with increased width */}
+              <TableCell className="text-center px-2 py-1 h-8 w-40">
                 <Input
                   value={order.commentaire}
                   onChange={(e) => handleCommentChange(order.id, e.target.value)}
