@@ -24,10 +24,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm">المبلغ الإجمالي</p>
-              <p className="text-2xl font-bold">{totalAmount.toFixed(2)} د.م</p>
+              <p className="text-blue-100 text-sm font-medium">T: المبلغ الإجمالي</p>
+              <p className="text-3xl font-bold">{totalAmount.toFixed(2)} د.م</p>
             </div>
-            <Calculator className="h-8 w-8 text-blue-200" />
+            <Calculator className="h-10 w-10 text-blue-200" />
           </div>
         </CardContent>
       </Card>
@@ -36,10 +36,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm">المدفوع</p>
-              <p className="text-2xl font-bold">{totalPaid.toFixed(2)} د.م</p>
+              <p className="text-green-100 text-sm font-medium">V: المدفوع</p>
+              <p className="text-3xl font-bold">{totalPaid.toFixed(2)} د.م</p>
             </div>
-            <DollarSign className="h-8 w-8 text-green-200" />
+            <DollarSign className="h-10 w-10 text-green-200" />
           </div>
         </CardContent>
       </Card>
@@ -48,10 +48,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-100 text-sm">العمولة الإجمالية</p>
-              <p className="text-2xl font-bold">{totalCommission.toFixed(2)} د.م</p>
+              <p className="text-orange-100 text-sm font-medium">C: العمولة</p>
+              <p className="text-3xl font-bold">{totalCommission.toFixed(2)} د.م</p>
             </div>
-            <TrendingUp className="h-8 w-8 text-orange-200" />
+            <TrendingUp className="h-10 w-10 text-orange-200" />
           </div>
         </CardContent>
       </Card>
@@ -60,10 +60,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm">عدد الطلبيات</p>
-              <p className="text-2xl font-bold">{orderCount}</p>
+              <p className="text-purple-100 text-sm font-medium">N: عدد الطلبيات</p>
+              <p className="text-3xl font-bold">{orderCount}</p>
             </div>
-            <Package className="h-8 w-8 text-purple-200" />
+            <Package className="h-10 w-10 text-purple-200" />
           </div>
         </CardContent>
       </Card>

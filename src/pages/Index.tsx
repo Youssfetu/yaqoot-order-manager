@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -109,10 +108,6 @@ const Index = () => {
     order.vendeur.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalAmount = orders.reduce((sum, order) => sum + order.prix, 0);
-  const totalCommission = commission * orders.length;
-  const orderCount = orders.length;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-orange-50 p-4" dir="rtl">
       <div className="max-w-7xl mx-auto">
@@ -174,69 +169,29 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">إجمالي المبلغ</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {totalAmount.toFixed(2)} د.م
-                  </p>
-                </div>
-                <Calculator className="h-8 w-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">العمولة الإجمالية</p>
-                  <p className="text-2xl font-bold text-orange-600">
-                    {totalCommission.toFixed(2)} د.م
-                  </p>
-                </div>
-                <BarChart3 className="h-8 w-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">عدد الطلبيات</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    {orderCount}
-                  </p>
-                </div>
-                <Badge variant="secondary" className="text-lg px-3 py-1">
-                  {orderCount}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">العمولة لكل طلبية</p>
-                  <Input
-                    type="number"
-                    value={commission}
-                    onChange={(e) => setCommission(Number(e.target.value))}
-                    className="w-24 mt-1"
-                  />
-                </div>
-                <p className="text-sm text-gray-500">د.م</p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Summary Cards - Using OrderSummary Component */}
+        <div className="mb-6">
+          <OrderSummary orders={orders} commission={commission} />
         </div>
+
+        {/* Commission Input Card */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 mb-2">العمولة لكل طلبية</p>
+                <Input
+                  type="number"
+                  value={commission}
+                  onChange={(e) => setCommission(Number(e.target.value))}
+                  className="w-32"
+                  placeholder="العمولة"
+                />
+              </div>
+              <p className="text-lg font-semibold text-gray-700">درهم</p>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Orders Table */}
         <Card>
