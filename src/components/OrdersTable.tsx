@@ -310,20 +310,23 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </p>
       </div>
 
-      {/* Custom scrollbar styles when visible */}
-      <style jsx>{`
-        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar {
+      {/* Custom scrollbar styles */}
+      <style>{`
+        div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"] {
+          scrollbar-width: ${showScrollbar ? 'thin' : 'none'};
+        }
+        div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar {
           height: ${showScrollbar ? '8px' : '0px'};
         }
-        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar-track {
+        div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-track {
           background: ${showScrollbar ? '#f1f5f9' : 'transparent'};
           border-radius: 4px;
         }
-        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar-thumb {
+        div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb {
           background: ${showScrollbar ? '#cbd5e0' : 'transparent'};
           border-radius: 4px;
         }
-        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar-thumb:hover {
+        div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb:hover {
           background: ${showScrollbar ? '#a0aec0' : 'transparent'};
         }
       `}</style>
