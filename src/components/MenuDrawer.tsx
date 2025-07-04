@@ -22,7 +22,6 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   onCommissionChange 
 }) => {
   const [tempCommission, setTempCommission] = useState(commission);
-  const [deliveryPercentage, setDeliveryPercentage] = useState(15);
   const { toast } = useToast();
 
   const handleSaveCommission = () => {
@@ -47,85 +46,88 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
     });
   };
 
+  // حساب نسبة التوصيل تلقائياً (مثال)
+  const deliveryPercentage = 15; // هذه ستُحسب بناءً على الطلبيات المُوزعة
+
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="max-h-[80vh]">
-        <DrawerHeader className="text-center">
-          <DrawerTitle>إعدادات التطبيق</DrawerTitle>
+      <DrawerContent className="max-h-[85vh]">
+        <DrawerHeader className="text-center border-b pb-4">
+          <DrawerTitle className="text-xl font-bold text-gray-800">إعدادات التطبيق</DrawerTitle>
         </DrawerHeader>
 
-        <div className="px-4 space-y-6">
+        <div className="px-6 py-4 space-y-8">
           {/* Commission Settings */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-blue-600" />
-              <Label className="text-lg font-medium">إعدادات العمولة</Label>
+          <div className="bg-blue-50 rounded-lg p-4 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-blue-600 p-2 rounded-lg">
+                <DollarSign className="h-5 w-5 text-white" />
+              </div>
+              <Label className="text-lg font-semibold text-gray-800">إعدادات العمولة</Label>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="commission">العمولة (ريال)</Label>
+            <div className="space-y-3">
+              <Label htmlFor="commission" className="text-sm text-gray-600">العمولة (ريال سعودي)</Label>
               <Input
                 id="commission"
                 type="number"
                 value={tempCommission}
                 onChange={(e) => setTempCommission(Number(e.target.value))}
                 placeholder="أدخل قيمة العمولة"
-                className="text-right"
+                className="text-right text-lg font-medium"
               />
-            </div>
-            <Button onClick={handleSaveCommission} className="w-full">
-              حفظ العمولة
-            </Button>
-          </div>
-
-          <Separator />
-
-          {/* Delivery Percentage */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Percent className="h-5 w-5 text-green-600" />
-              <Label className="text-lg font-medium">نسبة التوصيل</Label>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="delivery">النسبة المئوية للتوصيل (%)</Label>
-              <Input
-                id="delivery"
-                type="number"
-                value={deliveryPercentage}
-                onChange={(e) => setDeliveryPercentage(Number(e.target.value))}
-                placeholder="أدخل نسبة التوصيل"
-                className="text-right"
-              />
+              <Button onClick={handleSaveCommission} className="w-full bg-blue-600 hover:bg-blue-700">
+                حفظ العمولة
+              </Button>
             </div>
           </div>
 
-          <Separator />
+          {/* Delivery Percentage - Read Only */}
+          <div className="bg-green-50 rounded-lg p-4 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-green-600 p-2 rounded-lg">
+                <Percent className="h-5 w-5 text-white" />
+              </div>
+              <Label className="text-lg font-semibold text-gray-800">نسبة التوصيل</Label>
+            </div>
+            <div className="space-y-3">
+              <Label className="text-sm text-gray-600">النسبة المئوية للتوصيل (محسوبة تلقائياً)</Label>
+              <div className="bg-gray-100 border border-gray-300 px-4 py-3 rounded-lg text-right">
+                <span className="text-2xl font-bold text-green-600">{deliveryPercentage}%</span>
+              </div>
+              <p className="text-xs text-gray-500 text-center">
+                تُحسب هذه النسبة تلقائياً حسب الطلبيات الموزعة
+              </p>
+            </div>
+          </div>
 
           {/* Actions */}
-          <div className="space-y-3">
-            <Label className="text-lg font-medium">الإجراءات</Label>
+          <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+            <Label className="text-lg font-semibold text-gray-800">الإجراءات</Label>
             
-            <Button 
-              onClick={handleGenerateInvoice} 
-              className="w-full flex items-center gap-2"
-              variant="outline"
-            >
-              <Receipt className="h-4 w-4" />
-              إنشاء فاتورة
-            </Button>
+            <div className="grid grid-cols-1 gap-3">
+              <Button 
+                onClick={handleGenerateInvoice} 
+                className="flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 text-white py-3"
+                variant="default"
+              >
+                <Receipt className="h-5 w-5" />
+                <span className="font-medium">إنشاء فاتورة</span>
+              </Button>
 
-            <Button 
-              onClick={handleDownloadExcel} 
-              className="w-full flex items-center gap-2"
-              variant="outline"
-            >
-              <Download className="h-4 w-4" />
-              تحميل الطلبيات (Excel)
-            </Button>
+              <Button 
+                onClick={handleDownloadExcel} 
+                className="flex items-center justify-center gap-3 bg-gray-600 hover:bg-gray-700 text-white py-3"
+                variant="default"
+              >
+                <Download className="h-5 w-5" />
+                <span className="font-medium">تحميل الطلبيات (Excel)</span>
+              </Button>
+            </div>
           </div>
         </div>
 
-        <DrawerFooter>
-          <Button variant="outline" onClick={onClose}>
+        <DrawerFooter className="border-t pt-4">
+          <Button variant="outline" onClick={onClose} className="w-full py-3 text-lg">
             إغلاق
           </Button>
         </DrawerFooter>
