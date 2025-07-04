@@ -126,14 +126,14 @@ const Index = () => {
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            {/* Menu Icon instead of Logo */}
+            {/* Menu Icon - Just lines without blue background */}
             <Button
               onClick={() => setIsMenuDrawerOpen(true)}
               variant="ghost"
               size="sm"
-              className="bg-blue-600 p-2 rounded-xl hover:bg-blue-700"
+              className="p-2 hover:bg-gray-100 rounded-xl"
             >
-              <Menu className="h-6 w-6 text-white" />
+              <Menu className="h-6 w-6 text-gray-600" />
             </Button>
             
             {/* Header Icons - 5 Icons */}
