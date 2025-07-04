@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import type { Order } from '@/pages/Index';
 
 interface OrdersTableProps {
@@ -156,7 +157,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
           touchAction: 'none',
-          // Custom scrollbar styling when visible
           scrollbarWidth: showScrollbar ? 'thin' : 'none',
           scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent'
         }}
@@ -173,114 +173,209 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             transition: isPanning ? 'none' : 'transform 0.2s ease-out',
             minWidth: '800px',
             minHeight: '100%',
-            // Enhance text rendering at different zoom levels
             textRendering: 'optimizeLegibility',
             fontSmooth: 'always',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
-            // Prevent text degradation on zoom
             backfaceVisibility: 'hidden',
             WebkitBackfaceVisibility: 'hidden',
             willChange: 'transform'
           }}
         >
           <div className="w-full shadow-lg rounded-lg overflow-hidden bg-white">
-            {/* Header Row - Fixed font size */}
-            <div className="flex w-full border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 h-12 sticky top-0 z-10">
-              <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span className="text-sm">الكود</span>
-              </div>
-              <div className="flex-none w-44 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span className="text-sm">العميل/الموزع</span>
-              </div>
-              <div className="flex-none w-36 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span className="text-sm">الرقم</span>
-              </div>
-              <div className="flex-none w-24 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span className="text-sm">السعر</span>
-              </div>
-              <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span className="text-sm">الحالة</span>
-              </div>
-              <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span className="text-sm">التعليق</span>
-              </div>
-            </div>
-
-            {/* Data Rows - Fixed font sizes */}
-            <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
-              {orders.map((order, index) => (
-                <div 
-                  key={order.id}
-                  className={cn(
-                    "flex w-full border-b border-gray-300 h-14 hover:bg-blue-50 transition-colors duration-150",
-                    order.isScanned && "bg-green-50 border-green-200",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                >
-                  {/* Code Column */}
-                  <div className="flex-none w-28 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
-                    <span className="truncate w-full text-center text-sm">
-                      {order.code}
-                    </span>
+            {/* Resizable Columns Container */}
+            <ResizablePanelGroup direction="horizontal" className="w-full">
+              {/* Code Column */}
+              <ResizablePanel defaultSize={12} minSize={8}>
+                <div className="h-full flex flex-col">
+                  {/* Header */}
+                  <div className="h-12 px-3 py-3 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                    <span className="text-sm font-bold text-gray-800">الكود</span>
                   </div>
-
-                  {/* Vendeur Column */}
-                  <div className="flex-none w-44 px-3 py-3 border-r border-gray-300 flex items-center text-sm text-gray-800 bg-white">
-                    <span className="truncate w-full text-sm">
-                      {order.vendeur}
-                    </span>
-                  </div>
-
-                  {/* Number Column */}
-                  <div className="flex-none w-36 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
-                    <span className="truncate w-full text-center text-sm">
-                      {order.numero}
-                    </span>
-                  </div>
-
-                  {/* Price Column */}
-                  <div className="flex-none w-24 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-medium text-green-700 bg-white">
-                    <span className="text-sm">
-                      {order.prix.toFixed(2)}
-                    </span>
-                  </div>
-
-                  {/* Status Column */}
-                  <div className="flex-none w-28 px-2 py-3 border-r border-gray-300 flex items-center justify-center bg-white">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
-                        <div className="flex items-center gap-1">
-                          {getStatusBadge(order.statut)}
-                          <ChevronDown className="h-3 w-3 text-gray-500 flex-shrink-0" />
-                        </div>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[140px]">
-                        {getAvailableStatusOptions(order.statut).map((status) => (
-                          <DropdownMenuItem
-                            key={status}
-                            onClick={() => onUpdateStatus(order.id, status)}
-                            className="text-sm cursor-pointer hover:bg-gray-100 px-3 py-2 focus:bg-gray-100"
-                          >
-                            {getStatusBadge(status)}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  {/* Comment Column */}
-                  <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center bg-white">
-                    <Input
-                      value={order.commentaire}
-                      onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                      className="text-sm h-8 w-full px-3 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-2 focus:ring-blue-200 shadow-sm focus:outline-none rounded-md"
-                      placeholder="اكتب تعليق..."
-                    />
+                  {/* Data Rows */}
+                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                    {orders.map((order, index) => (
+                      <div 
+                        key={order.id}
+                        className={cn(
+                          "h-14 px-3 py-3 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned && "bg-green-50 border-green-200",
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        )}
+                      >
+                        <span className="truncate w-full text-center text-sm font-mono text-gray-800">
+                          {order.code}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Vendeur Column */}
+              <ResizablePanel defaultSize={20} minSize={15}>
+                <div className="h-full flex flex-col">
+                  {/* Header */}
+                  <div className="h-12 px-3 py-3 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                    <span className="text-sm font-bold text-gray-800">العميل/الموزع</span>
+                  </div>
+                  {/* Data Rows */}
+                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                    {orders.map((order, index) => (
+                      <div 
+                        key={order.id}
+                        className={cn(
+                          "h-14 px-3 py-3 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned && "bg-green-50 border-green-200",
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        )}
+                      >
+                        <span className="truncate w-full text-sm text-gray-800">
+                          {order.vendeur}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Number Column */}
+              <ResizablePanel defaultSize={16} minSize={12}>
+                <div className="h-full flex flex-col">
+                  {/* Header */}
+                  <div className="h-12 px-3 py-3 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                    <span className="text-sm font-bold text-gray-800">الرقم</span>
+                  </div>
+                  {/* Data Rows */}
+                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                    {orders.map((order, index) => (
+                      <div 
+                        key={order.id}
+                        className={cn(
+                          "h-14 px-3 py-3 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned && "bg-green-50 border-green-200",
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        )}
+                      >
+                        <span className="truncate w-full text-center text-sm font-mono text-gray-800">
+                          {order.numero}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Price Column */}
+              <ResizablePanel defaultSize={10} minSize={8}>
+                <div className="h-full flex flex-col">
+                  {/* Header */}
+                  <div className="h-12 px-3 py-3 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                    <span className="text-sm font-bold text-gray-800">السعر</span>
+                  </div>
+                  {/* Data Rows */}
+                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                    {orders.map((order, index) => (
+                      <div 
+                        key={order.id}
+                        className={cn(
+                          "h-14 px-3 py-3 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned && "bg-green-50 border-green-200",
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        )}
+                      >
+                        <span className="text-sm font-medium text-green-700">
+                          {order.prix.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Status Column */}
+              <ResizablePanel defaultSize={12} minSize={10}>
+                <div className="h-full flex flex-col">
+                  {/* Header */}
+                  <div className="h-12 px-3 py-3 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                    <span className="text-sm font-bold text-gray-800">الحالة</span>
+                  </div>
+                  {/* Data Rows */}
+                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                    {orders.map((order, index) => (
+                      <div 
+                        key={order.id}
+                        className={cn(
+                          "h-14 px-2 py-3 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned && "bg-green-50 border-green-200",
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        )}
+                      >
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
+                            <div className="flex items-center gap-1">
+                              {getStatusBadge(order.statut)}
+                              <ChevronDown className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[140px]">
+                            {getAvailableStatusOptions(order.statut).map((status) => (
+                              <DropdownMenuItem
+                                key={status}
+                                onClick={() => onUpdateStatus(order.id, status)}
+                                className="text-sm cursor-pointer hover:bg-gray-100 px-3 py-2 focus:bg-gray-100"
+                              >
+                                {getStatusBadge(status)}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ResizablePanel>
+
+              <ResizableHandle withHandle />
+
+              {/* Comment Column */}
+              <ResizablePanel defaultSize={30} minSize={20}>
+                <div className="h-full flex flex-col">
+                  {/* Header */}
+                  <div className="h-12 px-3 py-3 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                    <span className="text-sm font-bold text-gray-800">التعليق</span>
+                  </div>
+                  {/* Data Rows */}
+                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
+                    {orders.map((order, index) => (
+                      <div 
+                        key={order.id}
+                        className={cn(
+                          "h-14 px-3 py-3 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned && "bg-green-50 border-green-200",
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        )}
+                      >
+                        <Input
+                          value={order.commentaire}
+                          onChange={(e) => handleCommentChange(order.id, e.target.value)}
+                          className="text-sm h-8 w-full px-3 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-2 focus:ring-blue-200 shadow-sm focus:outline-none rounded-md"
+                          placeholder="اكتب تعليق..."
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
           </div>
         </div>
       </div>
@@ -296,7 +391,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       {/* Touch Instructions - Updated */}
       <div className="p-3 bg-blue-50 border-t border-blue-200 text-center">
         <p className="text-xs text-blue-700">
-          💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير • شريط التمرير يظهر عند الحاجة فقط
+          💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير • اسحب الخطوط الفاصلة لتغيير حجم الأعمدة
         </p>
       </div>
 
