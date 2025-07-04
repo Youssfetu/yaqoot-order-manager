@@ -58,7 +58,6 @@ const Index = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-  const [commission, setCommission] = useState(50);
   const { toast } = useToast();
 
   const handleAddOrder = (newOrder: Partial<Order>) => {
@@ -135,12 +134,10 @@ const Index = () => {
                 size="sm"
                 className="p-2 hover:bg-gray-100 rounded-xl"
                 onClick={() => {
-                  // Search functionality - focus on search input
-                  const searchInput = document.querySelector('input[placeholder*="Rechercher"]') as HTMLInputElement;
-                  if (searchInput) {
-                    searchInput.focus();
-                    searchInput.select();
-                  }
+                  toast({
+                    title: "البحث",
+                    description: "وظيفة البحث متاحة في الجدول أدناه",
+                  });
                 }}
               >
                 <Search className="h-6 w-6 text-gray-600" />
@@ -179,60 +176,10 @@ const Index = () => {
               </Button>
             </div>
           </div>
-
-          {/* Action Buttons Row - Simplified */}
-          <div className="flex gap-2 mb-3">
-            <Button
-              variant="outline"
-              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
-            >
-              <BarChart3 className="h-5 w-5" />
-            </Button>
-
-            <Button
-              onClick={() => setIsUploadDialogOpen(true)}
-              variant="outline"
-              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
-            >
-              <Upload className="h-5 w-5" />
-            </Button>
-          </div>
-          
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Rechercher par code ou nom du client..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-gray-50 border-gray-200 rounded-xl h-12"
-            />
-          </div>
         </div>
       </div>
 
       <div className="px-4 py-4 space-y-4">
-        {/* Commission Input */}
-        <Card className="bg-white shadow-md border-0 rounded-2xl">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-2">Commission par commande</p>
-                <Input
-                  type="number"
-                  value={commission}
-                  onChange={(e) => setCommission(Number(e.target.value))}
-                  className="w-full bg-gray-50 border-gray-200 rounded-xl h-12"
-                  placeholder="Commission"
-                />
-              </div>
-              <div className="ml-4">
-                <p className="text-lg font-semibold text-gray-700">€</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Orders Table */}
         <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
           <CardHeader className="bg-gray-50 border-b border-gray-100">
@@ -249,7 +196,7 @@ const Index = () => {
         </Card>
 
         {/* Summary Cards - Now Below Table */}
-        <OrderSummary orders={orders} commission={commission} />
+        <OrderSummary orders={orders} commission={50} />
       </div>
 
       {/* Dialogs */}
