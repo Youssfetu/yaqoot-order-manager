@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -73,13 +72,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         setZoomLevel(newZoom);
       }
     } else if (e.touches.length === 1 && isPanning && zoomLevel > 1) {
-      // Single touch pan
+      // Single touch pan - limit panning to keep table anchored to top-left
       const touch = e.touches[0];
-      const newOffset = {
-        x: touch.clientX - panStart.x,
-        y: touch.clientY - panStart.y
-      };
-      setPanOffset(newOffset);
+      const newOffsetX = Math.min(0, touch.clientX - panStart.x); // Prevent panning beyond left edge
+      const newOffsetY = Math.min(0, touch.clientY - panStart.y); // Prevent panning beyond top edge
+      setPanOffset({ x: newOffsetX, y: newOffsetY });
     }
   };
 
@@ -140,40 +137,49 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Google Sheets Style Transform Container - Fixed Top-Left Origin */}
+        {/* Enhanced Transform Container - Fixed Top-Left Anchor */}
         <div 
           className="absolute top-0 left-0 w-full"
           style={{
             transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
             transformOrigin: 'top left',
             transition: isPanning ? 'none' : 'transform 0.2s ease-out',
-            minWidth: '800px'
+            minWidth: '800px',
+            // Enhance text rendering at different zoom levels
+            textRendering: 'optimizeLegibility',
+            fontSmooth: 'always',
+            WebkitFontSmoothing: 'antialiased',
+            MozOsxFontSmoothing: 'grayscale',
+            // Prevent text degradation on zoom
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden',
+            willChange: 'transform'
           }}
         >
           <div className="w-full shadow-lg rounded-lg overflow-hidden bg-white">
-            {/* Header Row - Google Sheets Style */}
+            {/* Header Row - Enhanced for better text quality */}
             <div className="flex w-full border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 h-12 sticky top-0 z-10">
               <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                الكود
+                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>الكود</span>
               </div>
               <div className="flex-none w-44 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                العميل/الموزع
+                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>العميل/الموزع</span>
               </div>
               <div className="flex-none w-36 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                الرقم
+                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>الرقم</span>
               </div>
               <div className="flex-none w-24 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                السعر
+                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>السعر</span>
               </div>
               <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                الحالة
+                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>الحالة</span>
               </div>
               <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                التعليق
+                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>التعليق</span>
               </div>
             </div>
 
-            {/* Data Rows - Google Sheets Style */}
+            {/* Data Rows - Enhanced text rendering */}
             {orders.map((order, index) => (
               <div 
                 key={order.id}
@@ -185,22 +191,39 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               >
                 {/* Code Column */}
                 <div className="flex-none w-28 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
-                  <span className="truncate w-full text-center">{order.code}</span>
+                  <span 
+                    className="truncate w-full text-center"
+                    style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
+                  >
+                    {order.code}
+                  </span>
                 </div>
 
                 {/* Vendeur Column */}
                 <div className="flex-none w-44 px-3 py-3 border-r border-gray-300 flex items-center text-sm text-gray-800 bg-white">
-                  <span className="truncate w-full">{order.vendeur}</span>
+                  <span 
+                    className="truncate w-full"
+                    style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
+                  >
+                    {order.vendeur}
+                  </span>
                 </div>
 
                 {/* Number Column */}
                 <div className="flex-none w-36 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
-                  <span className="truncate w-full text-center">{order.numero}</span>
+                  <span 
+                    className="truncate w-full text-center"
+                    style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
+                  >
+                    {order.numero}
+                  </span>
                 </div>
 
                 {/* Price Column */}
                 <div className="flex-none w-24 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-medium text-green-700 bg-white">
-                  {order.prix.toFixed(2)}
+                  <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>
+                    {order.prix.toFixed(2)}
+                  </span>
                 </div>
 
                 {/* Status Column */}
@@ -233,6 +256,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     onChange={(e) => handleCommentChange(order.id, e.target.value)}
                     className="text-sm h-8 w-full px-3 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-2 focus:ring-blue-200 shadow-sm focus:outline-none rounded-md"
                     placeholder="اكتب تعليق..."
+                    style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
                   />
                 </div>
               </div>
