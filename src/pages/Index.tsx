@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import AddOrderDialog from '@/components/AddOrderDialog';
 import UploadDialog from '@/components/UploadDialog';
 import BarcodeScanner from '@/components/BarcodeScanner';
 import OrderSummary from '@/components/OrderSummary';
+import MenuDrawer from '@/components/MenuDrawer';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Order {
@@ -58,6 +58,8 @@ const Index = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [commission, setCommission] = useState(50);
+  const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   const { toast } = useToast();
 
   const handleAddOrder = (newOrder: Partial<Order>) => {
@@ -124,9 +126,15 @@ const Index = () => {
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <div className="bg-blue-600 p-2 rounded-xl">
-              <Package className="h-6 w-6 text-white" />
-            </div>
+            {/* Menu Icon instead of Logo */}
+            <Button
+              onClick={() => setIsMenuDrawerOpen(true)}
+              variant="ghost"
+              size="sm"
+              className="bg-blue-600 p-2 rounded-xl hover:bg-blue-700"
+            >
+              <Menu className="h-6 w-6 text-white" />
+            </Button>
             
             {/* Header Icons - 5 Icons */}
             <div className="flex items-center gap-3">
@@ -200,7 +208,7 @@ const Index = () => {
 
         {/* Summary Cards - Now Below Table */}
         <div className="px-4 py-4">
-          <OrderSummary orders={orders} commission={50} />
+          <OrderSummary orders={orders} commission={commission} />
         </div>
       </div>
 
@@ -227,6 +235,13 @@ const Index = () => {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onScan={handleBarcodeScanned}
+      />
+
+      <MenuDrawer
+        isOpen={isMenuDrawerOpen}
+        onClose={() => setIsMenuDrawerOpen(false)}
+        commission={commission}
+        onCommissionChange={setCommission}
       />
     </div>
   );
