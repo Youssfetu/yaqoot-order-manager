@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -121,6 +122,15 @@ const Index = () => {
             {/* Header Icons */}
             <div className="flex items-center gap-2">
               <Button
+                onClick={() => setIsAddDialogOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Plus className="h-6 w-6 text-gray-600" />
+              </Button>
+
+              <Button
                 onClick={() => setIsScannerOpen(true)}
                 variant="ghost"
                 size="sm"
@@ -137,6 +147,34 @@ const Index = () => {
               >
                 <Upload className="h-6 w-6 text-gray-600" />
               </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+                onClick={() => {
+                  toast({
+                    title: "Données exportées",
+                    description: "Cette fonctionnalité sera développée prochainement",
+                  });
+                }}
+              >
+                <Share2 className="h-6 w-6 text-gray-600" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+                onClick={() => {
+                  toast({
+                    title: "Calculatrice",
+                    description: "Cette fonctionnalité sera développée prochainement",
+                  });
+                }}
+              >
+                <Calculator className="h-6 w-6 text-gray-600" />
+              </Button>
               
               <Button variant="ghost" size="sm" className="p-2">
                 <Menu className="h-5 w-5 text-gray-600" />
@@ -144,26 +182,13 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Action Buttons Row */}
+          {/* Action Buttons Row - Simplified */}
           <div className="flex gap-2 mb-3">
-            <Button
-              onClick={() => setIsAddDialogOpen(true)}
-              className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md border-0 text-white font-medium"
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
-            
             <Button
               variant="outline"
               className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
-              onClick={() => {
-                toast({
-                  title: "Données exportées",
-                  description: "Cette fonctionnalité sera développée prochainement",
-                });
-              }}
             >
-              <Share2 className="h-5 w-5" />
+              <BarChart3 className="h-5 w-5" />
             </Button>
 
             {/* Search Icon Button */}
