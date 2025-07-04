@@ -69,7 +69,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       
       if (initialDistance && initialZoom) {
         const scale = distance / initialDistance;
-        const newZoom = Math.max(0.5, Math.min(3, initialZoom * scale));
+        const newZoom = Math.max(0.3, Math.min(3, initialZoom * scale));
         setZoomLevel(newZoom);
       }
     } else if (e.touches.length === 1 && isPanning && zoomLevel > 1) {
@@ -128,13 +128,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      {/* Simple zoom level indicator - no buttons */}
-      <div className="flex items-center justify-center p-2 bg-gray-50 border-b border-gray-300 sticky top-[73px] z-20">
-        <span className="text-sm font-medium text-gray-700">
-          مستوى التكبير: {Math.round(zoomLevel * 100)}%
-        </span>
-      </div>
-
       {/* Google Sheets Style Table Container */}
       <div 
         ref={containerRef}
