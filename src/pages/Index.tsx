@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -116,6 +115,14 @@ const Index = () => {
     setIsScannerOpen(false);
   };
 
+  const handleFileUpload = (newOrders: Order[]) => {
+    setOrders(prevOrders => [...prevOrders, ...newOrders]);
+    toast({
+      title: "تم تحميل الملف بنجاح",
+      description: `تم إضافة ${newOrders.length} طلبية جديدة إلى ${orders.length} طلبية موجودة`,
+    });
+  };
+
   const filteredOrders = orders.filter(order =>
     order.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.vendeur.toLowerCase().includes(searchTerm.toLowerCase())
@@ -222,13 +229,7 @@ const Index = () => {
       <UploadDialog
         isOpen={isUploadDialogOpen}
         onClose={() => setIsUploadDialogOpen(false)}
-        onUpload={(data) => {
-          setOrders([...orders, ...data]);
-          toast({
-            title: "Fichier téléchargé",
-            description: `${data.length} nouvelles commandes ajoutées`,
-          });
-        }}
+        onUpload={handleFileUpload}
       />
 
       <BarcodeScanner
