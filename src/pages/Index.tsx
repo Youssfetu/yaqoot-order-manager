@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -184,7 +183,7 @@ const Index = () => {
         <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
           <CardHeader className="bg-gray-50 border-b border-gray-100">
             <CardTitle className="text-lg font-bold text-gray-900">
-              Liste des Commandes ({filteredOrders.length})
+              
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
