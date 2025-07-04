@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
