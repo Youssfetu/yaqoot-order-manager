@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -129,6 +127,45 @@ const Index = () => {
               <Menu className="h-5 w-5 text-gray-600" />
             </Button>
           </div>
+
+          {/* Action Buttons Row */}
+          <div className="flex gap-2 mb-3">
+            <Button
+              onClick={() => setIsAddDialogOpen(true)}
+              className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md border-0 text-white font-medium"
+            >
+              <Plus className="h-5 w-5" />
+            </Button>
+            
+            <Button
+              onClick={() => setIsScannerOpen(true)}
+              variant="outline"
+              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
+            >
+              <QrCode className="h-5 w-5" />
+            </Button>
+
+            <Button
+              onClick={() => setIsUploadDialogOpen(true)}
+              variant="outline"
+              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
+            >
+              <Upload className="h-5 w-5" />
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
+              onClick={() => {
+                toast({
+                  title: "تم تصدير البيانات",
+                  description: "سيتم تطوير هذه الميزة قريباً",
+                });
+              }}
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+          </div>
           
           {/* Search Bar */}
           <div className="relative">
@@ -144,51 +181,6 @@ const Index = () => {
       </div>
 
       <div className="px-4 py-4 space-y-4">
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            onClick={() => setIsAddDialogOpen(true)}
-            className="h-14 bg-blue-600 hover:bg-blue-700 rounded-2xl shadow-md border-0 text-white font-medium"
-          >
-            <Plus className="h-5 w-5 ml-2" />
-            طلبية جديدة
-          </Button>
-          
-          <Button
-            onClick={() => setIsScannerOpen(true)}
-            variant="outline"
-            className="h-14 bg-white border-gray-200 rounded-2xl shadow-md hover:bg-gray-50"
-          >
-            <QrCode className="h-5 w-5 ml-2" />
-            مسح باركود
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Button
-            onClick={() => setIsUploadDialogOpen(true)}
-            variant="outline"
-            className="h-14 bg-white border-gray-200 rounded-2xl shadow-md hover:bg-gray-50"
-          >
-            <Upload className="h-5 w-5 ml-2" />
-            تحميل ملف
-          </Button>
-          
-          <Button
-            variant="outline"
-            className="h-14 bg-white border-gray-200 rounded-2xl shadow-md hover:bg-gray-50"
-            onClick={() => {
-              toast({
-                title: "تم تصدير البيانات",
-                description: "سيتم تطوير هذه الميزة قريباً",
-              });
-            }}
-          >
-            <Share2 className="h-5 w-5 ml-2" />
-            تصدير
-          </Button>
-        </div>
-
         {/* Commission Input */}
         <Card className="bg-white shadow-md border-0 rounded-2xl">
           <CardContent className="p-4">
