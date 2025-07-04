@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Download, Receipt, Percent, DollarSign } from 'lucide-react';
+import { Download, Receipt, Percent, DollarSign, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface MenuDrawerProps {
@@ -47,87 +47,106 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   };
 
   // حساب نسبة التوصيل تلقائياً (مثال)
-  const deliveryPercentage = 15; // هذه ستُحسب بناءً على الطلبيات المُوزعة
+  const deliveryPercentage = 15;
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="text-center border-b pb-4">
-          <DrawerTitle className="text-xl font-bold text-gray-800">إعدادات التطبيق</DrawerTitle>
+          <DrawerTitle className="text-xl font-bold text-gray-800">الإعدادات</DrawerTitle>
         </DrawerHeader>
 
-        <div className="px-6 py-4 space-y-8">
+        <div className="px-4 py-6 space-y-4">
           {/* Commission Settings */}
-          <div className="bg-blue-50 rounded-lg p-4 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <DollarSign className="h-5 w-5 text-white" />
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <DollarSign className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">العمولة</h3>
+                  <p className="text-sm text-gray-500">{commission} ريال سعودي</p>
+                </div>
               </div>
-              <Label className="text-lg font-semibold text-gray-800">إعدادات العمولة</Label>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
             </div>
-            <div className="space-y-3">
-              <Label htmlFor="commission" className="text-sm text-gray-600">العمولة (ريال سعودي)</Label>
+            
+            <div className="px-4 pb-4 space-y-3">
               <Input
-                id="commission"
                 type="number"
                 value={tempCommission}
                 onChange={(e) => setTempCommission(Number(e.target.value))}
                 placeholder="أدخل قيمة العمولة"
-                className="text-right text-lg font-medium"
+                className="text-right"
               />
-              <Button onClick={handleSaveCommission} className="w-full bg-blue-600 hover:bg-blue-700">
-                حفظ العمولة
+              <Button 
+                onClick={handleSaveCommission} 
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                size="sm"
+              >
+                حفظ التغييرات
               </Button>
             </div>
           </div>
 
-          {/* Delivery Percentage - Read Only */}
-          <div className="bg-green-50 rounded-lg p-4 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-green-600 p-2 rounded-lg">
-                <Percent className="h-5 w-5 text-white" />
+          {/* Delivery Percentage */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <Percent className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">نسبة التوصيل</h3>
+                  <p className="text-sm text-gray-500">{deliveryPercentage}% محسوبة تلقائياً</p>
+                </div>
               </div>
-              <Label className="text-lg font-semibold text-gray-800">نسبة التوصيل</Label>
-            </div>
-            <div className="space-y-3">
-              <Label className="text-sm text-gray-600">النسبة المئوية للتوصيل (محسوبة تلقائياً)</Label>
-              <div className="bg-gray-100 border border-gray-300 px-4 py-3 rounded-lg text-right">
-                <span className="text-2xl font-bold text-green-600">{deliveryPercentage}%</span>
-              </div>
-              <p className="text-xs text-gray-500 text-center">
-                تُحسب هذه النسبة تلقائياً حسب الطلبيات الموزعة
-              </p>
+              <span className="text-lg font-semibold text-green-600">{deliveryPercentage}%</span>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-            <Label className="text-lg font-semibold text-gray-800">الإجراءات</Label>
-            
-            <div className="grid grid-cols-1 gap-3">
-              <Button 
-                onClick={handleGenerateInvoice} 
-                className="flex items-center justify-center gap-3 bg-orange-600 hover:bg-orange-700 text-white py-3"
-                variant="default"
-              >
-                <Receipt className="h-5 w-5" />
-                <span className="font-medium">إنشاء فاتورة</span>
-              </Button>
+          {/* Generate Invoice */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div 
+              className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+              onClick={handleGenerateInvoice}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Receipt className="h-5 w-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">إنشاء فاتورة</h3>
+                  <p className="text-sm text-gray-500">إنشاء فاتورة للطلبيات</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </div>
+          </div>
 
-              <Button 
-                onClick={handleDownloadExcel} 
-                className="flex items-center justify-center gap-3 bg-gray-600 hover:bg-gray-700 text-white py-3"
-                variant="default"
-              >
-                <Download className="h-5 w-5" />
-                <span className="font-medium">تحميل الطلبيات (Excel)</span>
-              </Button>
+          {/* Download Excel */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div 
+              className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+              onClick={handleDownloadExcel}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Download className="h-5 w-5 text-gray-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">تحميل Excel</h3>
+                  <p className="text-sm text-gray-500">تحميل الطلبيات كملف Excel</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
             </div>
           </div>
         </div>
 
         <DrawerFooter className="border-t pt-4">
-          <Button variant="outline" onClick={onClose} className="w-full py-3 text-lg">
+          <Button variant="outline" onClick={onClose} className="w-full">
             إغلاق
           </Button>
         </DrawerFooter>
