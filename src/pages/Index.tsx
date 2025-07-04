@@ -82,6 +82,16 @@ const Index = () => {
     ));
   };
 
+  const handleUpdateStatus = (id: string, status: string) => {
+    setOrders(orders.map(order => 
+      order.id === id ? { ...order, statut: status } : order
+    ));
+    toast({
+      title: "Statut mis à jour",
+      description: `Le statut a été changé vers "${status}"`,
+    });
+  };
+
   const handleBarcodeScanned = (code: string) => {
     const foundOrder = orders.find(order => order.code === code);
     if (foundOrder) {
@@ -190,6 +200,7 @@ const Index = () => {
             <OrdersTable
               orders={filteredOrders}
               onUpdateComment={handleUpdateComment}
+              onUpdateStatus={handleUpdateStatus}
             />
           </CardContent>
         </Card>

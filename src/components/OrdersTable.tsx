@@ -3,17 +3,33 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
 
 interface OrdersTableProps {
   orders: Order[];
   onUpdateComment: (id: string, comment: string) => void;
+  onUpdateStatus: (id: string, status: string) => void;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus }) => {
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [tempComment, setTempComment] = useState('');
+
+  const statusOptions = [
+    'Nouveau',
+    'Confirmé',
+    'En cours',
+    'Livré',
+    'Reporté',
+    'Annulé',
+    'Refusé',
+    'Numéro erroné',
+    'Hors zone',
+    'Programmé'
+  ];
 
   const handleCommentEdit = (id: string, currentComment: string) => {
     setEditingComment(id);
@@ -35,7 +51,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
     const statusColors = {
       'Confirmé': 'bg-green-500 text-white text-xs px-2 py-0.5',
       'En cours': 'bg-yellow-500 text-white text-xs px-2 py-0.5',
+      'Livré': 'bg-emerald-500 text-white text-xs px-2 py-0.5',
+      'Reporté': 'bg-orange-500 text-white text-xs px-2 py-0.5',
       'Annulé': 'bg-red-500 text-white text-xs px-2 py-0.5',
+      'Refusé': 'bg-red-600 text-white text-xs px-2 py-0.5',
+      'Numéro erroné': 'bg-purple-500 text-white text-xs px-2 py-0.5',
+      'Hors zone': 'bg-gray-500 text-white text-xs px-2 py-0.5',
+      'Programmé': 'bg-blue-500 text-white text-xs px-2 py-0.5',
       'Nouveau': 'bg-blue-500 text-white text-xs px-2 py-0.5'
     };
     
@@ -101,9 +123,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
                 {order.prix.toFixed(2)}
               </TableCell>
 
-              {/* Status */}
+              {/* Status - Now with Dropdown */}
               <TableCell className="text-center border-r border-gray-300 px-2 py-1 h-8">
-                {getStatusBadge(order.statut)}
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center justify-center gap-1 hover:bg-gray-100 rounded px-1 py-0.5 w-full">
+                    {getStatusBadge(order.statut)}
+                    <ChevronDown className="h-3 w-3 text-gray-400" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-white shadow-lg border rounded-md z-50 min-w-[140px]">
+                    {statusOptions.map((status) => (
+                      <DropdownMenuItem
+                        key={status}
+                        onClick={() => onUpdateStatus(order.id, status)}
+                        className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1"
+                      >
+                        {getStatusBadge(status)}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
 
               {/* Comment - Editable */}
