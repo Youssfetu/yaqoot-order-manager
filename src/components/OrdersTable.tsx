@@ -185,29 +185,29 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           }}
         >
           <div className="w-full shadow-lg rounded-lg overflow-hidden bg-white">
-            {/* Header Row - Enhanced for better text quality */}
+            {/* Header Row - Fixed font size */}
             <div className="flex w-full border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 h-12 sticky top-0 z-10">
               <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>الكود</span>
+                <span className="text-sm">الكود</span>
               </div>
               <div className="flex-none w-44 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>العميل/الموزع</span>
+                <span className="text-sm">العميل/الموزع</span>
               </div>
               <div className="flex-none w-36 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>الرقم</span>
+                <span className="text-sm">الرقم</span>
               </div>
               <div className="flex-none w-24 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>السعر</span>
+                <span className="text-sm">السعر</span>
               </div>
               <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>الحالة</span>
+                <span className="text-sm">الحالة</span>
               </div>
               <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
-                <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>التعليق</span>
+                <span className="text-sm">التعليق</span>
               </div>
             </div>
 
-            {/* Data Rows - Enhanced text rendering */}
+            {/* Data Rows - Fixed font sizes */}
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 280px)' }}>
               {orders.map((order, index) => (
                 <div 
@@ -220,37 +220,28 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 >
                   {/* Code Column */}
                   <div className="flex-none w-28 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
-                    <span 
-                      className="truncate w-full text-center"
-                      style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
-                    >
+                    <span className="truncate w-full text-center text-sm">
                       {order.code}
                     </span>
                   </div>
 
                   {/* Vendeur Column */}
                   <div className="flex-none w-44 px-3 py-3 border-r border-gray-300 flex items-center text-sm text-gray-800 bg-white">
-                    <span 
-                      className="truncate w-full"
-                      style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
-                    >
+                    <span className="truncate w-full text-sm">
                       {order.vendeur}
                     </span>
                   </div>
 
                   {/* Number Column */}
                   <div className="flex-none w-36 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
-                    <span 
-                      className="truncate w-full text-center"
-                      style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
-                    >
+                    <span className="truncate w-full text-center text-sm">
                       {order.numero}
                     </span>
                   </div>
 
                   {/* Price Column */}
                   <div className="flex-none w-24 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-medium text-green-700 bg-white">
-                    <span style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}>
+                    <span className="text-sm">
                       {order.prix.toFixed(2)}
                     </span>
                   </div>
@@ -285,7 +276,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       onChange={(e) => handleCommentChange(order.id, e.target.value)}
                       className="text-sm h-8 w-full px-3 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-2 focus:ring-blue-200 shadow-sm focus:outline-none rounded-md"
                       placeholder="اكتب تعليق..."
-                      style={{ fontSize: `${Math.max(12, 14 / zoomLevel)}px` }}
                     />
                   </div>
                 </div>
