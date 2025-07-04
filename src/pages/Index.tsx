@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -115,18 +114,34 @@ const Index = () => {
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-xl">
-                <Package className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">Gestion des Commandes</h1>
-                <p className="text-xs text-gray-500">Système avancé pour distributeurs</p>
-              </div>
+            <div className="bg-blue-600 p-2 rounded-xl">
+              <Package className="h-6 w-6 text-white" />
             </div>
-            <Button variant="ghost" size="sm" className="p-2">
-              <Menu className="h-5 w-5 text-gray-600" />
-            </Button>
+            
+            {/* Header Icons */}
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setIsScannerOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <QrCode className="h-6 w-6 text-gray-600" />
+              </Button>
+              
+              <Button
+                onClick={() => setIsUploadDialogOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Upload className="h-6 w-6 text-gray-600" />
+              </Button>
+              
+              <Button variant="ghost" size="sm" className="p-2">
+                <Menu className="h-5 w-5 text-gray-600" />
+              </Button>
+            </div>
           </div>
 
           {/* Action Buttons Row */}
@@ -136,22 +151,6 @@ const Index = () => {
               className="flex-1 h-12 bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md border-0 text-white font-medium"
             >
               <Plus className="h-5 w-5" />
-            </Button>
-            
-            <Button
-              onClick={() => setIsScannerOpen(true)}
-              variant="outline"
-              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
-            >
-              <QrCode className="h-5 w-5" />
-            </Button>
-
-            <Button
-              onClick={() => setIsUploadDialogOpen(true)}
-              variant="outline"
-              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
-            >
-              <Upload className="h-5 w-5" />
             </Button>
             
             <Button
