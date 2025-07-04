@@ -27,33 +27,33 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   const handleSaveCommission = () => {
     onCommissionChange(tempCommission);
     toast({
-      title: 'تم حفظ الإعدادات',
-      description: 'تم تحديث العمولة بنجاح',
+      title: 'Paramètres sauvegardés',
+      description: 'Commission mise à jour avec succès',
     });
   };
 
   const handleDownloadExcel = () => {
     toast({
-      title: 'تحميل Excel',
-      description: 'سيتم تحميل الطلبيات كملف Excel قريباً',
+      title: 'Télécharger Excel',
+      description: 'Les commandes seront téléchargées en fichier Excel prochainement',
     });
   };
 
   const handleGenerateInvoice = () => {
     toast({
-      title: 'إنشاء فاتورة',
-      description: 'سيتم إنشاء الفاتورة قريباً',
+      title: 'Générer facture',
+      description: 'La facture sera générée prochainement',
     });
   };
 
-  // حساب نسبة التوصيل تلقائياً (مثال)
+  // Calcul automatique du pourcentage de livraison (exemple)
   const deliveryPercentage = 15;
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
       <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="text-center border-b pb-4">
-          <DrawerTitle className="text-xl font-bold text-gray-800">الإعدادات</DrawerTitle>
+          <DrawerTitle className="text-xl font-bold text-gray-800">Paramètres</DrawerTitle>
         </DrawerHeader>
 
         <div className="px-4 py-6 space-y-4">
@@ -65,8 +65,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <DollarSign className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">العمولة</h3>
-                  <p className="text-sm text-gray-500">{commission} ريال سعودي</p>
+                  <h3 className="font-medium text-gray-900">Commission</h3>
+                  <p className="text-sm text-gray-500">{commission} DH</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -77,7 +77,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 type="number"
                 value={tempCommission}
                 onChange={(e) => setTempCommission(Number(e.target.value))}
-                placeholder="أدخل قيمة العمولة"
+                placeholder="Entrez la valeur de la commission"
                 className="text-right"
               />
               <Button 
@@ -85,7 +85,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 size="sm"
               >
-                حفظ التغييرات
+                Sauvegarder les modifications
               </Button>
             </div>
           </div>
@@ -98,8 +98,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Percent className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">نسبة التوصيل</h3>
-                  <p className="text-sm text-gray-500">{deliveryPercentage}% محسوبة تلقائياً</p>
+                  <h3 className="font-medium text-gray-900">Pourcentage de livraison</h3>
+                  <p className="text-sm text-gray-500">{deliveryPercentage}% calculé automatiquement</p>
                 </div>
               </div>
               <span className="text-lg font-semibold text-green-600">{deliveryPercentage}%</span>
@@ -117,8 +117,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Receipt className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">إنشاء فاتورة</h3>
-                  <p className="text-sm text-gray-500">إنشاء فاتورة للطلبيات</p>
+                  <h3 className="font-medium text-gray-900">Générer facture</h3>
+                  <p className="text-sm text-gray-500">Créer une facture pour les commandes</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -136,8 +136,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Download className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">تحميل Excel</h3>
-                  <p className="text-sm text-gray-500">تحميل الطلبيات كملف Excel</p>
+                  <h3 className="font-medium text-gray-900">Télécharger Excel</h3>
+                  <p className="text-sm text-gray-500">Télécharger les commandes en fichier Excel</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -147,7 +147,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 
         <DrawerFooter className="border-t pt-4">
           <Button variant="outline" onClick={onClose} className="w-full">
-            إغلاق
+            Fermer
           </Button>
         </DrawerFooter>
       </DrawerContent>

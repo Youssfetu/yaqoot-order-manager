@@ -154,8 +154,8 @@ const Index = () => {
                 className="p-2 hover:bg-gray-100 rounded-xl"
                 onClick={() => {
                   toast({
-                    title: "البحث",
-                    description: "وظيفة البحث متاحة في الجدول أدناه",
+                    title: "Recherche",
+                    description: "La fonction de recherche est disponible dans le tableau ci-dessous",
                   });
                 }}
               >
