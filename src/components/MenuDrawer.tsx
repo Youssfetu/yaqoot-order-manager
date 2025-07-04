@@ -66,7 +66,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">Commission</h3>
-                  <p className="text-sm text-gray-500">{commission} DH</p>
+                  <p className="text-sm text-gray-500">{commission}</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
