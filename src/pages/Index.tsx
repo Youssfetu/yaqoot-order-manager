@@ -153,14 +153,14 @@ const Index = () => {
                 <Search className="h-6 w-6 text-gray-600" />
               </Button>
 
-              {/* New Add Button - Just text input style */}
+              {/* Changed Add Button - Now using Plus icon */}
               <Button
                 onClick={() => setIsAddDialogOpen(true)}
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="px-4 py-2 h-10 w-32 text-xs text-gray-500 border border-gray-300 rounded-md bg-white hover:bg-gray-50"
+                className="p-2 hover:bg-gray-100 rounded-xl"
               >
-                الموزع
+                <Plus className="h-6 w-6 text-gray-600" />
               </Button>
 
               <Button
