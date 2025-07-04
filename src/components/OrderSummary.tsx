@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Calculator, TrendingUp, Package, DollarSign } from 'lucide-react';
 import type { Order } from '@/pages/Index';
 
@@ -19,51 +19,59 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
   const totalPaid = confirmedOrders.reduce((sum, order) => sum + order.prix, 0);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
-        <CardContent className="p-6">
+    <div className="grid grid-cols-2 gap-3 px-1">
+      <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-100 text-sm font-medium">T: المبلغ الإجمالي</p>
-              <p className="text-3xl font-bold">{totalAmount.toFixed(2)} د.م</p>
+              <p className="text-blue-600 text-xs font-medium mb-1">T</p>
+              <p className="text-lg font-bold text-gray-800">{totalAmount.toFixed(0)}</p>
             </div>
-            <Calculator className="h-10 w-10 text-blue-200" />
+            <div className="bg-blue-100 p-2 rounded-full">
+              <Calculator className="h-5 w-5 text-blue-600" />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
-        <CardContent className="p-6">
+      <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-100 text-sm font-medium">V: المدفوع</p>
-              <p className="text-3xl font-bold">{totalPaid.toFixed(2)} د.م</p>
+              <p className="text-green-600 text-xs font-medium mb-1">V</p>
+              <p className="text-lg font-bold text-gray-800">{totalPaid.toFixed(0)}</p>
             </div>
-            <DollarSign className="h-10 w-10 text-green-200" />
+            <div className="bg-green-100 p-2 rounded-full">
+              <DollarSign className="h-5 w-5 text-green-600" />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
-        <CardContent className="p-6">
+      <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-orange-100 text-sm font-medium">C: العمولة</p>
-              <p className="text-3xl font-bold">{totalCommission.toFixed(2)} د.م</p>
+              <p className="text-orange-600 text-xs font-medium mb-1">C</p>
+              <p className="text-lg font-bold text-gray-800">{totalCommission.toFixed(0)}</p>
             </div>
-            <TrendingUp className="h-10 w-10 text-orange-200" />
+            <div className="bg-orange-100 p-2 rounded-full">
+              <TrendingUp className="h-5 w-5 text-orange-600" />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-        <CardContent className="p-6">
+      <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
+        <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-100 text-sm font-medium">N: عدد الطلبيات</p>
-              <p className="text-3xl font-bold">{orderCount}</p>
+              <p className="text-purple-600 text-xs font-medium mb-1">N</p>
+              <p className="text-lg font-bold text-gray-800">{orderCount}</p>
             </div>
-            <Package className="h-10 w-10 text-purple-200" />
+            <div className="bg-purple-100 p-2 rounded-full">
+              <Package className="h-5 w-5 text-purple-600" />
+            </div>
           </div>
         </CardContent>
       </Card>
