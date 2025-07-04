@@ -118,7 +118,7 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Android Style Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
@@ -188,25 +188,18 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="px-4 py-4 space-y-4">
-        {/* Orders Table */}
-        <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
-          <CardHeader className="bg-gray-50 border-b border-gray-100">
-            <CardTitle className="text-lg font-bold text-gray-900">
-              
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <OrdersTable
-              orders={filteredOrders}
-              onUpdateComment={handleUpdateComment}
-              onUpdateStatus={handleUpdateStatus}
-            />
-          </CardContent>
-        </Card>
+      <div className="px-0 py-0">
+        {/* Orders Table - Direct without card wrapper */}
+        <OrdersTable
+          orders={filteredOrders}
+          onUpdateComment={handleUpdateComment}
+          onUpdateStatus={handleUpdateStatus}
+        />
 
         {/* Summary Cards - Now Below Table */}
-        <OrderSummary orders={orders} commission={50} />
+        <div className="px-4 py-4">
+          <OrderSummary orders={orders} commission={50} />
+        </div>
       </div>
 
       {/* Dialogs */}
