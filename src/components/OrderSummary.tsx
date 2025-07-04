@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calculator, TrendingUp, Package, DollarSign } from 'lucide-react';
@@ -19,7 +20,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
   const totalPaid = confirmedOrders.reduce((sum, order) => sum + order.prix, 0);
 
   return (
-    <div className="grid grid-cols-2 gap-3 px-1">
+    <div className="space-y-3">
       <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">

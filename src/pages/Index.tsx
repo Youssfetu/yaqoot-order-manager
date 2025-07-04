@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -143,9 +144,6 @@ const Index = () => {
       </div>
 
       <div className="px-4 py-4 space-y-4">
-        {/* Summary Cards */}
-        <OrderSummary orders={orders} commission={commission} />
-
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <Button
@@ -226,6 +224,9 @@ const Index = () => {
             />
           </CardContent>
         </Card>
+
+        {/* Summary Cards - Now Below Table */}
+        <OrderSummary orders={orders} commission={commission} />
       </div>
 
       {/* Dialogs */}
