@@ -1,11 +1,10 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
-import { ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ChevronDown, ZoomIn, ZoomOut, RotateCcw, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
@@ -21,6 +20,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [transformOrigin, setTransformOrigin] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -35,14 +35,42 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Programmé'
   ];
 
-  // Handle wheel zoom
+  // Smart zoom to cursor position
+  const zoomAtPoint = useCallback((newZoom: number, clientX?: number, clientY?: number) => {
+    if (!containerRef.current) return;
+    
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    
+    // Use mouse position or center if not provided
+    const pointX = clientX !== undefined ? clientX - rect.left : rect.width / 2;
+    const pointY = clientY !== undefined ? clientY - rect.top : rect.height / 2;
+    
+    // Calculate new transform origin and offset
+    const zoomRatio = newZoom / zoom;
+    const newOriginX = pointX;
+    const newOriginY = pointY;
+    
+    // Adjust pan offset to keep the zoom point in place
+    const deltaX = (pointX - panOffset.x) * (1 - zoomRatio);
+    const deltaY = (pointY - panOffset.y) * (1 - zoomRatio);
+    
+    setTransformOrigin({ x: newOriginX, y: newOriginY });
+    setPanOffset({
+      x: panOffset.x + deltaX,
+      y: panOffset.y + deltaY
+    });
+    setZoom(newZoom);
+  }, [zoom, panOffset]);
+
+  // Handle wheel zoom with cursor position
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       if (e.ctrlKey || e.metaKey) {
         e.preventDefault();
         const delta = e.deltaY * -0.01;
-        const newZoom = Math.min(Math.max(zoom + delta, 0.5), 3);
-        setZoom(newZoom);
+        const newZoom = Math.min(Math.max(zoom + delta, 0.3), 5);
+        zoomAtPoint(newZoom, e.clientX, e.clientY);
       }
     };
 
@@ -51,11 +79,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       container.addEventListener('wheel', handleWheel, { passive: false });
       return () => container.removeEventListener('wheel', handleWheel);
     }
-  }, [zoom]);
+  }, [zoom, zoomAtPoint]);
 
-  // Handle touch gestures for mobile
+  // Enhanced touch gestures for mobile
   useEffect(() => {
     let lastTouchDistance = 0;
+    let touchCenter = { x: 0, y: 0 };
 
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
@@ -65,6 +94,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           touch1.clientX - touch2.clientX,
           touch1.clientY - touch2.clientY
         );
+        touchCenter = {
+          x: (touch1.clientX + touch2.clientX) / 2,
+          y: (touch1.clientY + touch2.clientY) / 2
+        };
       } else if (e.touches.length === 1) {
         setIsPanning(true);
         setPanStart({
@@ -86,8 +119,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         
         if (lastTouchDistance > 0) {
           const scale = currentDistance / lastTouchDistance;
-          const newZoom = Math.min(Math.max(zoom * scale, 0.5), 3);
-          setZoom(newZoom);
+          const newZoom = Math.min(Math.max(zoom * scale, 0.3), 5);
+          zoomAtPoint(newZoom, touchCenter.x, touchCenter.y);
         }
         lastTouchDistance = currentDistance;
       } else if (e.touches.length === 1 && isPanning) {
@@ -116,9 +149,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         container.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [zoom, isPanning, panStart, panOffset]);
+  }, [zoom, isPanning, panStart, panOffset, zoomAtPoint]);
 
-  // Handle mouse pan
+  // Enhanced mouse pan with better UX
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 0) { // Left mouse button
       setIsPanning(true);
@@ -126,6 +159,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         x: e.clientX - panOffset.x,
         y: e.clientY - panOffset.y
       });
+      e.preventDefault();
     }
   };
 
@@ -175,60 +209,100 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   const handleZoomIn = () => {
-    setZoom(Math.min(zoom + 0.2, 3));
+    zoomAtPoint(Math.min(zoom + 0.3, 5));
   };
 
   const handleZoomOut = () => {
-    setZoom(Math.max(zoom - 0.2, 0.5));
+    zoomAtPoint(Math.max(zoom - 0.3, 0.3));
   };
 
   const handleResetZoom = () => {
     setZoom(1);
     setPanOffset({ x: 0, y: 0 });
+    setTransformOrigin({ x: 0, y: 0 });
+  };
+
+  const handleFitToScreen = () => {
+    if (!containerRef.current || !tableRef.current) return;
+    
+    const container = containerRef.current;
+    const table = tableRef.current;
+    
+    const containerRect = container.getBoundingClientRect();
+    const tableRect = table.getBoundingClientRect();
+    
+    const scaleX = (containerRect.width * 0.9) / (tableRect.width / zoom);
+    const scaleY = (containerRect.height * 0.9) / (tableRect.height / zoom);
+    
+    const newZoom = Math.min(scaleX, scaleY, 3);
+    
+    setZoom(newZoom);
+    setPanOffset({ x: 0, y: 0 });
+    setTransformOrigin({ x: 0, y: 0 });
   };
 
   return (
     <div className="w-full border border-gray-300 bg-white relative">
-      {/* Zoom Controls */}
-      <div className="absolute top-2 right-2 z-20 flex gap-1 bg-white rounded-lg shadow-md border border-gray-200 p-1">
+      {/* Enhanced Zoom Controls */}
+      <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 bg-white rounded-lg shadow-lg border border-gray-200 p-2">
+        <div className="flex gap-1">
+          <Button
+            onClick={handleZoomIn}
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0 hover:bg-gray-100"
+            title="تكبير"
+          >
+            <ZoomIn className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={handleZoomOut}
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0 hover:bg-gray-100"
+            title="تصغير"
+          >
+            <ZoomOut className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={handleResetZoom}
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0 hover:bg-gray-100"
+            title="إعادة تعيين"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
+        </div>
         <Button
-          onClick={handleZoomIn}
+          onClick={handleFitToScreen}
           size="sm"
           variant="ghost"
-          className="h-8 w-8 p-0 hover:bg-gray-100"
+          className="h-8 w-full p-0 hover:bg-gray-100 text-xs"
+          title="ملء الشاشة"
         >
-          <ZoomIn className="h-4 w-4" />
+          ملء الشاشة
         </Button>
-        <Button
-          onClick={handleZoomOut}
-          size="sm"
-          variant="ghost"
-          className="h-8 w-8 p-0 hover:bg-gray-100"
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={handleResetZoom}
-          size="sm"
-          variant="ghost"
-          className="h-8 w-8 p-0 hover:bg-gray-100"
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-        <div className="flex items-center px-2 text-xs text-gray-600 border-l border-gray-200 ml-1">
+        <div className="flex items-center justify-center px-2 text-xs text-gray-600 border-t border-gray-200 pt-1">
           {Math.round(zoom * 100)}%
         </div>
       </div>
 
-      {/* Zoom Instructions */}
-      <div className="absolute top-2 left-2 z-20 text-xs text-gray-500 bg-white/90 rounded px-2 py-1">
-        Ctrl + عجلة الماوس للتكبير/التصغير
+      {/* Enhanced Instructions */}
+      <div className="absolute top-2 left-2 z-20 text-xs text-gray-500 bg-white/95 rounded-lg px-3 py-2 shadow-sm border border-gray-200">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <Move className="h-3 w-3" />
+            <span>اسحب للتنقل</span>
+          </div>
+          <div>Ctrl + عجلة الماوس للزوم</div>
+        </div>
       </div>
 
-      {/* Zoomable Container */}
+      {/* Enhanced Zoomable Container */}
       <div 
         ref={containerRef}
-        className="w-full overflow-hidden select-none relative"
+        className="w-full overflow-hidden select-none relative bg-gray-50"
         style={{ 
           cursor: isPanning ? 'grabbing' : 'grab',
           height: '70vh',
@@ -241,34 +315,34 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       >
         <div
           ref={tableRef}
-          className="origin-top-left transition-transform duration-200 ease-out"
+          className="transition-transform duration-100 ease-out bg-white"
           style={{
-            transform: `scale(${zoom}) translate(${panOffset.x}px, ${panOffset.y}px)`,
-            transformOrigin: '0 0'
+            transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom})`,
+            transformOrigin: `${transformOrigin.x}px ${transformOrigin.y}px`
           }}
         >
           {/* Horizontal Scroll Container */}
           <div className="w-full overflow-x-auto overflow-y-visible">
             {/* Table with fixed minimum width for mobile */}
-            <div className="min-w-[800px] w-full">
+            <div className="min-w-[800px] w-full shadow-lg rounded-lg overflow-hidden">
               {/* Header Row */}
-              <div className="flex w-full border-b border-gray-300 bg-gray-100 h-8">
-                <div className="flex-none w-24 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+              <div className="flex w-full border-b border-gray-300 bg-gradient-to-r from-gray-100 to-gray-200 h-10">
+                <div className="flex-none w-24 px-2 py-2 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
                   Code
                 </div>
-                <div className="flex-none w-40 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+                <div className="flex-none w-40 px-2 py-2 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
                   Client/Distributeur
                 </div>
-                <div className="flex-none w-32 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+                <div className="flex-none w-32 px-2 py-2 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
                   Numéro
                 </div>
-                <div className="flex-none w-20 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+                <div className="flex-none w-20 px-2 py-2 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
                   Prix
                 </div>
-                <div className="flex-none w-24 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+                <div className="flex-none w-24 px-2 py-2 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
                   Statut
                 </div>
-                <div className="flex-1 min-w-[200px] px-2 py-1 flex items-center justify-center text-xs font-semibold text-gray-700">
+                <div className="flex-1 min-w-[200px] px-2 py-2 flex items-center justify-center text-xs font-semibold text-gray-700">
                   Commentaire
                 </div>
               </div>
@@ -278,33 +352,33 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={order.id}
                   className={cn(
-                    "flex w-full border-b border-gray-200 h-8",
-                    order.isScanned && "bg-green-50",
+                    "flex w-full border-b border-gray-200 h-10 hover:bg-blue-50 transition-colors duration-150",
+                    order.isScanned && "bg-green-50 border-green-200",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
                 >
                   {/* Code Column */}
-                  <div className="flex-none w-24 px-2 py-1 border-r border-gray-200 flex items-center text-xs font-mono text-gray-800 truncate">
+                  <div className="flex-none w-24 px-2 py-2 border-r border-gray-200 flex items-center text-xs font-mono text-gray-800 truncate">
                     {order.code}
                   </div>
 
                   {/* Vendeur Column */}
-                  <div className="flex-none w-40 px-2 py-1 border-r border-gray-200 flex items-center text-xs text-gray-800 truncate">
+                  <div className="flex-none w-40 px-2 py-2 border-r border-gray-200 flex items-center text-xs text-gray-800 truncate">
                     {order.vendeur}
                   </div>
 
                   {/* Number Column */}
-                  <div className="flex-none w-32 px-2 py-1 border-r border-gray-200 flex items-center text-xs font-mono text-gray-800 truncate">
+                  <div className="flex-none w-32 px-2 py-2 border-r border-gray-200 flex items-center text-xs font-mono text-gray-800 truncate">
                     {order.numero}
                   </div>
 
                   {/* Price Column */}
-                  <div className="flex-none w-20 px-2 py-1 border-r border-gray-200 flex items-center justify-end text-xs font-medium text-green-700">
+                  <div className="flex-none w-20 px-2 py-2 border-r border-gray-200 flex items-center justify-end text-xs font-medium text-green-700">
                     {order.prix.toFixed(2)}
                   </div>
 
                   {/* Status Column */}
-                  <div className="flex-none w-24 px-1 py-1 border-r border-gray-200 flex items-center justify-center">
+                  <div className="flex-none w-24 px-1 py-2 border-r border-gray-200 flex items-center justify-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
                         <div className="flex items-center gap-1">
@@ -327,11 +401,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </div>
 
                   {/* Comment Column */}
-                  <div className="flex-1 min-w-[200px] px-1 py-1 flex items-center">
+                  <div className="flex-1 min-w-[200px] px-2 py-2 flex items-center">
                     <Input
                       value={order.commentaire}
                       onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                      className="text-xs h-6 w-full px-2 py-0 border-0 focus:border-0 bg-transparent focus:ring-0 shadow-none focus:outline-none rounded-none"
+                      className="text-xs h-6 w-full px-2 py-0 border-0 focus:border-0 bg-transparent focus:ring-1 focus:ring-blue-300 shadow-none focus:outline-none rounded-sm"
                       placeholder="اكتب تعليق..."
                     />
                   </div>
