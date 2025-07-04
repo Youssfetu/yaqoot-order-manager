@@ -52,6 +52,28 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     };
   }, [zoomLevel, orders]);
 
+  // Keyboard shortcuts for zoom
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === '=' || e.key === '+') {
+          e.preventDefault();
+          setZoomLevel(prev => Math.min(3, prev + 0.1));
+        } else if (e.key === '-') {
+          e.preventDefault();
+          setZoomLevel(prev => Math.max(0.3, prev - 0.1));
+        } else if (e.key === '0') {
+          e.preventDefault();
+          setZoomLevel(1);
+          setPanOffset({ x: 0, y: 0 });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Touch-based zoom functionality
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
@@ -386,6 +408,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       <div className="p-2 bg-blue-50 border-t border-blue-200 text-center">
         <p className="text-xs text-blue-700">
           💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير • اسحب الخطوط الفاصلة لتغيير حجم الأعمدة
+        </p>
+        <p className="text-xs text-blue-600 mt-1">
+          ⌨️ على الكمبيوتر: Ctrl + / Ctrl - للزوم • Ctrl 0 للعودة للحجم الطبيعي
         </p>
       </div>
 
