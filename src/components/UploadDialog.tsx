@@ -33,8 +33,8 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
 
     if (!allowedTypes.includes(file.type)) {
       toast({
-        title: "نوع ملف غير مدعوم",
-        description: "يرجى تحميل ملف Excel، PDF أو CSV",
+        title: "Type de fichier non supporté",
+        description: "Veuillez télécharger un fichier Excel, PDF ou CSV",
         variant: "destructive"
       });
       return;
@@ -48,20 +48,20 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
         {
           id: Date.now().toString(),
           code: 'CMD100',
-          vendeur: 'خالد أحمد',
+          vendeur: 'Khalid Ahmed',
           numero: '555123456',
           prix: 425.00,
-          statut: 'مؤكد',
-          commentaire: 'مستورد من الملف'
+          statut: 'Confirmé',
+          commentaire: 'Importé depuis le fichier'
         },
         {
           id: (Date.now() + 1).toString(),
           code: 'CMD101',
-          vendeur: 'سارة محمد',
+          vendeur: 'Sara Mohamed',
           numero: '555987654',
           prix: 380.50,
-          statut: 'قيد المعالجة',
-          commentaire: 'مستورد من الملف'
+          statut: 'En cours',
+          commentaire: 'Importé depuis le fichier'
         }
       ];
 
@@ -70,8 +70,8 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
       onClose();
 
       toast({
-        title: "تم تحميل الملف بنجاح",
-        description: `تم استيراد ${mockOrders.length} طلبية من الملف`,
+        title: "Fichier téléchargé avec succès",
+        description: `${mockOrders.length} commandes importées depuis le fichier`,
       });
     }, 2000);
   };
@@ -94,9 +94,9 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md" dir="rtl">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>تحميل ملف الطلبيات</DialogTitle>
+          <DialogTitle>Télécharger le fichier de commandes</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -113,17 +113,17 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
             {isProcessing ? (
               <div className="space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-sm text-gray-600">جاري معالجة الملف...</p>
+                <p className="text-sm text-gray-600">Traitement du fichier en cours...</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <Upload className="h-12 w-12 text-gray-400 mx-auto" />
                 <div>
                   <p className="text-lg font-medium text-gray-900">
-                    اسحب الملف هنا أو انقر للتحديد
+                    Glissez le fichier ici ou cliquez pour sélectionner
                   </p>
                   <p className="text-sm text-gray-500 mt-2">
-                    يدعم ملفات Excel (.xlsx, .xls) و PDF و CSV
+                    Supporte les fichiers Excel (.xlsx, .xls), PDF et CSV
                   </p>
                 </div>
                 <Button
@@ -132,7 +132,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
                   className="gap-2"
                 >
                   <Upload className="h-4 w-4" />
-                  اختيار ملف
+                  Choisir un fichier
                 </Button>
               </div>
             )}
@@ -147,7 +147,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
           />
 
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">الأعمدة المدعومة:</h4>
+            <h4 className="font-medium text-blue-900 mb-2">Colonnes supportées :</h4>
             <div className="grid grid-cols-2 gap-2 text-sm text-blue-800">
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
@@ -179,7 +179,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={isProcessing}>
-            إلغاء
+            Annuler
           </Button>
         </DialogFooter>
       </DialogContent>

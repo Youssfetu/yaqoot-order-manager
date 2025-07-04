@@ -33,10 +33,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
 
   const getStatusBadge = (status: string) => {
     const statusColors = {
-      'مؤكد': 'bg-green-500 text-white text-xs px-2 py-0.5',
-      'قيد المعالجة': 'bg-yellow-500 text-white text-xs px-2 py-0.5',
-      'ألغيت': 'bg-red-500 text-white text-xs px-2 py-0.5',
-      'جديد': 'bg-blue-500 text-white text-xs px-2 py-0.5'
+      'Confirmé': 'bg-green-500 text-white text-xs px-2 py-0.5',
+      'En cours': 'bg-yellow-500 text-white text-xs px-2 py-0.5',
+      'Annulé': 'bg-red-500 text-white text-xs px-2 py-0.5',
+      'Nouveau': 'bg-blue-500 text-white text-xs px-2 py-0.5'
     };
     
     return (
@@ -52,22 +52,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
         <TableHeader>
           <TableRow className="bg-gray-100 border-b border-gray-400 h-8">
             <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
-              الكود
+              Code
             </TableHead>
             <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
-              العميل/الموزع
+              Client/Distributeur
             </TableHead>
             <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
-              الرقم
+              Numéro
             </TableHead>
             <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
-              السعر
+              Prix
             </TableHead>
             <TableHead className="text-center font-bold text-gray-800 border-r border-gray-400 px-2 py-1 text-xs h-8">
-              الحالة
+              Statut
             </TableHead>
             <TableHead className="text-center font-bold text-gray-800 px-2 py-1 text-xs h-8">
-              التعليق
+              Commentaire
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -114,7 +114,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
                       value={tempComment}
                       onChange={(e) => setTempComment(e.target.value)}
                       className="text-xs h-6 flex-1 px-1 py-0"
-                      placeholder="تعليق..."
+                      placeholder="Commentaire..."
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           handleCommentSave(order.id);
@@ -143,9 +143,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
                   <div
                     onClick={() => handleCommentEdit(order.id, order.commentaire)}
                     className="text-xs text-gray-600 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded h-6 flex items-center justify-center border border-transparent hover:border-gray-300 truncate"
-                    title="انقر للتعديل"
+                    title="Cliquer pour modifier"
                   >
-                    {order.commentaire || 'تعليق...'}
+                    {order.commentaire || 'Commentaire...'}
                   </div>
                 )}
               </TableCell>
@@ -157,8 +157,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
       {/* Empty State */}
       {orders.length === 0 && (
         <div className="text-center py-8 text-gray-500 border-t border-gray-300">
-          <p className="text-sm">لا توجد طلبيات لعرضها</p>
-          <p className="text-xs mt-1">استخدم زر "طلبية جديدة" لإضافة أول طلبية</p>
+          <p className="text-sm">Aucune commande à afficher</p>
+          <p className="text-xs mt-1">Utilisez le bouton "Nouvelle commande" pour ajouter votre première commande</p>
         </div>
       )}
     </div>

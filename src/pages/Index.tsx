@@ -28,29 +28,29 @@ const Index = () => {
     {
       id: '1',
       code: 'CMD001',
-      vendeur: 'أحمد محمد',
+      vendeur: 'Ahmed Mohamed',
       numero: '123456789',
       prix: 250.00,
-      statut: 'مؤكد',
-      commentaire: 'تم التسليم بنجاح'
+      statut: 'Confirmé',
+      commentaire: 'Livré avec succès'
     },
     {
       id: '2',
       code: 'CMD002',
-      vendeur: 'فاطمة علي',
+      vendeur: 'Fatima Ali',
       numero: '987654321',
       prix: 180.50,
-      statut: 'قيد المعالجة',
+      statut: 'En cours',
       commentaire: ''
     },
     {
       id: '3',
       code: 'CMD003',
-      vendeur: 'محمد حسن',
+      vendeur: 'Mohamed Hassan',
       numero: '456789123',
       prix: 320.75,
-      statut: 'ألغيت',
-      commentaire: 'العميل غير متاح'
+      statut: 'Annulé',
+      commentaire: 'Client indisponible'
     }
   ]);
 
@@ -68,13 +68,13 @@ const Index = () => {
       vendeur: newOrder.vendeur || '',
       numero: newOrder.numero || '',
       prix: newOrder.prix || 0,
-      statut: newOrder.statut || 'جديد',
+      statut: newOrder.statut || 'Nouveau',
       commentaire: newOrder.commentaire || ''
     };
     setOrders([...orders, order]);
     toast({
-      title: "تم إضافة الطلبية",
-      description: `تم إضافة الطلبية ${order.code} بنجاح`,
+      title: "Commande ajoutée",
+      description: `La commande ${order.code} a été ajoutée avec succès`,
     });
   };
 
@@ -91,13 +91,13 @@ const Index = () => {
         order.code === code ? { ...order, isScanned: true } : order
       ));
       toast({
-        title: "تم العثور على الطلبية",
-        description: `الطلبية ${code} تم تحديدها بنجاح`,
+        title: "Commande trouvée",
+        description: `La commande ${code} a été identifiée avec succès`,
       });
     } else {
       toast({
-        title: "لم يتم العثور على الطلبية",
-        description: `الكود ${code} غير موجود`,
+        title: "Commande non trouvée",
+        description: `Le code ${code} n'existe pas`,
         variant: "destructive"
       });
     }
@@ -110,7 +110,7 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50">
       {/* Android Style Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
@@ -120,8 +120,8 @@ const Index = () => {
                 <Package className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-gray-900">إدارة الطلبيات</h1>
-                <p className="text-xs text-gray-500">نظام متقدم للموزعين</p>
+                <h1 className="text-lg font-bold text-gray-900">Gestion des Commandes</h1>
+                <p className="text-xs text-gray-500">Système avancé pour distributeurs</p>
               </div>
             </div>
             <Button variant="ghost" size="sm" className="p-2">
@@ -159,8 +159,8 @@ const Index = () => {
               className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
               onClick={() => {
                 toast({
-                  title: "تم تصدير البيانات",
-                  description: "سيتم تطوير هذه الميزة قريباً",
+                  title: "Données exportées",
+                  description: "Cette fonctionnalité sera développée prochainement",
                 });
               }}
             >
@@ -178,12 +178,12 @@ const Index = () => {
           
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
-              placeholder="البحث بالكود أو اسم العميل..."
+              placeholder="Rechercher par code ou nom du client..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10 bg-gray-50 border-gray-200 rounded-xl h-12"
+              className="pl-10 bg-gray-50 border-gray-200 rounded-xl h-12"
             />
           </div>
         </div>
@@ -195,17 +195,17 @@ const Index = () => {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-2">العمولة لكل طلبية</p>
+                <p className="text-sm text-gray-600 mb-2">Commission par commande</p>
                 <Input
                   type="number"
                   value={commission}
                   onChange={(e) => setCommission(Number(e.target.value))}
                   className="w-full bg-gray-50 border-gray-200 rounded-xl h-12"
-                  placeholder="العمولة"
+                  placeholder="Commission"
                 />
               </div>
-              <div className="mr-4">
-                <p className="text-lg font-semibold text-gray-700">درهم</p>
+              <div className="ml-4">
+                <p className="text-lg font-semibold text-gray-700">€</p>
               </div>
             </div>
           </CardContent>
@@ -215,7 +215,7 @@ const Index = () => {
         <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
           <CardHeader className="bg-gray-50 border-b border-gray-100">
             <CardTitle className="text-lg font-bold text-gray-900">
-              قائمة الطلبيات ({filteredOrders.length})
+              Liste des Commandes ({filteredOrders.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -243,8 +243,8 @@ const Index = () => {
         onUpload={(data) => {
           setOrders([...orders, ...data]);
           toast({
-            title: "تم تحميل الملف",
-            description: `تم إضافة ${data.length} طلبية جديدة`,
+            title: "Fichier téléchargé",
+            description: `${data.length} nouvelles commandes ajoutées`,
           });
         }}
       />

@@ -20,7 +20,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
     vendeur: '',
     numero: '',
     prix: '',
-    statut: 'جديد',
+    statut: 'Nouveau',
     commentaire: ''
   });
 
@@ -42,7 +42,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
       vendeur: '',
       numero: '',
       prix: '',
-      statut: 'جديد',
+      statut: 'Nouveau',
       commentaire: ''
     });
 
@@ -55,15 +55,15 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md" dir="rtl">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>إضافة طلبية جديدة</DialogTitle>
+          <DialogTitle>Ajouter une nouvelle commande</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="code">كود الطلبية *</Label>
+              <Label htmlFor="code">Code de commande *</Label>
               <Input
                 id="code"
                 value={formData.code}
@@ -74,12 +74,12 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vendeur">اسم العميل/الموزع *</Label>
+              <Label htmlFor="vendeur">Nom du client/distributeur *</Label>
               <Input
                 id="vendeur"
                 value={formData.vendeur}
                 onChange={(e) => handleInputChange('vendeur', e.target.value)}
-                placeholder="أحمد محمد"
+                placeholder="Ahmed Mohamed"
                 required
               />
             </div>
@@ -87,7 +87,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="numero">رقم الهاتف</Label>
+              <Label htmlFor="numero">Numéro de téléphone</Label>
               <Input
                 id="numero"
                 value={formData.numero}
@@ -97,7 +97,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="prix">السعر (د.م) *</Label>
+              <Label htmlFor="prix">Prix (€) *</Label>
               <Input
                 id="prix"
                 type="number"
@@ -111,7 +111,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="statut">حالة الطلبية</Label>
+            <Label htmlFor="statut">Statut de la commande</Label>
             <Select
               value={formData.statut}
               onValueChange={(value) => handleInputChange('statut', value)}
@@ -120,34 +120,34 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="جديد">جديد</SelectItem>
-                <SelectItem value="مؤكد">مؤكد</SelectItem>
-                <SelectItem value="قيد المعالجة">قيد المعالجة</SelectItem>
-                <SelectItem value="ألغيت">ألغيت</SelectItem>
+                <SelectItem value="Nouveau">Nouveau</SelectItem>
+                <SelectItem value="Confirmé">Confirmé</SelectItem>
+                <SelectItem value="En cours">En cours</SelectItem>
+                <SelectItem value="Annulé">Annulé</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="commentaire">التعليق</Label>
+            <Label htmlFor="commentaire">Commentaire</Label>
             <Textarea
               id="commentaire"
               value={formData.commentaire}
               onChange={(e) => handleInputChange('commentaire', e.target.value)}
-              placeholder="ملاحظات إضافية..."
+              placeholder="Remarques supplémentaires..."
               rows={3}
             />
           </div>
 
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              إلغاء
+              Annuler
             </Button>
             <Button 
               type="submit"
               className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700"
             >
-              إضافة الطلبية
+              Ajouter la commande
             </Button>
           </DialogFooter>
         </form>
