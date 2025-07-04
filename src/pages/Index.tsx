@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,7 +60,47 @@ const Index = () => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [commission, setCommission] = useState(50);
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const { toast } = useToast();
+
+  useEffect(() => {
+    document.body.style.zoom = zoomLevel.toString();
+    return () => {
+      document.body.style.zoom = '1';
+    };
+  }, [zoomLevel]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === '=' || e.key === '+') {
+          e.preventDefault();
+          handleZoomIn();
+        } else if (e.key === '-') {
+          e.preventDefault();
+          handleZoomOut();
+        } else if (e.key === '0') {
+          e.preventDefault();
+          handleZoomReset();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [zoomLevel]);
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 2));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
+  };
+
+  const handleZoomReset = () => {
+    setZoomLevel(1);
+  };
 
   const handleAddOrder = (newOrder: Partial<Order>) => {
     const order: Order = {
@@ -136,8 +176,44 @@ const Index = () => {
               <Menu className="h-6 w-6 text-gray-600" />
             </Button>
             
-            {/* Header Icons - 5 Icons */}
+            {/* Header Icons with Zoom Controls */}
             <div className="flex items-center gap-3">
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 border border-gray-300 rounded-lg p-1">
+                <Button
+                  onClick={handleZoomOut}
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5 hover:bg-gray-100 rounded-md"
+                  disabled={zoomLevel <= 0.5}
+                >
+                  <ZoomOut className="h-4 w-4 text-gray-600" />
+                </Button>
+                
+                <span className="text-xs font-medium text-gray-600 min-w-[40px] text-center">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
+                
+                <Button
+                  onClick={handleZoomIn}
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5 hover:bg-gray-100 rounded-md"
+                  disabled={zoomLevel >= 2}
+                >
+                  <ZoomIn className="h-4 w-4 text-gray-600" />
+                </Button>
+                
+                <Button
+                  onClick={handleZoomReset}
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5 hover:bg-gray-100 rounded-md"
+                >
+                  <RotateCcw className="h-3 w-3 text-gray-600" />
+                </Button>
+              </div>
+
               <Button
                 onClick={() => setIsScannerOpen(true)}
                 variant="ghost"
@@ -212,7 +288,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Dialogs */}
       <AddOrderDialog
         isOpen={isAddDialogOpen}
         onClose={() => setIsAddDialogOpen(false)}
