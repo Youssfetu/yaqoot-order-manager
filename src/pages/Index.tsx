@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -118,7 +119,7 @@ const Index = () => {
               <Package className="h-6 w-6 text-white" />
             </div>
             
-            {/* Header Icons - Only 4 Icons */}
+            {/* Header Icons - 5 Icons */}
             <div className="flex items-center gap-3">
               <Button
                 onClick={() => setIsScannerOpen(true)}
@@ -152,6 +153,15 @@ const Index = () => {
                 className="p-2 hover:bg-gray-100 rounded-xl"
               >
                 <Plus className="h-6 w-6 text-gray-600" />
+              </Button>
+
+              <Button
+                onClick={() => setIsUploadDialogOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Upload className="h-6 w-6 text-gray-600" />
               </Button>
 
               <Button
