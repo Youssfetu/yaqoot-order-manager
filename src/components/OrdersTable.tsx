@@ -48,193 +48,107 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     };
     
     return (
-      <span className={cn(
-        'inline-block rounded-sm text-white text-xs font-medium px-2 py-1 min-w-fit text-center',
+      <div className={cn(
+        'inline-flex items-center justify-center rounded-sm text-white text-xs font-medium px-2 py-1 w-20 h-6 text-center',
         statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
       )}>
-        {status}
-      </span>
+        <span className="truncate">{status}</span>
+      </div>
     );
   };
 
   return (
-    <div className="w-full border border-gray-300">
+    <div className="w-full border border-gray-300 bg-white">
       <div className="w-full overflow-hidden">
         {/* Table with fixed heights similar to Google Sheets */}
-        <ResizablePanelGroup direction="horizontal" className="w-full min-h-0">
-          {/* Code Column */}
-          <ResizablePanel defaultSize={12} minSize={8} maxSize={20}>
-            <div className="w-full border-r border-gray-300">
-              {/* Header */}
-              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
-                Code
-              </div>
-              {/* Data Rows */}
-              {orders.map((order, index) => (
-                <div 
-                  key={`code-${order.id}`}
-                  className={cn(
-                    "h-8 flex items-center px-2 border-b border-gray-200 text-xs font-mono text-gray-800 truncate",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                  title={order.code}
-                >
-                  {order.code}
-                </div>
-              ))}
+        <div className="w-full">
+          {/* Header Row */}
+          <div className="flex w-full border-b border-gray-300 bg-gray-100 h-8">
+            <div className="flex-none w-24 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+              Code
             </div>
-          </ResizablePanel>
-          
-          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
-
-          {/* Vendeur/Client Column */}
-          <ResizablePanel defaultSize={18} minSize={12} maxSize={25}>
-            <div className="w-full border-r border-gray-300">
-              {/* Header */}
-              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
-                Client/Distributeur
-              </div>
-              {/* Data Rows */}
-              {orders.map((order, index) => (
-                <div 
-                  key={`vendeur-${order.id}`}
-                  className={cn(
-                    "h-8 flex items-center px-2 border-b border-gray-200 text-xs text-gray-800 truncate",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                  title={order.vendeur}
-                >
-                  {order.vendeur}
-                </div>
-              ))}
+            <div className="flex-none w-40 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+              Client/Distributeur
             </div>
-          </ResizablePanel>
-          
-          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
-
-          {/* Number Column */}
-          <ResizablePanel defaultSize={15} minSize={10} maxSize={20}>
-            <div className="w-full border-r border-gray-300">
-              {/* Header */}
-              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
-                Numéro
-              </div>
-              {/* Data Rows */}
-              {orders.map((order, index) => (
-                <div 
-                  key={`numero-${order.id}`}
-                  className={cn(
-                    "h-8 flex items-center px-2 border-b border-gray-200 text-xs font-mono text-gray-800 truncate",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                  title={order.numero}
-                >
-                  {order.numero}
-                </div>
-              ))}
+            <div className="flex-none w-32 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+              Numéro
             </div>
-          </ResizablePanel>
-          
-          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
-
-          {/* Price Column */}
-          <ResizablePanel defaultSize={10} minSize={8} maxSize={15}>
-            <div className="w-full border-r border-gray-300">
-              {/* Header */}
-              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
-                Prix
-              </div>
-              {/* Data Rows */}
-              {orders.map((order, index) => (
-                <div 
-                  key={`prix-${order.id}`}
-                  className={cn(
-                    "h-8 flex items-center justify-end px-2 border-b border-gray-200 text-xs font-medium text-green-700 truncate",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                  title={order.prix.toFixed(2)}
-                >
-                  {order.prix.toFixed(2)}
-                </div>
-              ))}
+            <div className="flex-none w-20 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+              Prix
             </div>
-          </ResizablePanel>
-          
-          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
+            <div className="flex-none w-24 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
+              Statut
+            </div>
+            <div className="flex-1 px-2 py-1 flex items-center justify-center text-xs font-semibold text-gray-700">
+              Commentaire
+            </div>
+          </div>
 
-          {/* Status Column */}
-          <ResizablePanel defaultSize={15} minSize={12} maxSize={20}>
-            <div className="w-full border-r border-gray-300">
-              {/* Header */}
-              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
-                Statut
+          {/* Data Rows */}
+          {orders.map((order, index) => (
+            <div 
+              key={order.id}
+              className={cn(
+                "flex w-full border-b border-gray-200 h-8",
+                order.isScanned && "bg-green-50",
+                index % 2 === 0 ? "bg-white" : "bg-gray-50"
+              )}
+            >
+              {/* Code Column */}
+              <div className="flex-none w-24 px-2 py-1 border-r border-gray-200 flex items-center text-xs font-mono text-gray-800 truncate">
+                {order.code}
               </div>
-              {/* Data Rows */}
-              {orders.map((order, index) => (
-                <div 
-                  key={`statut-${order.id}`}
-                  className={cn(
-                    "h-8 flex items-center justify-center px-2 border-b border-gray-200",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                >
-                  <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center justify-center gap-1 hover:bg-gray-200 rounded-sm px-1 py-0.5 w-full h-full border-0 bg-transparent focus:outline-none focus:ring-0">
+
+              {/* Vendeur Column */}
+              <div className="flex-none w-40 px-2 py-1 border-r border-gray-200 flex items-center text-xs text-gray-800 truncate">
+                {order.vendeur}
+              </div>
+
+              {/* Number Column */}
+              <div className="flex-none w-32 px-2 py-1 border-r border-gray-200 flex items-center text-xs font-mono text-gray-800 truncate">
+                {order.numero}
+              </div>
+
+              {/* Price Column */}
+              <div className="flex-none w-20 px-2 py-1 border-r border-gray-200 flex items-center justify-end text-xs font-medium text-green-700">
+                {order.prix.toFixed(2)}
+              </div>
+
+              {/* Status Column */}
+              <div className="flex-none w-24 px-1 py-1 border-r border-gray-200 flex items-center justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
+                    <div className="flex items-center gap-1">
                       {getStatusBadge(order.statut)}
-                      <ChevronDown className="h-3 w-3 text-gray-500 ml-1" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[140px]">
-                      {statusOptions.map((status) => (
-                        <DropdownMenuItem
-                          key={status}
-                          onClick={() => onUpdateStatus(order.id, status)}
-                          className="text-xs cursor-pointer hover:bg-gray-100 px-3 py-2 focus:bg-gray-100"
-                        >
-                          {getStatusBadge(status)}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              ))}
-            </div>
-          </ResizablePanel>
-          
-          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
-
-          {/* Comment Column */}
-          <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
-            <div className="w-full">
-              {/* Header */}
-              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
-                Commentaire
+                      <ChevronDown className="h-2 w-2 text-gray-500 flex-shrink-0" />
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[140px]">
+                    {statusOptions.map((status) => (
+                      <DropdownMenuItem
+                        key={status}
+                        onClick={() => onUpdateStatus(order.id, status)}
+                        className="text-xs cursor-pointer hover:bg-gray-100 px-3 py-2 focus:bg-gray-100"
+                      >
+                        {getStatusBadge(status)}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              {/* Data Rows */}
-              {orders.map((order, index) => (
-                <div 
-                  key={`comment-${order.id}`}
-                  className={cn(
-                    "h-8 flex items-center px-1 border-b border-gray-200",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  )}
-                >
-                  <Input
-                    value={order.commentaire}
-                    onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                    className="text-xs h-6 w-full px-2 py-0 border-0 focus:border-0 bg-transparent focus:ring-0 shadow-none focus:outline-none rounded-none"
-                    placeholder="اكتب تعليق..."
-                  />
-                </div>
-              ))}
+
+              {/* Comment Column */}
+              <div className="flex-1 px-1 py-1 flex items-center">
+                <Input
+                  value={order.commentaire}
+                  onChange={(e) => handleCommentChange(order.id, e.target.value)}
+                  className="text-xs h-6 w-full px-2 py-0 border-0 focus:border-0 bg-transparent focus:ring-0 shadow-none focus:outline-none rounded-none"
+                  placeholder="اكتب تعليق..."
+                />
+              </div>
             </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+          ))}
+        </div>
       </div>
 
       {/* Empty State */}
