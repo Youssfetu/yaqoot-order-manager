@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -164,6 +165,14 @@ const Index = () => {
               }}
             >
               <Share2 className="h-5 w-5" />
+            </Button>
+
+            {/* Search Icon Button */}
+            <Button
+              variant="outline"
+              className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
+            >
+              <Search className="h-5 w-5" />
             </Button>
           </div>
           
