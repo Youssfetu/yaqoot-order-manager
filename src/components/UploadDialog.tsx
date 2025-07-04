@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -42,36 +41,49 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
 
     setIsProcessing(true);
 
-    // Simulate file processing
+    // Simulate file processing with proper data structure
     setTimeout(() => {
       const mockOrders: Order[] = [
         {
-          id: Date.now().toString(),
-          code: 'CMD100',
-          vendeur: 'Khalid Ahmed',
-          numero: '555123456',
-          prix: 425.00,
+          id: `upload_${Date.now()}_1`,
+          code: `CMD${Math.floor(Math.random() * 1000) + 100}`,
+          vendeur: 'محمد أحمد',
+          numero: '01234567890',
+          prix: 450.00,
           statut: 'Confirmé',
-          commentaire: 'Importé depuis le fichier'
+          commentaire: 'تم استيراده من الملف'
         },
         {
-          id: (Date.now() + 1).toString(),
-          code: 'CMD101',
-          vendeur: 'Sara Mohamed',
-          numero: '555987654',
-          prix: 380.50,
-          statut: 'En cours',
-          commentaire: 'Importé depuis le fichier'
+          id: `upload_${Date.now()}_2`,
+          code: `CMD${Math.floor(Math.random() * 1000) + 100}`,
+          vendeur: 'فاطمة علي',
+          numero: '01987654321',
+          prix: 320.75,
+          statut: 'Programmé',
+          commentaire: 'تم استيراده من الملف'
+        },
+        {
+          id: `upload_${Date.now()}_3`,
+          code: `CMD${Math.floor(Math.random() * 1000) + 100}`,
+          vendeur: 'أحمد حسن',
+          numero: '01555123456',
+          prix: 280.50,
+          statut: 'Confirmé',
+          commentaire: 'تم استيراده من الملف'
         }
       ];
 
+      console.log('Uploading orders:', mockOrders);
+      
+      // Call the onUpload function with the new orders
       onUpload(mockOrders);
+      
       setIsProcessing(false);
       onClose();
 
       toast({
-        title: "Fichier téléchargé avec succès",
-        description: `${mockOrders.length} commandes importées depuis le fichier`,
+        title: "تم رفع الملف بنجاح",
+        description: `تم استيراد ${mockOrders.length} طلبيات من الملف`,
       });
     }, 2000);
   };
@@ -96,7 +108,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Télécharger le fichier de commandes</DialogTitle>
+          <DialogTitle>رفع ملف الطلبيات</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -113,17 +125,17 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
             {isProcessing ? (
               <div className="space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                <p className="text-sm text-gray-600">Traitement du fichier en cours...</p>
+                <p className="text-sm text-gray-600">جاري معالجة الملف...</p>
               </div>
             ) : (
               <div className="space-y-4">
                 <Upload className="h-12 w-12 text-gray-400 mx-auto" />
                 <div>
                   <p className="text-lg font-medium text-gray-900">
-                    Glissez le fichier ici ou cliquez pour sélectionner
+                    اسحب الملف هنا أو انقر للاختيار
                   </p>
                   <p className="text-sm text-gray-500 mt-2">
-                    Supporte les fichiers Excel (.xlsx, .xls), PDF et CSV
+                    يدعم ملفات Excel (.xlsx, .xls), PDF و CSV
                   </p>
                 </div>
                 <Button
@@ -132,7 +144,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
                   className="gap-2"
                 >
                   <Upload className="h-4 w-4" />
-                  Choisir un fichier
+                  اختر ملف
                 </Button>
               </div>
             )}
@@ -147,31 +159,31 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
           />
 
           <div className="bg-blue-50 p-4 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Colonnes supportées :</h4>
+            <h4 className="font-medium text-blue-900 mb-2">الأعمدة المدعومة:</h4>
             <div className="grid grid-cols-2 gap-2 text-sm text-blue-800">
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                Code
+                الكود
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Vendeur/Client
+                البائع/العميل
               </div>
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                Numéro
+                الرقم
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Prix
+                السعر
               </div>
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="h-4 w-4" />
-                Statut
+                الحالة
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="h-4 w-4" />
-                Commentaire
+                التعليق
               </div>
             </div>
           </div>
@@ -179,7 +191,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose} disabled={isProcessing}>
-            Annuler
+            إلغاء
           </Button>
         </DialogFooter>
       </DialogContent>
