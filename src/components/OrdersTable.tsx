@@ -18,6 +18,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [showScrollbar, setShowScrollbar] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const statusOptions = [
@@ -30,6 +31,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Hors zone',
     'Programmé'
   ];
+
+  // Check if scrollbar should be visible
+  useEffect(() => {
+    const checkScrollbarVisibility = () => {
+      if (containerRef.current) {
+        const container = containerRef.current;
+        const needsHorizontalScroll = container.scrollWidth > container.clientWidth;
+        const isZoomedOut = zoomLevel < 0.8;
+        setShowScrollbar(needsHorizontalScroll || isZoomedOut);
+      }
+    };
+
+    checkScrollbarVisibility();
+    window.addEventListener('resize', checkScrollbarVisibility);
+    
+    return () => {
+      window.removeEventListener('resize', checkScrollbarVisibility);
+    };
+  }, [zoomLevel, orders]);
 
   // Touch-based zoom functionality
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -125,13 +145,20 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      {/* Google Sheets Style Table Container - Removed vertical scroll, added horizontal scroll */}
+      {/* Google Sheets Style Table Container - Dynamic scroll visibility */}
       <div 
         ref={containerRef}
-        className="w-full h-[calc(100vh-200px)] overflow-x-auto overflow-y-hidden border border-gray-300 bg-white relative"
+        className={cn(
+          "w-full h-[calc(100vh-200px)] border border-gray-300 bg-white relative",
+          showScrollbar ? "overflow-x-auto" : "overflow-x-hidden",
+          "overflow-y-hidden"
+        )}
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: 'none'
+          touchAction: 'none',
+          // Custom scrollbar styling when visible
+          scrollbarWidth: showScrollbar ? 'thin' : 'none',
+          scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -276,12 +303,30 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       )}
 
-      {/* Touch Instructions */}
+      {/* Touch Instructions - Updated */}
       <div className="p-3 bg-blue-50 border-t border-blue-200 text-center">
         <p className="text-xs text-blue-700">
-          💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير • اسحب أفقياً للتنقل يميناً ويساراً
+          💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير • شريط التمرير يظهر عند الحاجة فقط
         </p>
       </div>
+
+      {/* Custom scrollbar styles when visible */}
+      <style jsx>{`
+        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar {
+          height: ${showScrollbar ? '8px' : '0px'};
+        }
+        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar-track {
+          background: ${showScrollbar ? '#f1f5f9' : 'transparent'};
+          border-radius: 4px;
+        }
+        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar-thumb {
+          background: ${showScrollbar ? '#cbd5e0' : 'transparent'};
+          border-radius: 4px;
+        }
+        .${showScrollbar ? 'show-scrollbar' : 'hide-scrollbar'}::-webkit-scrollbar-thumb:hover {
+          background: ${showScrollbar ? '#a0aec0' : 'transparent'};
+        }
+      `}</style>
     </div>
   );
 };
