@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
 
@@ -46,61 +47,73 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
   };
 
   return (
-    <div className="w-full overflow-auto">
-      <div className="min-w-full bg-white rounded-lg border">
-        {/* Table Header */}
-        <div className="grid grid-cols-6 gap-4 p-4 bg-gray-50 border-b font-semibold text-sm text-gray-700">
-          <div className="text-center">الكود</div>
-          <div className="text-center">العميل/الموزع</div>
-          <div className="text-center">الرقم</div>
-          <div className="text-center">السعر</div>
-          <div className="text-center">الحالة</div>
-          <div className="text-center">التعليق</div>
-        </div>
-
-        {/* Table Body */}
-        <div className="divide-y divide-gray-200">
-          {orders.map((order) => (
-            <div
+    <div className="w-full border border-gray-300 rounded-lg overflow-hidden bg-white">
+      <Table className="w-full">
+        <TableHeader>
+          <TableRow className="bg-gray-100 border-b-2 border-gray-300">
+            <TableHead className="text-center font-bold text-gray-700 border-r border-gray-300 px-4 py-3">
+              الكود
+            </TableHead>
+            <TableHead className="text-center font-bold text-gray-700 border-r border-gray-300 px-4 py-3">
+              العميل/الموزع
+            </TableHead>
+            <TableHead className="text-center font-bold text-gray-700 border-r border-gray-300 px-4 py-3">
+              الرقم
+            </TableHead>
+            <TableHead className="text-center font-bold text-gray-700 border-r border-gray-300 px-4 py-3">
+              السعر
+            </TableHead>
+            <TableHead className="text-center font-bold text-gray-700 border-r border-gray-300 px-4 py-3">
+              الحالة
+            </TableHead>
+            <TableHead className="text-center font-bold text-gray-700 px-4 py-3">
+              التعليق
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {orders.map((order, index) => (
+            <TableRow
               key={order.id}
               className={cn(
-                "grid grid-cols-6 gap-4 p-4 hover:bg-gray-50 transition-colors",
-                order.isScanned && "bg-green-50 border-r-4 border-green-500"
+                "border-b border-gray-200 hover:bg-gray-50 transition-colors",
+                order.isScanned && "bg-green-50 border-green-200",
+                index % 2 === 0 ? "bg-white" : "bg-gray-50"
               )}
             >
               {/* Code */}
-              <div className="text-center font-mono text-sm font-medium text-blue-600">
+              <TableCell className="text-center font-mono text-sm font-medium text-blue-600 border-r border-gray-200 px-4 py-3">
                 {order.code}
-              </div>
+              </TableCell>
 
               {/* Vendeur/Client */}
-              <div className="text-center text-sm text-gray-900">
+              <TableCell className="text-center text-sm text-gray-900 border-r border-gray-200 px-4 py-3">
                 {order.vendeur}
-              </div>
+              </TableCell>
 
               {/* Number */}
-              <div className="text-center font-mono text-sm text-gray-700">
+              <TableCell className="text-center font-mono text-sm text-gray-700 border-r border-gray-200 px-4 py-3">
                 {order.numero}
-              </div>
+              </TableCell>
 
               {/* Price */}
-              <div className="text-center text-sm font-semibold text-green-600">
+              <TableCell className="text-center text-sm font-semibold text-green-600 border-r border-gray-200 px-4 py-3">
                 {order.prix.toFixed(2)} د.م
-              </div>
+              </TableCell>
 
               {/* Status */}
-              <div className="text-center">
+              <TableCell className="text-center border-r border-gray-200 px-4 py-3">
                 {getStatusBadge(order.statut)}
-              </div>
+              </TableCell>
 
               {/* Comment - Editable */}
-              <div className="text-center">
+              <TableCell className="text-center px-4 py-3">
                 {editingComment === order.id ? (
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
                     <Input
                       value={tempComment}
                       onChange={(e) => setTempComment(e.target.value)}
-                      className="text-xs h-8"
+                      className="text-xs h-8 flex-1"
                       placeholder="أدخل التعليق..."
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -114,13 +127,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleCommentSave(order.id)}
-                        className="text-green-600 hover:text-green-800 text-xs px-2 py-1 rounded"
+                        className="text-green-600 hover:text-green-800 text-xs px-2 py-1 rounded border border-green-300 hover:border-green-400"
                       >
                         ✓
                       </button>
                       <button
                         onClick={handleCommentCancel}
-                        className="text-red-600 hover:text-red-800 text-xs px-2 py-1 rounded"
+                        className="text-red-600 hover:text-red-800 text-xs px-2 py-1 rounded border border-red-300 hover:border-red-400"
                       >
                         ✗
                       </button>
@@ -129,25 +142,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment }) =>
                 ) : (
                   <div
                     onClick={() => handleCommentEdit(order.id, order.commentaire)}
-                    className="text-xs text-gray-600 cursor-pointer hover:bg-gray-100 p-2 rounded min-h-8 flex items-center justify-center"
+                    className="text-xs text-gray-600 cursor-pointer hover:bg-gray-100 p-2 rounded min-h-8 flex items-center justify-center border border-transparent hover:border-gray-300"
                     title="انقر للتعديل"
                   >
                     {order.commentaire || 'انقر لإضافة تعليق...'}
                   </div>
                 )}
-              </div>
-            </div>
+              </TableCell>
+            </TableRow>
           ))}
-        </div>
+        </TableBody>
+      </Table>
 
-        {/* Empty State */}
-        {orders.length === 0 && (
-          <div className="text-center py-12 text-gray-500">
-            <p>لا توجد طلبيات لعرضها</p>
-            <p className="text-sm mt-2">استخدم زر "طلبية جديدة" لإضافة أول طلبية</p>
-          </div>
-        )}
-      </div>
+      {/* Empty State */}
+      {orders.length === 0 && (
+        <div className="text-center py-12 text-gray-500 border-t border-gray-200">
+          <p>لا توجد طلبيات لعرضها</p>
+          <p className="text-sm mt-2">استخدم زر "طلبية جديدة" لإضافة أول طلبية</p>
+        </div>
+      )}
     </div>
   );
 };
