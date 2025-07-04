@@ -17,9 +17,7 @@ interface OrdersTableProps {
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus }) => {
   const statusOptions = [
-    'Nouveau',
     'Confirmé',
-    'En cours',
     'Livré',
     'Reporté',
     'Annulé',
@@ -49,12 +47,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     
     return (
       <div className={cn(
-        'inline-flex items-center justify-center rounded-sm text-white text-xs font-medium px-2 py-1 w-20 h-6 text-center',
+        'inline-flex items-center justify-center rounded-sm text-white text-xs font-medium w-20 h-5 text-center',
         statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
       )}>
-        <span className="truncate">{status}</span>
+        <span className="truncate text-[10px]">{status}</span>
       </div>
     );
+  };
+
+  // Filter available status options to exclude current status
+  const getAvailableStatusOptions = (currentStatus: string) => {
+    return statusOptions.filter(status => status !== currentStatus);
   };
 
   return (
@@ -124,7 +127,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[140px]">
-                    {statusOptions.map((status) => (
+                    {getAvailableStatusOptions(order.statut).map((status) => (
                       <DropdownMenuItem
                         key={status}
                         onClick={() => onUpdateStatus(order.id, status)}
