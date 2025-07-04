@@ -152,7 +152,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         className={cn(
           "w-full h-[calc(100vh-200px)] border border-gray-300 bg-white relative",
           showScrollbar ? "overflow-x-auto" : "overflow-x-hidden",
-          "overflow-y-hidden"
+          "overflow-y-auto"
         )}
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
@@ -173,7 +173,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             transition: isPanning ? 'none' : 'transform 0.2s ease-out',
             minWidth: '800px',
             minHeight: '100%',
-            fontSize: '12px'
+            fontSize: '11px'
           }}
         >
           <div className="w-full shadow-lg rounded-sm overflow-hidden bg-white">
@@ -183,16 +183,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               <ResizablePanel defaultSize={12} minSize={8}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
-                  <div className="h-8 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
                     <span className="text-xs font-bold text-gray-800">الكود</span>
                   </div>
                   {/* Data Rows */}
-                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                  <div className="flex-1">
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-8 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -212,16 +212,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               <ResizablePanel defaultSize={20} minSize={15}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
-                  <div className="h-8 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
                     <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
                   </div>
                   {/* Data Rows */}
-                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                  <div className="flex-1">
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-8 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -241,16 +241,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               <ResizablePanel defaultSize={16} minSize={12}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
-                  <div className="h-8 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
                     <span className="text-xs font-bold text-gray-800">الرقم</span>
                   </div>
                   {/* Data Rows */}
-                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                  <div className="flex-1">
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-8 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -270,16 +270,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               <ResizablePanel defaultSize={10} minSize={8}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
-                  <div className="h-8 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
                     <span className="text-xs font-bold text-gray-800">السعر</span>
                   </div>
                   {/* Data Rows */}
-                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                  <div className="flex-1">
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-8 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -299,16 +299,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               <ResizablePanel defaultSize={12} minSize={10}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
-                  <div className="h-8 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
                     <span className="text-xs font-bold text-gray-800">الحالة</span>
                   </div>
                   {/* Data Rows */}
-                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                  <div className="flex-1">
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-8 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -344,16 +344,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               <ResizablePanel defaultSize={30} minSize={20}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
-                  <div className="h-8 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center sticky top-0 z-10">
                     <span className="text-xs font-bold text-gray-800">التعليق</span>
                   </div>
                   {/* Data Rows */}
-                  <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 240px)' }}>
+                  <div className="flex-1">
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-8 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -361,7 +361,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         <Input
                           value={order.commentaire}
                           onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                          className="text-xs h-6 w-full px-2 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-1 focus:ring-blue-200 shadow-none focus:outline-none rounded-sm"
+                          className="text-xs h-5 w-full px-2 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-1 focus:ring-blue-200 shadow-none focus:outline-none rounded-sm"
                           placeholder="اكتب تعليق..."
                         />
                       </div>
