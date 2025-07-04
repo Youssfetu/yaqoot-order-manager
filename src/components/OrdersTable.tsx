@@ -35,35 +35,38 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   const getStatusBadge = (status: string) => {
     const statusColors = {
-      'Confirmé': 'bg-green-500 text-white text-xs px-2 py-0.5',
-      'En cours': 'bg-yellow-500 text-white text-xs px-2 py-0.5',
-      'Livré': 'bg-emerald-500 text-white text-xs px-2 py-0.5',
-      'Reporté': 'bg-orange-500 text-white text-xs px-2 py-0.5',
-      'Annulé': 'bg-red-500 text-white text-xs px-2 py-0.5',
-      'Refusé': 'bg-red-600 text-white text-xs px-2 py-0.5',
-      'Numéro erroné': 'bg-purple-500 text-white text-xs px-2 py-0.5',
-      'Hors zone': 'bg-gray-500 text-white text-xs px-2 py-0.5',
-      'Programmé': 'bg-blue-500 text-white text-xs px-2 py-0.5',
-      'Nouveau': 'bg-blue-500 text-white text-xs px-2 py-0.5'
+      'Confirmé': 'bg-green-500',
+      'En cours': 'bg-yellow-500',
+      'Livré': 'bg-emerald-500',
+      'Reporté': 'bg-orange-500',
+      'Annulé': 'bg-red-500',
+      'Refusé': 'bg-red-600',
+      'Numéro erroné': 'bg-purple-500',
+      'Hors zone': 'bg-gray-500',
+      'Programmé': 'bg-blue-500',
+      'Nouveau': 'bg-blue-500'
     };
     
     return (
-      <span className={cn('rounded text-xs font-medium', statusColors[status as keyof typeof statusColors] || 'bg-gray-500 text-white px-2 py-0.5')}>
+      <span className={cn(
+        'inline-block rounded-sm text-white text-xs font-medium px-2 py-1 min-w-fit text-center',
+        statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
+      )}>
         {status}
       </span>
     );
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full border border-gray-300">
       <div className="w-full overflow-hidden">
-        {/* Single ResizablePanelGroup for entire table */}
-        <ResizablePanelGroup direction="horizontal" className="w-full">
+        {/* Table with fixed heights similar to Google Sheets */}
+        <ResizablePanelGroup direction="horizontal" className="w-full min-h-0">
           {/* Code Column */}
-          <ResizablePanel defaultSize={15} minSize={10} maxSize={25}>
-            <div className="w-full">
+          <ResizablePanel defaultSize={12} minSize={8} maxSize={20}>
+            <div className="w-full border-r border-gray-300">
               {/* Header */}
-              <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2 border-b border-gray-200 bg-gray-50">
+              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
                 Code
               </div>
               {/* Data Rows */}
@@ -71,10 +74,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={`code-${order.id}`}
                   className={cn(
-                    "h-10 flex items-center justify-center text-center font-mono text-xs font-medium text-blue-600 px-2 border-b border-gray-100",
+                    "h-8 flex items-center px-2 border-b border-gray-200 text-xs font-mono text-gray-800 truncate",
                     order.isScanned && "bg-green-50",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
+                  title={order.code}
                 >
                   {order.code}
                 </div>
@@ -82,13 +86,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </div>
           </ResizablePanel>
           
-          <ResizableHandle />
+          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
 
           {/* Vendeur/Client Column */}
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
-            <div className="w-full">
+          <ResizablePanel defaultSize={18} minSize={12} maxSize={25}>
+            <div className="w-full border-r border-gray-300">
               {/* Header */}
-              <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2 border-b border-gray-200 bg-gray-50">
+              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
                 Client/Distributeur
               </div>
               {/* Data Rows */}
@@ -96,10 +100,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={`vendeur-${order.id}`}
                   className={cn(
-                    "h-10 flex items-center justify-center text-center text-xs text-gray-900 px-2 border-b border-gray-100",
+                    "h-8 flex items-center px-2 border-b border-gray-200 text-xs text-gray-800 truncate",
                     order.isScanned && "bg-green-50",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
+                  title={order.vendeur}
                 >
                   {order.vendeur}
                 </div>
@@ -107,13 +112,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </div>
           </ResizablePanel>
           
-          <ResizableHandle />
+          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
 
           {/* Number Column */}
-          <ResizablePanel defaultSize={15} minSize={10} maxSize={25}>
-            <div className="w-full">
+          <ResizablePanel defaultSize={15} minSize={10} maxSize={20}>
+            <div className="w-full border-r border-gray-300">
               {/* Header */}
-              <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2 border-b border-gray-200 bg-gray-50">
+              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
                 Numéro
               </div>
               {/* Data Rows */}
@@ -121,10 +126,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={`numero-${order.id}`}
                   className={cn(
-                    "h-10 flex items-center justify-center text-center font-mono text-xs text-gray-700 px-2 border-b border-gray-100",
+                    "h-8 flex items-center px-2 border-b border-gray-200 text-xs font-mono text-gray-800 truncate",
                     order.isScanned && "bg-green-50",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
+                  title={order.numero}
                 >
                   {order.numero}
                 </div>
@@ -132,13 +138,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </div>
           </ResizablePanel>
           
-          <ResizableHandle />
+          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
 
           {/* Price Column */}
           <ResizablePanel defaultSize={10} minSize={8} maxSize={15}>
-            <div className="w-full">
+            <div className="w-full border-r border-gray-300">
               {/* Header */}
-              <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2 border-b border-gray-200 bg-gray-50">
+              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
                 Prix
               </div>
               {/* Data Rows */}
@@ -146,10 +152,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={`prix-${order.id}`}
                   className={cn(
-                    "h-10 flex items-center justify-center text-center text-xs font-semibold text-green-600 px-2 border-b border-gray-100",
+                    "h-8 flex items-center justify-end px-2 border-b border-gray-200 text-xs font-medium text-green-700 truncate",
                     order.isScanned && "bg-green-50",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
+                  title={order.prix.toFixed(2)}
                 >
                   {order.prix.toFixed(2)}
                 </div>
@@ -157,13 +164,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </div>
           </ResizablePanel>
           
-          <ResizableHandle />
+          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
 
           {/* Status Column */}
           <ResizablePanel defaultSize={15} minSize={12} maxSize={20}>
-            <div className="w-full">
+            <div className="w-full border-r border-gray-300">
               {/* Header */}
-              <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2 border-b border-gray-200 bg-gray-50">
+              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
                 Statut
               </div>
               {/* Data Rows */}
@@ -171,22 +178,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={`statut-${order.id}`}
                   className={cn(
-                    "h-10 flex items-center justify-center px-2 border-b border-gray-100",
+                    "h-8 flex items-center justify-center px-2 border-b border-gray-200",
                     order.isScanned && "bg-green-50",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
                 >
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="flex items-center justify-center gap-1 hover:bg-gray-100 rounded px-1 py-0.5 w-full">
+                    <DropdownMenuTrigger className="flex items-center justify-center gap-1 hover:bg-gray-200 rounded-sm px-1 py-0.5 w-full h-full border-0 bg-transparent focus:outline-none focus:ring-0">
                       {getStatusBadge(order.statut)}
-                      <ChevronDown className="h-3 w-3 text-gray-400" />
+                      <ChevronDown className="h-3 w-3 text-gray-500 ml-1" />
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="bg-white shadow-lg border rounded-md z-50 min-w-[140px]">
+                    <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[140px]">
                       {statusOptions.map((status) => (
                         <DropdownMenuItem
                           key={status}
                           onClick={() => onUpdateStatus(order.id, status)}
-                          className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1"
+                          className="text-xs cursor-pointer hover:bg-gray-100 px-3 py-2 focus:bg-gray-100"
                         >
                           {getStatusBadge(status)}
                         </DropdownMenuItem>
@@ -198,13 +205,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </div>
           </ResizablePanel>
           
-          <ResizableHandle />
+          <ResizableHandle className="w-px bg-gray-300 hover:bg-blue-400 hover:w-0.5 transition-all" />
 
           {/* Comment Column */}
-          <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
+          <ResizablePanel defaultSize={30} minSize={20} maxSize={40}>
             <div className="w-full">
               {/* Header */}
-              <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2 border-b border-gray-200 bg-gray-50">
+              <div className="h-8 flex items-center justify-center text-center font-semibold text-gray-700 text-xs px-2 border-b border-gray-300 bg-gray-100">
                 Commentaire
               </div>
               {/* Data Rows */}
@@ -212,7 +219,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div 
                   key={`comment-${order.id}`}
                   className={cn(
-                    "h-10 flex items-center px-2 border-b border-gray-100",
+                    "h-8 flex items-center px-1 border-b border-gray-200",
                     order.isScanned && "bg-green-50",
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
                   )}
@@ -220,7 +227,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   <Input
                     value={order.commentaire}
                     onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                    className="text-xs h-8 w-full px-2 py-1 border-gray-200 focus:border-blue-400 bg-transparent border-0 focus:ring-0 shadow-none"
+                    className="text-xs h-6 w-full px-2 py-0 border-0 focus:border-0 bg-transparent focus:ring-0 shadow-none focus:outline-none rounded-none"
                     placeholder="اكتب تعليق..."
                   />
                 </div>
@@ -232,7 +239,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
       {/* Empty State */}
       {orders.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 border-t border-gray-300">
           <p className="text-sm">Aucune commande à afficher</p>
           <p className="text-xs mt-1">Utilisez le bouton "Nouvelle commande" pour ajouter votre première commande</p>
         </div>
