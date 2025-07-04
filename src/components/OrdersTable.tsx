@@ -52,16 +52,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     };
   }, [zoomLevel, orders]);
 
-  // Keyboard shortcuts for zoom
+  // Enhanced keyboard shortcuts for zoom with focus point preservation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.key === '=' || e.key === '+') {
           e.preventDefault();
-          setZoomLevel(prev => Math.min(3, prev + 0.1));
+          zoomAtPoint(0.1, null);
         } else if (e.key === '-') {
           e.preventDefault();
-          setZoomLevel(prev => Math.max(0.3, prev - 0.1));
+          zoomAtPoint(-0.1, null);
         } else if (e.key === '0') {
           e.preventDefault();
           setZoomLevel(1);
@@ -72,9 +72,44 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [zoomLevel, panOffset]);
 
-  // Touch-based zoom functionality
+  // Enhanced zoom function that preserves focus point
+  const zoomAtPoint = (deltaZoom: number, focusPoint: { x: number, y: number } | null) => {
+    if (!containerRef.current) return;
+
+    const container = containerRef.current;
+    const rect = container.getBoundingClientRect();
+    
+    // Use center of viewport if no focus point provided
+    const focusX = focusPoint?.x ?? rect.width / 2;
+    const focusY = focusPoint?.y ?? rect.height / 2;
+    
+    const newZoom = Math.max(0.3, Math.min(3, zoomLevel + deltaZoom));
+    const zoomFactor = newZoom / zoomLevel;
+    
+    // Calculate the position of the focus point relative to the current pan offset
+    const currentFocusX = (focusX - panOffset.x) / zoomLevel;
+    const currentFocusY = (focusY - panOffset.y) / zoomLevel;
+    
+    // Calculate new pan offset to keep the focus point at the same screen position
+    const newPanX = focusX - currentFocusX * newZoom;
+    const newPanY = focusY - currentFocusY * newZoom;
+    
+    // Apply limits to prevent excessive panning
+    const maxPanX = 0;
+    const maxPanY = 0;
+    const minPanX = Math.min(0, rect.width - (800 * newZoom));
+    const minPanY = Math.min(0, rect.height - (600 * newZoom));
+    
+    setZoomLevel(newZoom);
+    setPanOffset({
+      x: Math.max(minPanX, Math.min(maxPanX, newPanX)),
+      y: Math.max(minPanY, Math.min(maxPanY, newPanY))
+    });
+  };
+
+  // Enhanced touch-based zoom functionality with focus point
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 2) {
       // Pinch zoom start
@@ -84,6 +119,19 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         Math.pow(touch2.clientX - touch1.clientX, 2) + 
         Math.pow(touch2.clientY - touch1.clientY, 2)
       );
+      
+      // Calculate the center point between two fingers
+      const centerX = (touch1.clientX + touch2.clientX) / 2;
+      const centerY = (touch1.clientY + touch2.clientY) / 2;
+      
+      // Convert to container-relative coordinates
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const focusX = centerX - rect.left;
+        const focusY = centerY - rect.top;
+        (e.currentTarget as any).focusPoint = { x: focusX, y: focusY };
+      }
+      
       (e.currentTarget as any).initialDistance = distance;
       (e.currentTarget as any).initialZoom = zoomLevel;
     } else if (e.touches.length === 1 && zoomLevel > 1) {
@@ -98,7 +146,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     e.preventDefault();
     
     if (e.touches.length === 2) {
-      // Pinch zoom
+      // Pinch zoom with focus point preservation
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
@@ -108,18 +156,33 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       
       const initialDistance = (e.currentTarget as any).initialDistance;
       const initialZoom = (e.currentTarget as any).initialZoom;
+      const focusPoint = (e.currentTarget as any).focusPoint;
       
-      if (initialDistance && initialZoom) {
+      if (initialDistance && initialZoom && focusPoint) {
         const scale = distance / initialDistance;
         const newZoom = Math.max(0.3, Math.min(3, initialZoom * scale));
-        setZoomLevel(newZoom);
+        const deltaZoom = newZoom - zoomLevel;
+        
+        if (Math.abs(deltaZoom) > 0.01) {
+          zoomAtPoint(deltaZoom, focusPoint);
+        }
       }
     } else if (e.touches.length === 1 && isPanning && zoomLevel > 1) {
-      // Single touch pan - limit panning to keep table anchored to top-left
+      // Single touch pan with improved limits
       const touch = e.touches[0];
-      const newOffsetX = Math.min(0, touch.clientX - panStart.x); // Prevent panning beyond left edge
-      const newOffsetY = Math.min(0, touch.clientY - panStart.y); // Prevent panning beyond top edge
-      setPanOffset({ x: newOffsetX, y: newOffsetY });
+      const rect = containerRef.current?.getBoundingClientRect();
+      
+      if (rect) {
+        const maxPanX = 0;
+        const maxPanY = 0;
+        const minPanX = Math.min(0, rect.width - (800 * zoomLevel));
+        const minPanY = Math.min(0, rect.height - (600 * zoomLevel));
+        
+        const newOffsetX = Math.max(minPanX, Math.min(maxPanX, touch.clientX - panStart.x));
+        const newOffsetY = Math.max(minPanY, Math.min(maxPanY, touch.clientY - panStart.y));
+        
+        setPanOffset({ x: newOffsetX, y: newOffsetY });
+      }
     }
   };
 
@@ -166,6 +229,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     return statusOptions.filter(status => status !== currentStatus);
   };
 
+  // Enhanced wheel zoom with focus point preservation
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const focusX = e.clientX - rect.left;
+        const focusY = e.clientY - rect.top;
+        const deltaZoom = e.deltaY > 0 ? -0.1 : 0.1;
+        
+        zoomAtPoint(deltaZoom, { x: focusX, y: focusY });
+      }
+    }
+  };
+
   return (
     <div className="w-full bg-white">
       {/* Google Sheets Style Compact Table Container */}
@@ -185,8 +264,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
+        onWheel={handleWheel}
       >
-        {/* Enhanced Transform Container - Fixed Top-Left Anchor */}
+        {/* Enhanced Transform Container with Focus Point Preservation */}
         <div 
           className="absolute top-0 left-0 w-full h-full"
           style={{
@@ -404,13 +484,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       )}
 
-      {/* Touch Instructions */}
+      {/* Enhanced Touch Instructions */}
       <div className="p-2 bg-blue-50 border-t border-blue-200 text-center">
         <p className="text-xs text-blue-700">
-          💡 استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير • اسحب الخطوط الفاصلة لتغيير حجم الأعمدة
+          💡 استخدم إصبعين للتكبير والتصغير في النقطة المحددة • اسحب بإصبع واحد للتنقل عند التكبير • اسحب الخطوط الفاصلة لتغيير حجم الأعمدة
         </p>
         <p className="text-xs text-blue-600 mt-1">
-          ⌨️ على الكمبيوتر: Ctrl + / Ctrl - للزوم • Ctrl 0 للعودة للحجم الطبيعي
+          ⌨️ على الكمبيوتر: Ctrl + / Ctrl - للزوم • Ctrl 0 للعودة للحجم الطبيعي • استخدم Ctrl + عجلة الماوس للزوم على النقطة المحددة
         </p>
       </div>
 
