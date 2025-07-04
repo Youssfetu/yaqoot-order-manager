@@ -62,9 +62,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full border border-gray-300 bg-white">
-      <div className="w-full overflow-hidden">
-        {/* Table with fixed heights similar to Google Sheets */}
-        <div className="w-full">
+      {/* Horizontal Scroll Container */}
+      <div className="w-full overflow-x-auto overflow-y-visible">
+        {/* Table with fixed minimum width for mobile */}
+        <div className="min-w-[800px] w-full">
           {/* Header Row */}
           <div className="flex w-full border-b border-gray-300 bg-gray-100 h-8">
             <div className="flex-none w-24 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
@@ -82,7 +83,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             <div className="flex-none w-24 px-2 py-1 border-r border-gray-300 flex items-center justify-center text-xs font-semibold text-gray-700">
               Statut
             </div>
-            <div className="flex-1 px-2 py-1 flex items-center justify-center text-xs font-semibold text-gray-700">
+            <div className="flex-1 min-w-[200px] px-2 py-1 flex items-center justify-center text-xs font-semibold text-gray-700">
               Commentaire
             </div>
           </div>
@@ -141,7 +142,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               </div>
 
               {/* Comment Column */}
-              <div className="flex-1 px-1 py-1 flex items-center">
+              <div className="flex-1 min-w-[200px] px-1 py-1 flex items-center">
                 <Input
                   value={order.commentaire}
                   onChange={(e) => handleCommentChange(order.id, e.target.value)}
