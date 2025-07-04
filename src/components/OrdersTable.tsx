@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
@@ -55,61 +56,92 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      <Table className="w-full text-xs">
-        <TableHeader>
-          <TableRow className="bg-gray-50 border-b border-gray-200 h-10">
-            <TableHead className="text-center font-bold text-gray-700 px-2 py-2 text-xs h-10 w-20">
+      <div className="w-full overflow-hidden">
+        {/* Header Row with Resizable Panels */}
+        <ResizablePanelGroup direction="horizontal" className="min-h-[40px] border-b border-gray-200 bg-gray-50">
+          <ResizablePanel defaultSize={15} minSize={10}>
+            <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2">
               Code
-            </TableHead>
-            <TableHead className="text-center font-bold text-gray-700 px-2 py-2 text-xs h-10 w-32">
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={20} minSize={15}>
+            <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2">
               Client/Distributeur
-            </TableHead>
-            <TableHead className="text-center font-bold text-gray-700 px-2 py-2 text-xs h-10 w-24">
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={15} minSize={10}>
+            <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2">
               Numéro
-            </TableHead>
-            <TableHead className="text-center font-bold text-gray-700 px-2 py-2 text-xs h-10 w-20">
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={10} minSize={8}>
+            <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2">
               Prix
-            </TableHead>
-            <TableHead className="text-center font-bold text-gray-700 px-2 py-2 text-xs h-10 w-24">
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={15} minSize={12}>
+            <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2">
               Statut
-            </TableHead>
-            <TableHead className="text-center font-bold text-gray-700 px-2 py-2 text-xs h-10 w-48">
+            </div>
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={25} minSize={20}>
+            <div className="h-10 flex items-center justify-center text-center font-bold text-gray-700 text-xs px-2">
               Commentaire
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {orders.map((order, index) => (
-            <TableRow
-              key={order.id}
-              className={cn(
-                "border-b border-gray-100 hover:bg-gray-50 transition-colors h-10",
-                order.isScanned && "bg-green-50",
-                index % 2 === 0 ? "bg-white" : "bg-gray-50"
-              )}
-            >
-              {/* Code */}
-              <TableCell className="text-center font-mono text-xs font-medium text-blue-600 px-2 py-2 h-10 w-20">
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+
+        {/* Data Rows with Resizable Panels */}
+        {orders.map((order, index) => (
+          <ResizablePanelGroup 
+            key={order.id}
+            direction="horizontal" 
+            className={cn(
+              "min-h-[40px] border-b border-gray-100 hover:bg-gray-50 transition-colors",
+              order.isScanned && "bg-green-50",
+              index % 2 === 0 ? "bg-white" : "bg-gray-50"
+            )}
+          >
+            {/* Code Column */}
+            <ResizablePanel defaultSize={15} minSize={10}>
+              <div className="h-10 flex items-center justify-center text-center font-mono text-xs font-medium text-blue-600 px-2">
                 {order.code}
-              </TableCell>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
 
-              {/* Vendeur/Client */}
-              <TableCell className="text-center text-xs text-gray-900 px-2 py-2 h-10 w-32">
+            {/* Vendeur/Client Column */}
+            <ResizablePanel defaultSize={20} minSize={15}>
+              <div className="h-10 flex items-center justify-center text-center text-xs text-gray-900 px-2">
                 {order.vendeur}
-              </TableCell>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
 
-              {/* Number */}
-              <TableCell className="text-center font-mono text-xs text-gray-700 px-2 py-2 h-10 w-24">
+            {/* Number Column */}
+            <ResizablePanel defaultSize={15} minSize={10}>
+              <div className="h-10 flex items-center justify-center text-center font-mono text-xs text-gray-700 px-2">
                 {order.numero}
-              </TableCell>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
 
-              {/* Price */}
-              <TableCell className="text-center text-xs font-semibold text-green-600 px-2 py-2 h-10 w-20">
+            {/* Price Column */}
+            <ResizablePanel defaultSize={10} minSize={8}>
+              <div className="h-10 flex items-center justify-center text-center text-xs font-semibold text-green-600 px-2">
                 {order.prix.toFixed(2)}
-              </TableCell>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
 
-              {/* Status - Now with Dropdown */}
-              <TableCell className="text-center px-2 py-2 h-10 w-24">
+            {/* Status Column */}
+            <ResizablePanel defaultSize={15} minSize={12}>
+              <div className="h-10 flex items-center justify-center px-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="flex items-center justify-center gap-1 hover:bg-gray-100 rounded px-1 py-0.5 w-full">
                     {getStatusBadge(order.statut)}
@@ -127,21 +159,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     ))}
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </TableCell>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle />
 
-              {/* Comment - Direct Input with increased width */}
-              <TableCell className="text-center px-2 py-2 h-10 w-48">
+            {/* Comment Column */}
+            <ResizablePanel defaultSize={25} minSize={20}>
+              <div className="h-10 flex items-center px-2">
                 <Input
                   value={order.commentaire}
                   onChange={(e) => handleCommentChange(order.id, e.target.value)}
                   className="text-xs h-8 w-full px-2 py-1 border-gray-200 focus:border-blue-400 bg-white"
                   placeholder="اكتب تعليق..."
                 />
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ))}
+      </div>
 
       {/* Empty State */}
       {orders.length === 0 && (
