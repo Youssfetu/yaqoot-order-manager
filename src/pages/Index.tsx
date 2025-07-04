@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -119,17 +118,8 @@ const Index = () => {
               <Package className="h-6 w-6 text-white" />
             </div>
             
-            {/* Header Icons */}
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setIsAddDialogOpen(true)}
-                variant="ghost"
-                size="sm"
-                className="p-2 hover:bg-gray-100 rounded-xl"
-              >
-                <Plus className="h-6 w-6 text-gray-600" />
-              </Button>
-
+            {/* Header Icons - Only 4 Icons */}
+            <div className="flex items-center gap-3">
               <Button
                 onClick={() => setIsScannerOpen(true)}
                 variant="ghost"
@@ -138,14 +128,30 @@ const Index = () => {
               >
                 <QrCode className="h-6 w-6 text-gray-600" />
               </Button>
-              
+
               <Button
-                onClick={() => setIsUploadDialogOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+                onClick={() => {
+                  // Search functionality - focus on search input
+                  const searchInput = document.querySelector('input[placeholder*="Rechercher"]') as HTMLInputElement;
+                  if (searchInput) {
+                    searchInput.focus();
+                    searchInput.select();
+                  }
+                }}
+              >
+                <Search className="h-6 w-6 text-gray-600" />
+              </Button>
+
+              <Button
+                onClick={() => setIsAddDialogOpen(true)}
                 variant="ghost"
                 size="sm"
                 className="p-2 hover:bg-gray-100 rounded-xl"
               >
-                <Upload className="h-6 w-6 text-gray-600" />
+                <Plus className="h-6 w-6 text-gray-600" />
               </Button>
 
               <Button
@@ -161,24 +167,6 @@ const Index = () => {
               >
                 <Share2 className="h-6 w-6 text-gray-600" />
               </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                className="p-2 hover:bg-gray-100 rounded-xl"
-                onClick={() => {
-                  toast({
-                    title: "Calculatrice",
-                    description: "Cette fonctionnalité sera développée prochainement",
-                  });
-                }}
-              >
-                <Calculator className="h-6 w-6 text-gray-600" />
-              </Button>
-              
-              <Button variant="ghost" size="sm" className="p-2">
-                <Menu className="h-5 w-5 text-gray-600" />
-              </Button>
             </div>
           </div>
 
@@ -191,12 +179,12 @@ const Index = () => {
               <BarChart3 className="h-5 w-5" />
             </Button>
 
-            {/* Search Icon Button */}
             <Button
+              onClick={() => setIsUploadDialogOpen(true)}
               variant="outline"
               className="flex-1 h-12 bg-white border-gray-200 rounded-xl shadow-md hover:bg-gray-50"
             >
-              <Search className="h-5 w-5" />
+              <Upload className="h-5 w-5" />
             </Button>
           </div>
           
