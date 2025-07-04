@@ -19,7 +19,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [lastPanOffset, setLastPanOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   
   const statusOptions = [
@@ -34,17 +33,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   ];
 
   const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 0.2, 3));
+    setZoomLevel(prev => Math.min(prev + 0.25, 3));
   };
 
   const handleZoomOut = () => {
-    setZoomLevel(prev => Math.max(prev - 0.2, 0.8));
+    setZoomLevel(prev => Math.max(prev - 0.25, 0.5));
   };
 
   const handleZoomReset = () => {
     setZoomLevel(1);
     setPanOffset({ x: 0, y: 0 });
-    setLastPanOffset({ x: 0, y: 0 });
   };
 
   const handleFitToScreen = () => {
@@ -55,11 +53,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       const fitZoom = Math.min(containerWidth / tableWidth, 1);
       setZoomLevel(fitZoom);
       setPanOffset({ x: 0, y: 0 });
-      setLastPanOffset({ x: 0, y: 0 });
     }
   };
 
-  // Mouse/Touch Pan Handlers
+  // Pan functionality for when zoomed
   const handlePanStart = (clientX: number, clientY: number) => {
     if (zoomLevel > 1) {
       setIsPanning(true);
@@ -78,10 +75,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   const handlePanEnd = () => {
-    if (isPanning) {
-      setIsPanning(false);
-      setLastPanOffset(panOffset);
-    }
+    setIsPanning(false);
   };
 
   // Mouse Events
@@ -151,7 +145,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      {/* Mobile-Friendly Zoom Controls - Fixed Position */}
+      {/* Google Sheets Style Zoom Controls - Fixed at Top */}
       <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-300 sticky top-[73px] z-20">
         <div className="flex items-center gap-2">
           <Button
@@ -159,12 +153,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             variant="outline"
             size="sm"
             className="h-8 w-8 p-0"
-            disabled={zoomLevel <= 0.8}
+            disabled={zoomLevel <= 0.5}
           >
             <ZoomOut className="h-4 w-4" />
           </Button>
           
-          <span className="text-sm font-medium text-gray-700 min-w-[50px] text-center">
+          <span className="text-sm font-medium text-gray-700 min-w-[60px] text-center">
             {Math.round(zoomLevel * 100)}%
           </span>
           
@@ -181,6 +175,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         
         <div className="flex items-center gap-2">
           <Button
+            onClick={handleZoomReset}
+            variant="outline"
+            size="sm"
+            className="text-xs px-3 h-8"
+          >
+            100%
+          </Button>
+          
+          <Button
             onClick={handleFitToScreen}
             variant="outline"
             size="sm"
@@ -188,22 +191,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           >
             ملائم للشاشة
           </Button>
-          
-          <Button
-            onClick={handleZoomReset}
-            variant="outline"
-            size="sm"
-            className="h-8 w-8 p-0"
-          >
-            <RotateCcw className="h-3 w-3" />
-          </Button>
         </div>
       </div>
 
-      {/* Scrollable Table Container - Fixed Origin Point */}
+      {/* Google Sheets Style Table Container */}
       <div 
         ref={containerRef}
-        className="w-full overflow-hidden border border-gray-300 bg-white relative"
+        className="w-full h-[calc(100vh-200px)] overflow-hidden border border-gray-300 bg-white relative"
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
           touchAction: zoomLevel > 1 ? 'none' : 'auto'
@@ -216,69 +210,71 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Google Sheets Style Transform Container - Fixed Top-Left Origin */}
         <div 
-          className="w-full overflow-x-auto"
+          className="absolute top-0 left-0 w-full"
           style={{
-            transform: `scale(${zoomLevel}) translate(${panOffset.x / zoomLevel}px, ${panOffset.y / zoomLevel}px)`,
+            transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
             transformOrigin: 'top left',
-            transition: isPanning ? 'none' : 'transform 0.2s ease-out'
+            transition: isPanning ? 'none' : 'transform 0.2s ease-out',
+            minWidth: '800px'
           }}
         >
-          <div className="min-w-[800px] w-full shadow-lg rounded-lg overflow-hidden">
-            {/* Header Row - Optimized for Mobile */}
-            <div className="flex w-full border-b border-gray-300 bg-gradient-to-r from-gray-100 to-gray-200 h-12">
-              <div className="flex-none w-28 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">
+          <div className="w-full shadow-lg rounded-lg overflow-hidden bg-white">
+            {/* Header Row - Google Sheets Style */}
+            <div className="flex w-full border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 h-12 sticky top-0 z-10">
+              <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
                 الكود
               </div>
-              <div className="flex-none w-44 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">
+              <div className="flex-none w-44 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
                 العميل/الموزع
               </div>
-              <div className="flex-none w-36 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">
+              <div className="flex-none w-36 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
                 الرقم
               </div>
-              <div className="flex-none w-24 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">
+              <div className="flex-none w-24 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
                 السعر
               </div>
-              <div className="flex-none w-28 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-semibold text-gray-700">
+              <div className="flex-none w-28 px-3 py-3 border-r border-gray-400 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
                 الحالة
               </div>
-              <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center justify-center text-sm font-semibold text-gray-700">
+              <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center justify-center text-sm font-bold text-gray-800 bg-gray-100">
                 التعليق
               </div>
             </div>
 
-            {/* Data Rows - Enhanced for Mobile */}
+            {/* Data Rows - Google Sheets Style */}
             {orders.map((order, index) => (
               <div 
                 key={order.id}
                 className={cn(
-                  "flex w-full border-b border-gray-200 h-14 hover:bg-blue-50 transition-colors duration-150",
+                  "flex w-full border-b border-gray-300 h-14 hover:bg-blue-50 transition-colors duration-150",
                   order.isScanned && "bg-green-50 border-green-200",
                   index % 2 === 0 ? "bg-white" : "bg-gray-50"
                 )}
               >
                 {/* Code Column */}
-                <div className="flex-none w-28 px-3 py-3 border-r border-gray-200 flex items-center text-sm font-mono text-gray-800">
+                <div className="flex-none w-28 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
                   <span className="truncate w-full text-center">{order.code}</span>
                 </div>
 
                 {/* Vendeur Column */}
-                <div className="flex-none w-44 px-3 py-3 border-r border-gray-200 flex items-center text-sm text-gray-800">
+                <div className="flex-none w-44 px-3 py-3 border-r border-gray-300 flex items-center text-sm text-gray-800 bg-white">
                   <span className="truncate w-full">{order.vendeur}</span>
                 </div>
 
                 {/* Number Column */}
-                <div className="flex-none w-36 px-3 py-3 border-r border-gray-200 flex items-center text-sm font-mono text-gray-800">
+                <div className="flex-none w-36 px-3 py-3 border-r border-gray-300 flex items-center text-sm font-mono text-gray-800 bg-white">
                   <span className="truncate w-full text-center">{order.numero}</span>
                 </div>
 
                 {/* Price Column */}
-                <div className="flex-none w-24 px-3 py-3 border-r border-gray-200 flex items-center justify-center text-sm font-medium text-green-700">
+                <div className="flex-none w-24 px-3 py-3 border-r border-gray-300 flex items-center justify-center text-sm font-medium text-green-700 bg-white">
                   {order.prix.toFixed(2)}
                 </div>
 
                 {/* Status Column */}
-                <div className="flex-none w-28 px-2 py-3 border-r border-gray-200 flex items-center justify-center">
+                <div className="flex-none w-28 px-2 py-3 border-r border-gray-300 flex items-center justify-center bg-white">
                   <DropdownMenu>
                     <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
                       <div className="flex items-center gap-1">
@@ -300,8 +296,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </DropdownMenu>
                 </div>
 
-                {/* Comment Column - Enhanced for Mobile */}
-                <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center">
+                {/* Comment Column */}
+                <div className="flex-1 min-w-[240px] px-3 py-3 flex items-center bg-white">
                   <Input
                     value={order.commentaire}
                     onChange={(e) => handleCommentChange(order.id, e.target.value)}
@@ -323,11 +319,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       )}
 
-      {/* Mobile Usage Instructions */}
+      {/* Usage Instructions */}
       {zoomLevel > 1 && (
         <div className="p-3 bg-blue-50 border-t border-blue-200 text-center">
           <p className="text-xs text-blue-700">
-            💡 يمكنك سحب الجدول للتنقل عند التكبير
+            💡 يمكنك سحب الجدول للتنقل عند التكبير - مثل Google Sheets تماماً
           </p>
         </div>
       )}
