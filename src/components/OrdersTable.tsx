@@ -151,8 +151,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      {/* Mobile-Friendly Zoom Controls */}
-      <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-300">
+      {/* Mobile-Friendly Zoom Controls - Fixed Position */}
+      <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-300 sticky top-[73px] z-20">
         <div className="flex items-center gap-2">
           <Button
             onClick={handleZoomOut}
@@ -200,7 +200,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       </div>
 
-      {/* Scrollable Table Container */}
+      {/* Scrollable Table Container - Fixed Origin Point */}
       <div 
         ref={containerRef}
         className="w-full overflow-hidden border border-gray-300 bg-white relative"
