@@ -20,6 +20,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [showScrollbar, setShowScrollbar] = useState(false);
+  const [editingCell, setEditingCell] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const statusOptions = [
@@ -201,6 +202,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     onUpdateComment(id, comment);
   };
 
+  const handleCommentFocus = (id: string) => {
+    setEditingCell(id);
+  };
+
+  const handleCommentBlur = () => {
+    setEditingCell(null);
+  };
+
   const getStatusBadge = (status: string) => {
     const statusColors = {
       'Confirmé': 'bg-green-500',
@@ -257,14 +266,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         )}
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: 'none',
+          touchAction: editingCell ? 'auto' : 'none',
           scrollbarWidth: showScrollbar ? 'thin' : 'none',
           scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent'
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onWheel={handleWheel}
+        onTouchStart={editingCell ? undefined : handleTouchStart}
+        onTouchMove={editingCell ? undefined : handleTouchMove}
+        onTouchEnd={editingCell ? undefined : handleTouchEnd}
+        onWheel={editingCell ? undefined : handleWheel}
       >
         {/* Enhanced Transform Container with Focus Point Preservation */}
         <div 
@@ -275,7 +284,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             transition: isPanning ? 'none' : 'transform 0.2s ease-out',
             minWidth: '800px',
             minHeight: '100%',
-            fontSize: '11px'
+            fontSize: '11px',
+            pointerEvents: editingCell ? 'none' : 'auto'
           }}
         >
           <div className="w-full shadow-lg rounded-sm overflow-hidden bg-white">
@@ -442,7 +452,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
               <ResizableHandle withHandle />
 
-              {/* Comment Column */}
+              {/* Comment Column - Fixed for proper input interaction */}
               <ResizablePanel defaultSize={30} minSize={20}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
@@ -455,7 +465,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       <div 
                         key={order.id}
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
                           order.isScanned && "bg-green-50 border-green-200",
                           index % 2 === 0 ? "bg-white" : "bg-gray-50"
                         )}
@@ -463,9 +473,26 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         <Input
                           value={order.commentaire}
                           onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                          className="text-xs h-5 w-full px-2 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-1 focus:ring-blue-200 shadow-none focus:outline-none rounded-sm"
+                          onFocus={() => handleCommentFocus(order.id)}
+                          onBlur={handleCommentBlur}
+                          className="text-xs h-5 w-full px-2 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-1 focus:ring-blue-200 shadow-none focus:outline-none rounded-sm relative z-50"
+                          style={{
+                            pointerEvents: 'auto',
+                            position: 'relative',
+                            zIndex: editingCell === order.id ? 9999 : 'auto'
+                          }}
                           placeholder="اكتب تعليق..."
                         />
+                        {/* Invisible overlay to capture events when editing */}
+                        {editingCell === order.id && (
+                          <div 
+                            className="absolute inset-0 pointer-events-auto z-40"
+                            style={{
+                              transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
+                              transformOrigin: 'top left'
+                            }}
+                          />
+                        )}
                       </div>
                     ))}
                   </div>
@@ -474,6 +501,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </ResizablePanelGroup>
           </div>
         </div>
+
+        {/* Editing Overlay - Prevents zoom/pan when editing */}
+        {editingCell && (
+          <div 
+            className="absolute inset-0 bg-transparent z-30 pointer-events-auto"
+            onClick={handleCommentBlur}
+          />
+        )}
       </div>
 
       {/* Empty State */}
