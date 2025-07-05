@@ -210,6 +210,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     setEditingCell(null);
   };
 
+  const handleCommentKeyDown = (e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter') {
+      setEditingCell(null);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const statusColors = {
       'Confirmé': 'bg-green-500',
@@ -452,7 +458,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
               <ResizableHandle withHandle />
 
-              {/* Comment Column - Fixed for proper input interaction */}
+              {/* Comment Column - Updated for direct editing */}
               <ResizablePanel defaultSize={30} minSize={20}>
                 <div className="h-full flex flex-col">
                   {/* Header */}
@@ -467,31 +473,41 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         className={cn(
                           "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
                           order.isScanned && "bg-green-50 border-green-200",
-                          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                          index % 2 === 0 ? "bg-white" : "bg-gray-50",
+                          editingCell === order.id && "bg-white border-blue-500 shadow-sm"
                         )}
                       >
-                        <Input
-                          value={order.commentaire}
-                          onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                          onFocus={() => handleCommentFocus(order.id)}
-                          onBlur={handleCommentBlur}
-                          className="text-xs h-5 w-full px-2 py-1 border border-gray-300 focus:border-blue-500 bg-white focus:ring-1 focus:ring-blue-200 shadow-none focus:outline-none rounded-sm relative z-50"
-                          style={{
-                            pointerEvents: 'auto',
-                            position: 'relative',
-                            zIndex: editingCell === order.id ? 9999 : 'auto'
-                          }}
-                          placeholder="اكتب تعليق..."
-                        />
-                        {/* Invisible overlay to capture events when editing */}
-                        {editingCell === order.id && (
+                        {editingCell === order.id ? (
                           <div 
-                            className="absolute inset-0 pointer-events-auto z-40"
+                            className="absolute inset-0 z-50"
                             style={{
                               transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
                               transformOrigin: 'top left'
                             }}
-                          />
+                          >
+                            <input
+                              value={order.commentaire}
+                              onChange={(e) => handleCommentChange(order.id, e.target.value)}
+                              onBlur={handleCommentBlur}
+                              onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
+                              className="w-full h-full px-2 text-xs border-none outline-none bg-white focus:ring-0"
+                              placeholder="اكتب تعليق..."
+                              autoFocus
+                              style={{
+                                fontSize: `${11 * zoomLevel}px`,
+                                padding: `${1 * zoomLevel}px ${8 * zoomLevel}px`
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className="w-full h-full flex items-center cursor-text px-0"
+                            onClick={() => handleCommentFocus(order.id)}
+                          >
+                            <span className="text-xs text-gray-800 truncate w-full">
+                              {order.commentaire || 'اكتب تعليق...'}
+                            </span>
+                          </div>
                         )}
                       </div>
                     ))}
