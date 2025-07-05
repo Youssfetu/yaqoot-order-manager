@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Camera } from 'lucide-react';
+import { QrCode, Camera, X } from 'lucide-react';
 
 interface BarcodeScannerProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ interface BarcodeScannerProps {
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
   const [manualCode, setManualCode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
+  const scanTimeoutRef = useRef<NodeJS.Timeout>();
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,17 +26,40 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
 
   const startScanning = () => {
     setIsScanning(true);
-    // Simulate barcode scanning
-    setTimeout(() => {
-      // Mock scanned code
+    // محاكاة مسح الكود
+    scanTimeoutRef.current = setTimeout(() => {
+      // كود وهمي للاختبار
       const mockCode = 'CMD001';
       onScan(mockCode);
       setIsScanning(false);
     }, 3000);
   };
 
+  const stopScanning = () => {
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current);
+    }
+    setIsScanning(false);
+  };
+
+  const handleClose = () => {
+    // إيقاف المسح عند إغلاق النافذة
+    stopScanning();
+    setManualCode('');
+    onClose();
+  };
+
+  // تنظيف عند إغلاق المكون
+  React.useEffect(() => {
+    return () => {
+      if (scanTimeoutRef.current) {
+        clearTimeout(scanTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Scanner le code-barres</DialogTitle>
@@ -55,6 +79,14 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
                   </div>
+                  <Button
+                    onClick={stopScanning}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    إيقاف المسح
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -81,8 +113,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                 onChange={(e) => setManualCode(e.target.value)}
                 placeholder="Entrez le code de commande..."
                 className="flex-1"
+                disabled={isScanning}
               />
-              <Button type="submit" variant="outline">
+              <Button type="submit" variant="outline" disabled={isScanning}>
                 Rechercher
               </Button>
             </form>
@@ -95,6 +128,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
               <li>• Dirigez la caméra vers le code-barres</li>
               <li>• Assurez-vous que l'éclairage est suffisant</li>
               <li>• Vous pouvez saisir le code manuellement si le scan ne fonctionne pas</li>
+              <li>• يمكنك إيقاف المسح في أي وقت بالضغط على "إيقاف المسح"</li>
             </ul>
           </div>
         </div>
@@ -102,11 +136,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         <DialogFooter>
           <Button 
             variant="outline" 
-            onClick={() => {
-              setIsScanning(false);
-              setManualCode('');
-              onClose();
-            }}
+            onClick={handleClose}
           >
             Fermer
           </Button>
