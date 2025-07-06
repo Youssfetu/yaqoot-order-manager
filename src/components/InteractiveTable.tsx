@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
 
@@ -215,45 +215,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
 
   return (
     <div className="w-full h-[calc(100vh-200px)] bg-white border border-gray-300 relative overflow-hidden">
-      {/* Zoom Controls Toolbar */}
-      <div className="absolute top-2 left-2 z-50 flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 px-3 py-2 shadow-lg">
-        <Button
-          onClick={handleZoomOut}
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          disabled={zoomLevel <= 0.5}
-        >
-          <ZoomOut className="h-4 w-4" />
-        </Button>
-        
-        <span className="text-xs font-medium text-gray-600 min-w-[3rem] text-center">
-          {getZoomPercentage()}%
-        </span>
-        
-        <Button
-          onClick={handleZoomIn}
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          disabled={zoomLevel >= 3}
-        >
-          <ZoomIn className="h-4 w-4" />
-        </Button>
-        
-        <div className="w-px h-4 bg-gray-300" />
-        
-        <Button
-          onClick={handleResetZoom}
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
-          disabled={zoomLevel === 1}
-        >
-          <RotateCcw className="h-4 w-4" />
-        </Button>
-      </div>
-
       <div 
         ref={containerRef}
         className="w-full h-full overflow-auto"
