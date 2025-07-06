@@ -21,6 +21,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [showScrollbar, setShowScrollbar] = useState(false);
   const [editingCell, setEditingCell] = useState<string | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const [columnWidths, setColumnWidths] = useState({
+    code: 12,      // 12%
+    vendeur: 20,   // 20%
+    numero: 16,    // 16%
+    prix: 10,      // 10%
+    status: 12,    // 12%
+    comment: 30    // 30%
+  });
+  
   const containerRef = useRef<HTMLDivElement>(null);
   
   const statusOptions = [
@@ -33,6 +44,40 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Hors zone',
     'Programmé'
   ];
+
+  // Handle column resizing
+  const handleResizeStart = (e: React.MouseEvent, column: string) => {
+    e.preventDefault();
+    setIsResizing(true);
+    setResizingColumn(column);
+    
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      if (!containerRef.current) return;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      const totalWidth = rect.width;
+      const deltaX = moveEvent.clientX - e.clientX;
+      const deltaPercent = (deltaX / totalWidth) * 100;
+      
+      setColumnWidths(prev => {
+        const newWidths = { ...prev };
+        const currentWidth = newWidths[column as keyof typeof newWidths];
+        const newWidth = Math.max(8, Math.min(40, currentWidth + deltaPercent));
+        newWidths[column as keyof typeof newWidths] = newWidth;
+        return newWidths;
+      });
+    };
+    
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      setResizingColumn(null);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
 
   // Check if scrollbar should be visible
   useEffect(() => {
@@ -287,7 +332,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           style={{
             transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
             transformOrigin: 'top left',
-            transition: isPanning ? 'none' : 'transform 0.2s ease-out',
+            transition: isPanning || isResizing ? 'none' : 'transform 0.2s ease-out',
             minWidth: '800px',
             minHeight: '100%',
             fontSize: '11px',
@@ -298,52 +343,67 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             {/* Header Row with Resizable Handles */}
             <div className="flex">
               {/* Code Column Header */}
-              <div className="flex-none w-[12%] min-w-[80px] relative">
+              <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الكود</span>
                 </div>
-                {/* Resize Handle - Only in header */}
-                <div className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100" />
+                {/* Resize Handle */}
+                <div 
+                  className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100"
+                  onMouseDown={(e) => handleResizeStart(e, 'code')}
+                />
               </div>
 
               {/* Vendeur Column Header */}
-              <div className="flex-none w-[20%] min-w-[120px] relative">
+              <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
                 </div>
-                {/* Resize Handle - Only in header */}
-                <div className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100" />
+                {/* Resize Handle */}
+                <div 
+                  className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100"
+                  onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
+                />
               </div>
 
               {/* Number Column Header */}
-              <div className="flex-none w-[16%] min-w-[100px] relative">
+              <div className="relative" style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الرقم</span>
                 </div>
-                {/* Resize Handle - Only in header */}
-                <div className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100" />
+                {/* Resize Handle */}
+                <div 
+                  className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100"
+                  onMouseDown={(e) => handleResizeStart(e, 'numero')}
+                />
               </div>
 
               {/* Price Column Header */}
-              <div className="flex-none w-[10%] min-w-[70px] relative">
+              <div className="relative" style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">السعر</span>
                 </div>
-                {/* Resize Handle - Only in header */}
-                <div className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100" />
+                {/* Resize Handle */}
+                <div 
+                  className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100"
+                  onMouseDown={(e) => handleResizeStart(e, 'prix')}
+                />
               </div>
 
               {/* Status Column Header */}
-              <div className="flex-none w-[12%] min-w-[90px] relative">
+              <div className="relative" style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الحالة</span>
                 </div>
-                {/* Resize Handle - Only in header */}
-                <div className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100" />
+                {/* Resize Handle */}
+                <div 
+                  className="absolute top-0 right-0 w-1 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100"
+                  onMouseDown={(e) => handleResizeStart(e, 'status')}
+                />
               </div>
 
               {/* Comment Column Header */}
-              <div className="flex-1 min-w-[150px]">
+              <div className="flex-1" style={{ minWidth: '150px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">التعليق</span>
                 </div>
@@ -355,7 +415,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {orders.map((order, index) => (
                 <div key={order.id} className="flex">
                   {/* Code Column Data */}
-                  <div className="flex-none w-[12%] min-w-[80px]">
+                  <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                     <div 
                       data-code={order.code}
                       className={cn(
@@ -372,7 +432,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </div>
 
                   {/* Vendeur Column Data */}
-                  <div className="flex-none w-[20%] min-w-[120px]">
+                  <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
@@ -388,7 +448,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </div>
 
                   {/* Number Column Data */}
-                  <div className="flex-none w-[16%] min-w-[100px]">
+                  <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
@@ -404,7 +464,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </div>
 
                   {/* Price Column Data */}
-                  <div className="flex-none w-[10%] min-w-[70px]">
+                  <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
@@ -420,7 +480,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </div>
 
                   {/* Status Column Data */}
-                  <div className="flex-none w-[12%] min-w-[90px]">
+                  <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                     <div 
                       className={cn(
                         "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
@@ -452,7 +512,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   </div>
 
                   {/* Comment Column Data */}
-                  <div className="flex-1 min-w-[150px]">
+                  <div className="flex-1" style={{ minWidth: '150px' }}>
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
