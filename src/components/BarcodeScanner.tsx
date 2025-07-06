@@ -20,7 +20,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   const streamRef = useRef<MediaStream | null>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
 
-  const playSound = (success: boolean) => {
+  const playSound = (result: string) => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
@@ -29,7 +29,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
-      if (success) {
+      if (result === 'success') {
         // صوت النجاح - نغمة بيب إيجابية
         oscillator.type = 'square';
         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
@@ -40,6 +40,18 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.8);
+      } else if (result === 'not-found') {
+        // صوت عدم الوجود - نغمة خطأ حادة
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(350, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(250, audioContext.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.4);
+        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.2);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 1.2);
       } else {
         // صوت التحذير - نغمة بزر إنذار
         oscillator.type = 'triangle';
@@ -61,7 +73,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   const handleCameraScanResult = (code: string) => {
     const result = onScan(code);
     const foundOrder = document.querySelector(`[data-code="${code}"]`);
-    playSound(result === 'success');
+    playSound(result);
     
     if (foundOrder) {
       // إزالة الألوان السابقة
@@ -83,7 +95,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   const handleManualScanResult = (code: string) => {
     const result = onScan(code);
     const foundOrder = document.querySelector(`[data-code="${code}"]`);
-    playSound(result === 'success');
+    playSound(result);
     
     if (foundOrder) {
       // إزالة الألوان السابقة
