@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Camera, X, CheckCircle } from 'lucide-react';
+import { QrCode, Camera, X } from 'lucide-react';
 
 interface BarcodeScannerProps {
   isOpen: boolean;
@@ -14,9 +14,39 @@ interface BarcodeScannerProps {
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
   const [manualCode, setManualCode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
-  const [lastScannedCode, setLastScannedCode] = useState<string | null>(null);
-  const [scanResult, setScanResult] = useState<'success' | 'not-found' | null>(null);
   const scanTimeoutRef = useRef<NodeJS.Timeout>();
+
+  // دالة تشغيل الصوت
+  const playSound = (success: boolean) => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      if (success) {
+        // صوت نجاح - نوتتان متتاليتان صاعدتان
+        oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+        oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+      } else {
+        // صوت فشل - نوتتان متتاليتان هابطتان
+        oscillator.frequency.setValueAtTime(330, audioContext.currentTime); // E4
+        oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.15); // C4
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.4);
+      }
+    } catch (error) {
+      console.log('Audio not supported');
+    }
+  };
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,17 +57,13 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   };
 
   const handleScanResult = (code: string) => {
-    setLastScannedCode(code);
     const result = onScan(code);
-    // We'll assume the parent component will handle the toast and return success/failure
-    // For now, we'll show success feedback
-    setScanResult('success');
+    // تشغيل الصوت المناسب بناءً على النتيجة
+    playSound(result === 'success');
   };
 
   const startScanning = () => {
     setIsScanning(true);
-    setScanResult(null);
-    setLastScannedCode(null);
     // محاكاة مسح الكود
     scanTimeoutRef.current = setTimeout(() => {
       // كود وهمي للاختبار
@@ -58,14 +84,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     // إيقاف المسح عند إغلاق النافذة
     stopScanning();
     setManualCode('');
-    setLastScannedCode(null);
-    setScanResult(null);
     onClose();
-  };
-
-  const handleContinueScanning = () => {
-    setScanResult(null);
-    setLastScannedCode(null);
   };
 
   // تنظيف عند إغلاق المكون
@@ -85,36 +104,6 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Success Message */}
-          {scanResult === 'success' && lastScannedCode && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-                <div>
-                  <h4 className="font-medium text-green-800">تم العثور على الطلبية!</h4>
-                  <p className="text-sm text-green-700">الكود: {lastScannedCode}</p>
-                </div>
-              </div>
-              <div className="mt-3 flex gap-2">
-                <Button
-                  onClick={handleContinueScanning}
-                  variant="outline"
-                  size="sm"
-                  className="border-green-300 text-green-700 hover:bg-green-100"
-                >
-                  مسح كود آخر
-                </Button>
-                <Button
-                  onClick={handleClose}
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  إنهاء المسح
-                </Button>
-              </div>
-            </div>
-          )}
-
           {/* Camera Scanner */}
           <div className="space-y-4">
             <h4 className="font-medium text-gray-900">Scanner avec la caméra</h4>
@@ -144,7 +133,6 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                   <Button
                     onClick={startScanning}
                     className="gap-2 bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700"
-                    disabled={scanResult === 'success'}
                   >
                     <Camera className="h-4 w-4" />
                     Commencer le scan
@@ -182,7 +170,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
               <li>• Dirigez la caméra vers le code-barres</li>
               <li>• Assurez-vous que l'éclairage est suffisant</li>
               <li>• Vous pouvez saisir le code manuellement si le scan ne fonctionne pas</li>
-              <li>• بعد العثور على الكود، يمكنك الاستمرار في المسح أو إنهاء العملية</li>
+              <li>• ستسمع صوت تأكيد عند العثور على الكود أو صوت تنبيه عند عدم وجوده</li>
             </ul>
           </div>
         </div>

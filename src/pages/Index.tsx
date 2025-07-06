@@ -119,17 +119,8 @@ const Index = () => {
       setOrders(orders.map(order => 
         order.code === code ? { ...order, isScanned: true } : order
       ));
-      toast({
-        title: "Commande trouvée",
-        description: `La commande ${code} a été identifiée avec succès`,
-      });
       return 'success';
     } else {
-      toast({
-        title: "Commande non trouvée",
-        description: `Le code ${code} n'existe pas`,
-        variant: "destructive"
-      });
       return 'not-found';
     }
   };
