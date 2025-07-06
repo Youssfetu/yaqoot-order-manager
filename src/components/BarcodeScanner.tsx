@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -54,16 +53,17 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 1.2);
       } else {
-        // صوت التحذير الجديد - نغمة رقمية متقطعة
-        oscillator.type = 'sine';
-        for (let i = 0; i < 5; i++) {
-          oscillator.frequency.setValueAtTime(600, audioContext.currentTime + (i * 0.15));
-          oscillator.frequency.setValueAtTime(450, audioContext.currentTime + (i * 0.15) + 0.075);
-        }
+        // صوت التحذير الجديد - صوت تحذير عميق ومتقطع
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.4);
+        oscillator.frequency.setValueAtTime(100, audioContext.currentTime + 0.6);
+        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.8);
         gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.75);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.75);
+        oscillator.stop(audioContext.currentTime + 1.0);
       }
     } catch (error) {
       console.log('Audio not supported');
