@@ -51,6 +51,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Programmé'
   ];
 
+  // Helper function to check if status is rejected/cancelled
+  const isRejectedStatus = (status: string) => {
+    return ['Annulé', 'Refusé', 'Hors zone'].includes(status);
+  };
+
   // Enhanced tracking for recently scanned orders with better mobile support
   useEffect(() => {
     console.log('Current orders scan status:', orders.map(o => ({ id: o.id, code: o.code, isScanned: o.isScanned })));
@@ -588,12 +593,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             <div className="flex-1">
               {orders.map((order, index) => {
                 const isRecentlyScanned = recentlyScannedOrders.has(order.id);
-                console.log(`Order ${order.code}: isScanned=${order.isScanned}, isRecentlyScanned=${isRecentlyScanned}`);
+                const isRejected = isRejectedStatus(order.statut);
+                console.log(`Order ${order.code}: isScanned=${order.isScanned}, isRecentlyScanned=${isRecentlyScanned}, isRejected=${isRejected}`);
                 
-                // Enhanced row background logic for better mobile visibility
+                // Enhanced row background logic with red for rejected orders
                 const getRowBackgroundClass = () => {
                   if (isRecentlyScanned) {
-                    return "bg-green-200 border-green-300 animate-pulse";
+                    // Show red for rejected statuses, green for others during the 3-second highlight
+                    return isRejected 
+                      ? "bg-red-200 border-red-300 animate-pulse" 
+                      : "bg-green-200 border-green-300 animate-pulse";
                   } else if (order.isScanned) {
                     return "bg-blue-50 border-blue-200";
                   } else {
