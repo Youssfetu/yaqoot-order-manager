@@ -25,6 +25,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
   const [recentlyScannedOrders, setRecentlyScannedOrders] = useState<Set<string>>(new Set());
   const [scannedOrdersTimer, setScannedOrdersTimer] = useState<Map<string, NodeJS.Timeout>>(new Map());
+  const [permanentlyScannedOrders, setPermanentlyScannedOrders] = useState<Set<string>>(new Set());
   const [touchVelocity, setTouchVelocity] = useState({ x: 0, y: 0 });
   const [lastTouchTime, setLastTouchTime] = useState(0);
   const [lastTouchPosition, setLastTouchPosition] = useState({ x: 0, y: 0 });
@@ -56,19 +57,27 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     return ['Annulé', 'Refusé', 'Hors zone'].includes(status);
   };
 
-  // Enhanced tracking for recently scanned orders with better mobile support
+  // Enhanced tracking for recently scanned orders - show animation only once then keep permanent state
   useEffect(() => {
     console.log('Current orders scan status:', orders.map(o => ({ id: o.id, code: o.code, isScanned: o.isScanned })));
     
     orders.forEach(order => {
-      if (order.isScanned && !recentlyScannedOrders.has(order.id)) {
-        console.log('New scanned order detected:', order.id, order.code);
+      if (order.isScanned && !permanentlyScannedOrders.has(order.id)) {
+        console.log('New scanned order detected (first time):', order.id, order.code);
         
-        // Add to recently scanned set immediately
+        // Add to permanently scanned set immediately
+        setPermanentlyScannedOrders(prev => {
+          const newSet = new Set(prev);
+          newSet.add(order.id);
+          console.log('Added to permanently scanned:', order.id);
+          return newSet;
+        });
+
+        // Add to recently scanned set for 3-second animation
         setRecentlyScannedOrders(prev => {
           const newSet = new Set(prev);
           newSet.add(order.id);
-          console.log('Added to recently scanned:', order.id);
+          console.log('Added to recently scanned for animation:', order.id);
           return newSet;
         });
         
@@ -78,13 +87,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           clearTimeout(existingTimer);
         }
         
-        // Set new timer to remove highlighting after 3 seconds
+        // Set new timer to remove animation after 3 seconds (but keep permanent state)
         const newTimer = setTimeout(() => {
-          console.log('Removing highlighting for order:', order.id);
+          console.log('Removing animation for order (keeping permanent state):', order.id);
           setRecentlyScannedOrders(prev => {
             const updated = new Set(prev);
             updated.delete(order.id);
-            console.log('Removed from recently scanned:', order.id);
+            console.log('Removed from recently scanned animation:', order.id);
             return updated;
           });
           
@@ -115,9 +124,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           newMap.delete(orderId);
           return newMap;
         });
+        // Also remove from permanent state if order is no longer scanned
+        setPermanentlyScannedOrders(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(orderId);
+          return newSet;
+        });
       }
     });
-  }, [orders]);
+  }, [orders, permanentlyScannedOrders]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -593,17 +608,19 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             <div className="flex-1">
               {orders.map((order, index) => {
                 const isRecentlyScanned = recentlyScannedOrders.has(order.id);
+                const isPermanentlyScanned = permanentlyScannedOrders.has(order.id);
                 const isRejected = isRejectedStatus(order.statut);
-                console.log(`Order ${order.code}: isScanned=${order.isScanned}, isRecentlyScanned=${isRecentlyScanned}, isRejected=${isRejected}`);
+                console.log(`Order ${order.code}: isScanned=${order.isScanned}, isRecentlyScanned=${isRecentlyScanned}, isPermanentlyScanned=${isPermanentlyScanned}, isRejected=${isRejected}`);
                 
-                // Enhanced row background logic with red for rejected orders
+                // Enhanced row background logic with permanent state and temporary animation
                 const getRowBackgroundClass = () => {
                   if (isRecentlyScanned) {
                     // Show red for rejected statuses, green for others during the 3-second highlight
                     return isRejected 
                       ? "bg-red-200 border-red-300 animate-pulse" 
                       : "bg-green-200 border-green-300 animate-pulse";
-                  } else if (order.isScanned) {
+                  } else if (isPermanentlyScanned) {
+                    // Permanent light blue background for previously scanned orders
                     return "bg-blue-50 border-blue-200";
                   } else {
                     return index % 2 === 0 ? "bg-white" : "bg-gray-50";
@@ -620,7 +637,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         data-code={order.code}
                         className={cn(
                           "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
-                          order.isScanned 
+                          isPermanentlyScanned 
                             ? "bg-green-100 border-green-200 font-semibold" 
                             : rowBackgroundClass
                         )}
