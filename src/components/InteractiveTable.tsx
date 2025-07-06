@@ -361,13 +361,16 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                   key={order.id}
                   className={cn(
                     "flex border-b border-gray-200 hover:bg-blue-50 transition-colors",
-                    order.isScanned && "bg-green-50",
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    order.isScanned && "bg-green-100 border-green-300",
+                    !order.isScanned && (index % 2 === 0 ? "bg-white" : "bg-gray-50")
                   )}
                   style={{ height: '28px' }}
                 >
                   <div 
-                    className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono text-gray-800"
+                    className={cn(
+                      "flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono",
+                      order.isScanned ? "text-green-800 bg-green-200 font-bold" : "text-gray-800"
+                    )}
                     style={{ width: `${columnWidths.code}px` }}
                   >
                     {order.code}
