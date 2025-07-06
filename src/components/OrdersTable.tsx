@@ -519,16 +519,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       )}
 
-      {/* Enhanced Touch Instructions */}
-      <div className="p-2 bg-blue-50 border-t border-blue-200 text-center">
-        <p className="text-xs text-blue-700">
-          💡 استخدم إصبعين للتكبير والتصغير في النقطة المحددة • اسحب بإصبع واحد للتنقل عند التكبير • اسحب من رؤوس الأعمدة لتغيير حجم الأعمدة
-        </p>
-        <p className="text-xs text-blue-600 mt-1">
-          ⌨️ على الكمبيوتر: Ctrl + / Ctrl - للزوم • Ctrl 0 للعودة للحجم الطبيعي • استخدم Ctrl + عجلة الماوس للزوم على النقطة المحددة
-        </p>
-      </div>
-
       {/* Custom scrollbar styles */}
       <style>{`
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"] {
