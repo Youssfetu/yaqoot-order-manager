@@ -30,22 +30,25 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       gainNode.connect(audioContext.destination);
       
       if (success) {
-        // صوت النجاح - بأقصى صوت ممكن
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
-        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime); // أقصى مستوى صوت
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
+        // صوت النجاح - نغمة صاعدة واضحة ومميزة
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // Do
+        oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2); // Mi
+        oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.4); // Sol
+        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.8);
+        oscillator.stop(audioContext.currentTime + 1.0);
       } else {
-        // صوت التحذير - بأقصى صوت ممكن
+        // صوت التحذير - نغمة هابطة واضحة ومميزة
+        oscillator.type = 'square';
         oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.3);
-        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime); // أقصى مستوى صوت
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.6);
+        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.9);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.6);
+        oscillator.stop(audioContext.currentTime + 0.9);
       }
     } catch (error) {
       console.log('Audio not supported');
