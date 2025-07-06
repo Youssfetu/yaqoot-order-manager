@@ -30,20 +30,22 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       gainNode.connect(audioContext.destination);
       
       if (success) {
-        // صوت النجاح - نغمة لطيفة وقصيرة
+        // صوت النجاح - بأقصى صوت ممكن
         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
         oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime); // أقصى مستوى صوت
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
+        oscillator.stop(audioContext.currentTime + 0.8);
       } else {
-        // صوت التحذير - نغمة خفيفة وقصيرة جداً
-        oscillator.frequency.setValueAtTime(500, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        // صوت التحذير - بأقصى صوت ممكن
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime); // أقصى مستوى صوت
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.15);
+        oscillator.stop(audioContext.currentTime + 0.6);
       }
     } catch (error) {
       console.log('Audio not supported');
