@@ -135,6 +135,8 @@ const Index = () => {
 
   const handleShare = async () => {
     try {
+      console.log('Share button clicked on mobile');
+      
       // Create a summary of orders data
       const ordersSummary = orders.map(order => 
         `الكود: ${order.code} | العميل: ${order.vendeur} | الرقم: ${order.numero} | السعر: ${order.prix} | الحالة: ${order.statut}`
@@ -144,7 +146,7 @@ const Index = () => {
       const totalAmount = orders.reduce((sum, order) => sum + order.prix, 0);
       
       const shareText = `📋 ملخص الطلبيات:
-      
+
 عدد الطلبيات: ${totalOrders}
 إجمالي المبلغ: ${totalAmount} دج
 
@@ -153,8 +155,11 @@ ${ordersSummary}
 
 تم إنشاؤه بواسطة Yaqoot Order Manager`;
 
+      console.log('Share data prepared, checking for native share API');
+
       // Check if Web Share API is available (mobile browsers)
-      if (navigator.share) {
+      if (navigator.share && navigator.canShare && navigator.canShare({ text: shareText })) {
+        console.log('Using native share API');
         await navigator.share({
           title: 'ملخص الطلبيات - Yaqoot',
           text: shareText,
@@ -164,7 +169,8 @@ ${ordersSummary}
           title: "تم المشاركة بنجاح",
           description: "تم مشاركة البيانات بنجاح",
         });
-      } else {
+      } else if (navigator.clipboard && window.isSecureContext) {
+        console.log('Using clipboard API');
         // Fallback for desktop browsers - copy to clipboard
         await navigator.clipboard.writeText(shareText);
         
@@ -172,12 +178,24 @@ ${ordersSummary}
           title: "تم نسخ البيانات",
           description: "تم نسخ البيانات إلى الحافظة، يمكنك لصقها في أي تطبيق",
         });
+      } else {
+        console.log('Using WhatsApp fallback');
+        // WhatsApp fallback
+        const whatsappText = encodeURIComponent(shareText);
+        const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
+        
+        window.open(whatsappUrl, '_blank');
+        
+        toast({
+          title: "تم فتح الواتساب",
+          description: "تم فتح الواتساب لإرسال ملخص الطلبيات",
+        });
       }
     } catch (error) {
       console.error('Error sharing:', error);
       
-      // Create WhatsApp link as fallback
-      const whatsappText = encodeURIComponent(`📋 ملخص الطلبيات - عدد الطلبيات: ${orders.length}`);
+      // Final fallback - always try WhatsApp
+      const whatsappText = encodeURIComponent(`📋 ملخص الطلبيات - عدد الطلبيات: ${orders.length} - إجمالي المبلغ: ${orders.reduce((sum, order) => sum + order.prix, 0)} دج`);
       const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
       
       window.open(whatsappUrl, '_blank');
