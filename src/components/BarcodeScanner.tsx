@@ -1,9 +1,10 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { QrCode, Camera, X } from 'lucide-react';
+import { QrCode, Camera, X, AlertCircle } from 'lucide-react';
+import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
 interface BarcodeScannerProps {
   isOpen: boolean;
@@ -14,7 +15,11 @@ interface BarcodeScannerProps {
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
   const [manualCode, setManualCode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
-  const scanTimeoutRef = useRef<NodeJS.Timeout>();
+  const [cameraError, setCameraError] = useState<string>('');
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const readerRef = useRef<BrowserMultiFormatReader | null>(null);
 
   // دالة تشغيل الصوت
   const playSound = (success: boolean) => {
@@ -27,26 +32,115 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       gainNode.connect(audioContext.destination);
       
       if (success) {
-        // صوت نجاح - أكثر وضوحاً وارتفاعاً
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // نوتة عالية
-        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1); // نوتة أعلى
-        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2); // النوتة الأعلى
-        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime); // صوت أعلى
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
+        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.5);
       } else {
-        // صوت فشل - أكثر وضوحاً وتميزاً
-        oscillator.frequency.setValueAtTime(400, audioContext.currentTime); // نوتة منخفضة
-        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.2); // نوتة أقل
-        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.4); // النوتة الأقل
-        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime); // صوت أعلى
+        oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.4);
+        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.6);
       }
     } catch (error) {
       console.log('Audio not supported');
+    }
+  };
+
+  const handleScanResult = (code: string) => {
+    onScan(code);
+    const foundOrder = document.querySelector(`[data-code="${code}"]`);
+    playSound(!!foundOrder);
+    stopScanning();
+  };
+
+  const startCamera = async () => {
+    try {
+      setCameraError('');
+      setIsScanning(true);
+
+      // طلب الإذن للوصول إلى الكاميرا
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment' // استخدام الكاميرا الخلفية إذا كانت متاحة
+        }
+      });
+
+      streamRef.current = stream;
+      setHasPermission(true);
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+
+        // إنشاء قارئ الباركود
+        if (!readerRef.current) {
+          readerRef.current = new BrowserMultiFormatReader();
+        }
+
+        // بدء مسح الباركود
+        try {
+          const result = await readerRef.current.decodeFromVideoDevice(
+            undefined, // استخدام الكاميرا الافتراضية
+            videoRef.current,
+            (result, error) => {
+              if (result) {
+                const scannedCode = result.getText();
+                console.log('Barcode scanned:', scannedCode);
+                handleScanResult(scannedCode);
+              }
+              if (error && !(error instanceof NotFoundException)) {
+                console.error('Scanning error:', error);
+              }
+            }
+          );
+        } catch (scanError) {
+          console.error('Scan error:', scanError);
+          setCameraError('خطأ في بدء المسح الضوئي');
+        }
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      setHasPermission(false);
+      setIsScanning(false);
+      
+      if (error instanceof Error) {
+        if (error.name === 'NotAllowedError') {
+          setCameraError('تم رفض الإذن للوصول إلى الكاميرا. يرجى السماح بالوصول إلى الكاميرا في إعدادات المتصفح.');
+        } else if (error.name === 'NotFoundError') {
+          setCameraError('لم يتم العثور على كاميرا في هذا الجهاز.');
+        } else {
+          setCameraError('خطأ في الوصول إلى الكاميرا: ' + error.message);
+        }
+      } else {
+        setCameraError('خطأ غير معروف في الوصول إلى الكاميرا');
+      }
+    }
+  };
+
+  const stopScanning = () => {
+    setIsScanning(false);
+    
+    // إيقاف تدفق الكاميرا
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+
+    // إيقاف قارئ الباركود
+    if (readerRef.current) {
+      readerRef.current.reset();
+    }
+
+    // إيقاف الفيديو
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
   };
 
@@ -58,101 +152,101 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     }
   };
 
-  const handleScanResult = (code: string) => {
-    onScan(code);
-    const foundOrder = document.querySelector(`[data-code="${code}"]`);
-    // تشغيل الصوت المناسب بناءً على وجود الكود
-    playSound(!!foundOrder);
-  };
-
-  const startScanning = () => {
-    setIsScanning(true);
-    // محاكاة مسح الكود
-    scanTimeoutRef.current = setTimeout(() => {
-      // كود وهمي للاختبار
-      const mockCode = 'CMD001';
-      handleScanResult(mockCode);
-      setIsScanning(false);
-    }, 3000);
-  };
-
-  const stopScanning = () => {
-    if (scanTimeoutRef.current) {
-      clearTimeout(scanTimeoutRef.current);
-    }
-    setIsScanning(false);
-  };
-
   const handleClose = () => {
-    // إيقاف المسح عند إغلاق النافذة
     stopScanning();
     setManualCode('');
+    setCameraError('');
     onClose();
   };
 
   // تنظيف عند إغلاق المكون
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
-      if (scanTimeoutRef.current) {
-        clearTimeout(scanTimeoutRef.current);
-      }
+      stopScanning();
     };
   }, []);
+
+  // إيقاف الكاميرا عند إغلاق الحوار
+  useEffect(() => {
+    if (!isOpen) {
+      stopScanning();
+    }
+  }, [isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Scanner le code-barres</DialogTitle>
+          <DialogTitle>مسح الكود الشريطي</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Camera Scanner */}
           <div className="space-y-4">
-            <h4 className="font-medium text-gray-900">Scanner avec la caméra</h4>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <h4 className="font-medium text-gray-900">مسح بالكاميرا</h4>
+            
+            <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
               {isScanning ? (
-                <div className="space-y-4">
-                  <div className="animate-pulse">
-                    <Camera className="h-16 w-16 text-blue-500 mx-auto" />
+                <div className="relative">
+                  <video
+                    ref={videoRef}
+                    className="w-full h-64 object-cover bg-black"
+                    autoPlay
+                    muted
+                    playsInline
+                  />
+                  <div className="absolute inset-0 border-2 border-blue-500 border-dashed opacity-70 pointer-events-none">
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-32 border-2 border-red-500"></div>
                   </div>
-                  <p className="text-sm text-gray-600">Recherche du code-barres en cours...</p>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                    <Button
+                      onClick={stopScanning}
+                      variant="destructive"
+                      size="sm"
+                      className="gap-2"
+                    >
+                      <X className="h-4 w-4" />
+                      إيقاف المسح
+                    </Button>
                   </div>
-                  <Button
-                    onClick={stopScanning}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    <X className="h-4 w-4" />
-                    إيقاف المسح
-                  </Button>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="p-8 text-center space-y-4">
                   <QrCode className="h-16 w-16 text-gray-400 mx-auto" />
-                  <p className="text-sm text-gray-600">Cliquez pour commencer le scan du code-barres</p>
+                  <p className="text-sm text-gray-600">اضغط لبدء مسح الكود الشريطي</p>
                   <Button
-                    onClick={startScanning}
+                    onClick={startCamera}
                     className="gap-2 bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700"
                   >
                     <Camera className="h-4 w-4" />
-                    Commencer le scan
+                    بدء المسح
                   </Button>
                 </div>
               )}
             </div>
+
+            {/* Error Message */}
+            {cameraError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h5 className="font-medium text-red-900 mb-1">خطأ في الكاميرا</h5>
+                    <p className="text-sm text-red-800">{cameraError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Manual Input */}
           <div className="space-y-4">
-            <h4 className="font-medium text-gray-900">Saisie manuelle</h4>
+            <h4 className="font-medium text-gray-900">إدخال يدوي</h4>
             <form onSubmit={handleManualSubmit} className="flex gap-2">
               <Input
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                placeholder="Entrez le code de commande..."
+                placeholder="أدخل كود الطلبية..."
                 className="flex-1"
                 disabled={isScanning}
               />
@@ -161,19 +255,20 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                 variant="outline" 
                 disabled={isScanning || !manualCode.trim()}
               >
-                Rechercher
+                بحث
               </Button>
             </form>
           </div>
 
           {/* Instructions */}
           <div className="bg-amber-50 p-4 rounded-lg">
-            <h5 className="font-medium text-amber-900 mb-2">Instructions :</h5>
+            <h5 className="font-medium text-amber-900 mb-2">تعليمات:</h5>
             <ul className="text-sm text-amber-800 space-y-1">
-              <li>• Dirigez la caméra vers le code-barres</li>
-              <li>• Assurez-vous que l'éclairage est suffisant</li>
-              <li>• Vous pouvez saisir le code manuellement si le scan ne fonctionne pas</li>
-              <li>• ستسمع صوت تأكيد عند العثور على الكود أو صوت تنبيه عند عدم وجوده</li>
+              <li>• وجه الكاميرا نحو الكود الشريطي</li>
+              <li>• تأكد من وجود إضاءة كافية</li>
+              <li>• يمكنك إدخال الكود يدوياً إذا لم يعمل المسح</li>
+              <li>• ستسمع صوت تأكيد عند العثور على الكود</li>
+              <li>• اسمح للمتصفح بالوصول إلى الكاميرا عند طلب الإذن</li>
             </ul>
           </div>
         </div>
@@ -183,7 +278,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
             variant="outline" 
             onClick={handleClose}
           >
-            Fermer
+            إغلاق
           </Button>
         </DialogFooter>
       </DialogContent>
