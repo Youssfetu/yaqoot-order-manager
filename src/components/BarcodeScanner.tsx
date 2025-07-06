@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 interface BarcodeScannerProps {
   isOpen: boolean;
   onClose: () => void;
-  onScan: (code: string) => void;
+  onScan: (code: string) => string;
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
