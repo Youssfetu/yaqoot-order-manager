@@ -32,14 +32,10 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
   });
 
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [isPanning, setIsPanning] = useState(false);
-  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [isResizing, setIsResizing] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState({ x: 0, width: 0 });
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
-  const [zoomCenter, setZoomCenter] = useState({ x: 0, y: 0 });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -61,7 +57,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
 
   const handleResetZoom = () => {
     setZoomLevel(1);
-    setPanOffset({ x: 0, y: 0 });
   };
 
   const getZoomPercentage = () => Math.round(zoomLevel * 100);
@@ -96,7 +91,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     setIsResizing(null);
   }, []);
 
-  // Touch and zoom handlers
+  // Touch and zoom handlers - simplified to only handle zoom
   const handleTouchStart = (e: React.TouchEvent) => {
     if (editingCell || isResizing) return;
     
@@ -109,30 +104,15 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
       );
       
       setLastPinchDistance(distance);
-      
-      // Calculate zoom center
-      const centerX = (touch1.clientX + touch2.clientX) / 2;
-      const centerY = (touch1.clientY + touch2.clientY) / 2;
-      
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        setZoomCenter({
-          x: centerX - rect.left,
-          y: centerY - rect.top
-        });
-      }
-    } else if (e.touches.length === 1 && zoomLevel > 1) {
-      const touch = e.touches[0];
-      setIsPanning(true);
-      setPanStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
     }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (editingCell || isResizing) return;
-    e.preventDefault();
     
     if (e.touches.length === 2 && lastPinchDistance !== null) {
+      e.preventDefault();
+      
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
@@ -143,30 +123,14 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
       const scale = distance / lastPinchDistance;
       const newZoom = Math.max(0.5, Math.min(3, zoomLevel * scale));
       
-      // Apply zoom with center point
-      const zoomFactor = newZoom / zoomLevel;
-      const newPanX = zoomCenter.x - (zoomCenter.x - panOffset.x) * zoomFactor;
-      const newPanY = zoomCenter.y - (zoomCenter.y - panOffset.y) * zoomFactor;
-      
       setZoomLevel(newZoom);
-      setPanOffset({ x: newPanX, y: newPanY });
       setLastPinchDistance(distance);
-      
-    } else if (e.touches.length === 1 && isPanning && zoomLevel > 1) {
-      const touch = e.touches[0];
-      const newOffsetX = touch.clientX - panStart.x;
-      const newOffsetY = touch.clientY - panStart.y;
-      setPanOffset({ x: newOffsetX, y: newOffsetY });
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (e.touches.length < 2) {
       setLastPinchDistance(null);
-    }
-    
-    if (e.touches.length === 0) {
-      setIsPanning(false);
     }
   };
 
@@ -175,21 +139,10 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (rect) {
-        const focusX = e.clientX - rect.left;
-        const focusY = e.clientY - rect.top;
-        const deltaZoom = e.deltaY > 0 ? -0.1 : 0.1;
-        const newZoom = Math.max(0.5, Math.min(3, zoomLevel + deltaZoom));
-        
-        // Apply zoom with focus point
-        const zoomFactor = newZoom / zoomLevel;
-        const newPanX = focusX - (focusX - panOffset.x) * zoomFactor;
-        const newPanY = focusY - (focusY - panOffset.y) * zoomFactor;
-        
-        setZoomLevel(newZoom);
-        setPanOffset({ x: newPanX, y: newPanY });
-      }
+      const deltaZoom = e.deltaY > 0 ? -0.1 : 0.1;
+      const newZoom = Math.max(0.5, Math.min(3, zoomLevel + deltaZoom));
+      
+      setZoomLevel(newZoom);
     }
   };
 
@@ -295,7 +248,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
           variant="ghost"
           size="sm"
           className="h-7 w-7 p-0"
-          disabled={zoomLevel === 1 && panOffset.x === 0 && panOffset.y === 0}
+          disabled={zoomLevel === 1}
         >
           <RotateCcw className="h-4 w-4" />
         </Button>
@@ -305,8 +258,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         ref={containerRef}
         className="w-full h-full overflow-auto"
         style={{
-          cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: editingCell || isResizing ? 'auto' : 'none'
+          touchAction: editingCell || isResizing ? 'auto' : 'manipulation'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
@@ -316,9 +268,9 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         <div 
           ref={tableRef}
           style={{
-            transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
+            transform: `scale(${zoomLevel})`,
             transformOrigin: 'top left',
-            transition: isPanning || isResizing ? 'none' : 'transform 0.2s ease-out',
+            transition: isResizing ? 'none' : 'transform 0.2s ease-out',
             minWidth: `${totalWidth}px`,
             minHeight: '100%'
           }}
