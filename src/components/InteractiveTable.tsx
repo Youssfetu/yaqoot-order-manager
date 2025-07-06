@@ -44,6 +44,23 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     'Confirmé', 'Livré', 'Reporté', 'Annulé', 'Refusé', 'Numéro erroné', 'Hors zone', 'Programmé'
   ];
 
+  // New function to sort orders by status priority
+  const getSortedOrders = (ordersToSort: Order[]) => {
+    const bottomStatuses = ['Annulé', 'Refusé', 'Hors zone'];
+    
+    return [...ordersToSort].sort((a, b) => {
+      const aIsBottom = bottomStatuses.includes(a.statut);
+      const bIsBottom = bottomStatuses.includes(b.statut);
+      
+      // If one is bottom status and other is not, bottom goes to end
+      if (aIsBottom && !bIsBottom) return 1;
+      if (!aIsBottom && bIsBottom) return -1;
+      
+      // If both are same type (both bottom or both not bottom), maintain original order
+      return 0;
+    });
+  };
+
   // Zoom control functions
   const handleZoomIn = () => {
     const newZoom = Math.min(3, zoomLevel + 0.2);
@@ -212,6 +229,9 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
   };
 
   const totalWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
+  
+  // Sort orders before rendering
+  const sortedOrders = getSortedOrders(orders);
 
   return (
     <div className="w-full h-[calc(100vh-200px)] bg-white border border-gray-300 relative overflow-hidden">
@@ -317,7 +337,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
 
             {/* Data Rows */}
             <div>
-              {orders.map((order, index) => (
+              {sortedOrders.map((order, index) => (
                 <div 
                   key={order.id}
                   className={cn(
