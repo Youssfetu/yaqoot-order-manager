@@ -210,61 +210,61 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         bg: 'bg-emerald-500 hover:bg-emerald-600', 
         text: 'text-white',
         ring: 'ring-emerald-200',
-        label: 'مؤكد'
+        label: 'Confirmé'
       },
       'En cours': { 
         bg: 'bg-amber-500 hover:bg-amber-600', 
         text: 'text-white',
         ring: 'ring-amber-200',
-        label: 'جاري'
+        label: 'En cours'
       },
       'Livré': { 
         bg: 'bg-green-600 hover:bg-green-700', 
         text: 'text-white',
         ring: 'ring-green-200',
-        label: 'تم التسليم'
+        label: 'Livré'
       },
       'Reporté': { 
         bg: 'bg-orange-500 hover:bg-orange-600', 
         text: 'text-white',
         ring: 'ring-orange-200',
-        label: 'مؤجل'
+        label: 'Reporté'
       },
       'Annulé': { 
         bg: 'bg-red-500 hover:bg-red-600', 
         text: 'text-white',
         ring: 'ring-red-200',
-        label: 'ملغي'
+        label: 'Annulé'
       },
       'Refusé': { 
         bg: 'bg-red-600 hover:bg-red-700', 
         text: 'text-white',
         ring: 'ring-red-200',
-        label: 'مرفوض'
+        label: 'Refusé'
       },
       'Numéro erroné': { 
         bg: 'bg-purple-500 hover:bg-purple-600', 
         text: 'text-white',
         ring: 'ring-purple-200',
-        label: 'رقم خاطئ'
+        label: 'Numéro erroné'
       },
       'Hors zone': { 
         bg: 'bg-gray-500 hover:bg-gray-600', 
         text: 'text-white',
         ring: 'ring-gray-200',
-        label: 'خارج المنطقة'
+        label: 'Hors zone'
       },
       'Programmé': { 
         bg: 'bg-blue-500 hover:bg-blue-600', 
         text: 'text-white',
         ring: 'ring-blue-200',
-        label: 'مبرمج'
+        label: 'Programmé'
       },
       'Nouveau': { 
         bg: 'bg-indigo-500 hover:bg-indigo-600', 
         text: 'text-white',
         ring: 'ring-indigo-200',
-        label: 'جديد'
+        label: 'Nouveau'
       }
     };
     
@@ -327,7 +327,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.code}px` }}
               >
-                الكود
+                Code
                 <div 
                   className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
                   onMouseDown={(e) => handleResizeStart(e, 'code')}
@@ -339,7 +339,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.vendeur}px` }}
               >
-                العميل/الموزع
+                Client/Vendeur
                 <div 
                   className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
                   onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
@@ -351,7 +351,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.numero}px` }}
               >
-                الرقم
+                Numéro
                 <div 
                   className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
                   onMouseDown={(e) => handleResizeStart(e, 'numero')}
@@ -363,7 +363,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.prix}px` }}
               >
-                السعر
+                Prix
                 <div 
                   className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
                   onMouseDown={(e) => handleResizeStart(e, 'prix')}
@@ -375,7 +375,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.statut}px` }}
               >
-                الحالة
+                Statut
                 <div 
                   className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
                   onMouseDown={(e) => handleResizeStart(e, 'statut')}
@@ -387,7 +387,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.commentaire}px` }}
               >
-                التعليق
+                Commentaire
                 <div 
                   className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
                   onMouseDown={(e) => handleResizeStart(e, 'commentaire')}
