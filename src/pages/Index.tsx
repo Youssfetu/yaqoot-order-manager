@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +29,7 @@ const Index = () => {
   const [archivedOrders, setArchivedOrders] = useState<Order[]>([]);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -36,6 +37,14 @@ const Index = () => {
   const [commission, setCommission] = useState(50);
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   const { toast } = useToast();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus search input when search opens
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
 
   const handleAddOrder = (newOrder: Partial<Order>) => {
     const order: Order = {
@@ -106,9 +115,22 @@ const Index = () => {
     });
   };
 
+  const handleSearchToggle = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (isSearchOpen) {
+      setSearchTerm('');
+    }
+  };
+
+  const handleSearchClear = () => {
+    setSearchTerm('');
+    setIsSearchOpen(false);
+  };
+
   const filteredOrders = orders.filter(order =>
     order.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.vendeur.toLowerCase().includes(searchTerm.toLowerCase())
+    order.vendeur.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.numero.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -117,7 +139,7 @@ const Index = () => {
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            {/* Menu Icon - Just lines without blue background */}
+            {/* Menu Icon */}
             <Button
               onClick={() => setIsMenuDrawerOpen(true)}
               variant="ghost"
@@ -147,21 +169,16 @@ const Index = () => {
                 <Archive className="h-6 w-6 text-gray-600" />
               </Button>
 
+              {/* Search Button - Now Functional */}
               <Button
                 variant="ghost"
                 size="sm"
                 className="p-2 hover:bg-gray-100 rounded-xl"
-                onClick={() => {
-                  toast({
-                    title: "Recherche",
-                    description: "La fonction de recherche est disponible dans le tableau ci-dessous",
-                  });
-                }}
+                onClick={handleSearchToggle}
               >
                 <Search className="h-6 w-6 text-gray-600" />
               </Button>
 
-              {/* Changed Add Button - Now using Plus icon */}
               <Button
                 onClick={() => setIsAddDialogOpen(true)}
                 variant="ghost"
@@ -195,6 +212,32 @@ const Index = () => {
               </Button>
             </div>
           </div>
+
+          {/* Search Bar - Shows when search is active */}
+          {isSearchOpen && (
+            <div className="flex items-center gap-2 mt-2">
+              <div className="flex-1 relative">
+                <Input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="ابحث بالكود، العميل، أو الرقم..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pr-4 pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  dir="rtl"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
+              <Button
+                onClick={handleSearchClear}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-lg"
+              >
+                <X className="h-4 w-4 text-gray-600" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -211,6 +254,15 @@ const Index = () => {
           <OrderSummary orders={orders} commission={commission} />
         </div>
       </div>
+
+      {/* Search Results Info */}
+      {isSearchOpen && searchTerm && (
+        <div className="px-4 py-2 bg-blue-50 border-t border-blue-200">
+          <p className="text-sm text-blue-700" dir="rtl">
+            تم العثور على {filteredOrders.length} طلبية من أصل {orders.length} طلبية
+          </p>
+        </div>
+      )}
 
       <AddOrderDialog
         isOpen={isAddDialogOpen}
