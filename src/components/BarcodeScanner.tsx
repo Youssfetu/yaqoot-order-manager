@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { QrCode, Camera, X, AlertCircle } from 'lucide-react';
 import { BrowserMultiFormatReader, NotFoundException } from '@zxing/library';
 
@@ -11,6 +12,7 @@ interface BarcodeScannerProps {
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
+  const [manualCode, setManualCode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState<string>('');
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
@@ -134,8 +136,17 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     }
   };
 
+  const handleManualSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (manualCode.trim()) {
+      handleScanResult(manualCode.trim());
+      setManualCode('');
+    }
+  };
+
   const handleClose = () => {
     stopScanning();
+    setManualCode('');
     setCameraError('');
     onClose();
   };
@@ -218,12 +229,34 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
             )}
           </div>
 
+          {/* Manual Input */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-gray-900">إدخال يدوي</h4>
+            <form onSubmit={handleManualSubmit} className="flex gap-2">
+              <Input
+                value={manualCode}
+                onChange={(e) => setManualCode(e.target.value)}
+                placeholder="أدخل كود الطلبية..."
+                className="flex-1"
+                disabled={isScanning}
+              />
+              <Button 
+                type="submit" 
+                variant="outline" 
+                disabled={isScanning || !manualCode.trim()}
+              >
+                بحث
+              </Button>
+            </form>
+          </div>
+
           {/* Instructions */}
           <div className="bg-amber-50 p-4 rounded-lg">
             <h5 className="font-medium text-amber-900 mb-2">تعليمات:</h5>
             <ul className="text-sm text-amber-800 space-y-1">
               <li>• وجه الكاميرا نحو الكود الشريطي</li>
               <li>• تأكد من وجود إضاءة كافية</li>
+              <li>• يمكنك إدخال الكود يدوياً إذا لم يعمل المسح</li>
               <li>• ستسمع صوت تأكيد عند العثور على الكود</li>
               <li>• اسمح للمتصفح بالوصول إلى الكاميرا عند طلب الإذن</li>
             </ul>
