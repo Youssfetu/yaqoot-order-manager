@@ -30,23 +30,24 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       gainNode.connect(audioContext.destination);
       
       if (success) {
-        // صوت النجاح - نغمة جرس واضحة
-        oscillator.type = 'triangle';
-        oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5
-        oscillator.frequency.setValueAtTime(1108, audioContext.currentTime + 0.15); // C#6
-        oscillator.frequency.setValueAtTime(1318, audioContext.currentTime + 0.3); // E6
-        oscillator.frequency.setValueAtTime(1760, audioContext.currentTime + 0.5); // A6
+        // صوت النجاح - نغمة بيب إيجابية
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(1500, audioContext.currentTime + 0.3);
         gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 1.0);
+        oscillator.stop(audioContext.currentTime + 0.8);
       } else {
-        // صوت التحذير - نغمة إنذار واضحة
-        oscillator.type = 'sawtooth';
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(450, audioContext.currentTime + 0.2);
-        oscillator.frequency.setValueAtTime(350, audioContext.currentTime + 0.5);
-        oscillator.frequency.setValueAtTime(250, audioContext.currentTime + 0.7);
+        // صوت التحذير - نغمة بزر إنذار
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.15);
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.45);
+        oscillator.frequency.setValueAtTime(300, audioContext.currentTime + 0.6);
         gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.9);
         oscillator.start(audioContext.currentTime);
