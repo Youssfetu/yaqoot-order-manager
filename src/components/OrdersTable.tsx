@@ -552,24 +552,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الكود</span>
                 </div>
-                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
+                {/* Professional Resize Handle */}
                 <div 
                   className={cn(
-                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
-                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
-                    "border-l-2 border-white shadow-sm",
-                    isResizing && resizingColumn === 'code' && "bg-blue-500 opacity-100 shadow-lg"
+                    "absolute top-0 right-0 w-2 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-300 bg-gray-400 opacity-40 hover:opacity-70 transition-all duration-200",
+                    "border-l border-gray-300",
+                    isResizing && resizingColumn === 'code' && "bg-blue-400 opacity-80"
                   )}
                   onMouseDown={(e) => handleResizeStart(e, 'code')}
                   onTouchStart={(e) => handleResizeStart(e, 'code')}
                   style={{ 
                     touchAction: 'none',
                     minHeight: '28px',
-                    minWidth: '32px',
+                    minWidth: '8px',
                     zIndex: isResizing ? 50 : 10
                   }}
                 >
-                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                  <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
 
@@ -578,24 +578,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
                 </div>
-                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
+                {/* Professional Resize Handle */}
                 <div 
                   className={cn(
-                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
-                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
-                    "border-l-2 border-white shadow-sm",
-                    isResizing && resizingColumn === 'vendeur' && "bg-blue-500 opacity-100 shadow-lg"
+                    "absolute top-0 right-0 w-2 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-300 bg-gray-400 opacity-40 hover:opacity-70 transition-all duration-200",
+                    "border-l border-gray-300",
+                    isResizing && resizingColumn === 'vendeur' && "bg-blue-400 opacity-80"
                   )}
                   onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
                   onTouchStart={(e) => handleResizeStart(e, 'vendeur')}
                   style={{ 
                     touchAction: 'none',
                     minHeight: '28px',
-                    minWidth: '32px',
+                    minWidth: '8px',
                     zIndex: isResizing ? 50 : 10
                   }}
                 >
-                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                  <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
 
@@ -604,24 +604,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الرقم</span>
                 </div>
-                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
+                {/* Professional Resize Handle */}
                 <div 
                   className={cn(
-                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
-                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
-                    "border-l-2 border-white shadow-sm",
-                    isResizing && resizingColumn === 'numero' && "bg-blue-500 opacity-100 shadow-lg"
+                    "absolute top-0 right-0 w-2 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-300 bg-gray-400 opacity-40 hover:opacity-70 transition-all duration-200",
+                    "border-l border-gray-300",
+                    isResizing && resizingColumn === 'numero' && "bg-blue-400 opacity-80"
                   )}
                   onMouseDown={(e) => handleResizeStart(e, 'numero')}
                   onTouchStart={(e) => handleResizeStart(e, 'numero')}
                   style={{ 
                     touchAction: 'none',
                     minHeight: '28px',
-                    minWidth: '32px',
+                    minWidth: '8px',
                     zIndex: isResizing ? 50 : 10
                   }}
                 >
-                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                  <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
 
@@ -630,24 +630,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">السعر</span>
                 </div>
-                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
+                {/* Professional Resize Handle */}
                 <div 
                   className={cn(
-                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
-                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
-                    "border-l-2 border-white shadow-sm",
-                    isResizing && resizingColumn === 'prix' && "bg-blue-500 opacity-100 shadow-lg"
+                    "absolute top-0 right-0 w-2 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-300 bg-gray-400 opacity-40 hover:opacity-70 transition-all duration-200",
+                    "border-l border-gray-300",
+                    isResizing && resizingColumn === 'prix' && "bg-blue-400 opacity-80"
                   )}
                   onMouseDown={(e) => handleResizeStart(e, 'prix')}
                   onTouchStart={(e) => handleResizeStart(e, 'prix')}
                   style={{ 
                     touchAction: 'none',
                     minHeight: '28px',
-                    minWidth: '32px',
+                    minWidth: '8px',
                     zIndex: isResizing ? 50 : 10
                   }}
                 >
-                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                  <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
 
@@ -656,24 +656,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الحالة</span>
                 </div>
-                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
+                {/* Professional Resize Handle */}
                 <div 
                   className={cn(
-                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
-                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
-                    "border-l-2 border-white shadow-sm",
-                    isResizing && resizingColumn === 'status' && "bg-blue-500 opacity-100 shadow-lg"
+                    "absolute top-0 right-0 w-2 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-300 bg-gray-400 opacity-40 hover:opacity-70 transition-all duration-200",
+                    "border-l border-gray-300",
+                    isResizing && resizingColumn === 'status' && "bg-blue-400 opacity-80"
                   )}
                   onMouseDown={(e) => handleResizeStart(e, 'status')}
                   onTouchStart={(e) => handleResizeStart(e, 'status')}
                   style={{ 
                     touchAction: 'none',
                     minHeight: '28px',
-                    minWidth: '32px',
+                    minWidth: '8px',
                     zIndex: isResizing ? 50 : 10
                   }}
                 >
-                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                  <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
 
