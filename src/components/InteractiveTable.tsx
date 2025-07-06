@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
@@ -36,6 +37,8 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
   const [resizeStart, setResizeStart] = useState({ x: 0, width: 0 });
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [lastPinchDistance, setLastPinchDistance] = useState<number | null>(null);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingStatusChange, setPendingStatusChange] = useState<{orderId: string, status: string} | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<HTMLDivElement>(null);
@@ -44,7 +47,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     'Confirmé', 'Livré', 'Reporté', 'Annulé', 'Refusé', 'Numéro erroné', 'Hors zone', 'Programmé'
   ];
 
-  // New function to sort orders by status priority
   const getSortedOrders = (ordersToSort: Order[]) => {
     const bottomStatuses = ['Annulé', 'Refusé', 'Hors zone'];
     
@@ -52,16 +54,13 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
       const aIsBottom = bottomStatuses.includes(a.statut);
       const bIsBottom = bottomStatuses.includes(b.statut);
       
-      // If one is bottom status and other is not, bottom goes to end
       if (aIsBottom && !bIsBottom) return 1;
       if (!aIsBottom && bIsBottom) return -1;
       
-      // If both are same type (both bottom or both not bottom), maintain original order
       return 0;
     });
   };
 
-  // Zoom control functions
   const handleZoomIn = () => {
     const newZoom = Math.min(3, zoomLevel + 0.2);
     setZoomLevel(newZoom);
@@ -78,7 +77,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
 
   const getZoomPercentage = () => Math.round(zoomLevel * 100);
 
-  // Column resizing handlers
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: keyof ColumnWidths) => {
     e.preventDefault();
     e.stopPropagation();
@@ -108,7 +106,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     setIsResizing(null);
   }, []);
 
-  // Touch and zoom handlers - simplified to only handle zoom
   const handleTouchStart = (e: React.TouchEvent) => {
     if (editingCell || isResizing) return;
     
@@ -161,6 +158,28 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
       
       setZoomLevel(newZoom);
     }
+  };
+
+  const handleStatusChangeRequest = (orderId: string, newStatus: string) => {
+    if (newStatus === 'Livré') {
+      setPendingStatusChange({ orderId, status: newStatus });
+      setShowConfirmDialog(true);
+    } else {
+      onUpdateStatus(orderId, newStatus);
+    }
+  };
+
+  const handleConfirmStatusChange = () => {
+    if (pendingStatusChange) {
+      onUpdateStatus(pendingStatusChange.orderId, pendingStatusChange.status);
+      setPendingStatusChange(null);
+    }
+    setShowConfirmDialog(false);
+  };
+
+  const handleCancelStatusChange = () => {
+    setPendingStatusChange(null);
+    setShowConfirmDialog(false);
   };
 
   useEffect(() => {
@@ -291,209 +310,231 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
 
   const totalWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
   
-  // Sort orders before rendering
   const sortedOrders = getSortedOrders(orders);
 
   return (
-    <div className="w-full h-[calc(100vh-200px)] bg-white border border-gray-300 relative overflow-hidden">
-      <div 
-        ref={containerRef}
-        className="w-full h-full overflow-auto"
-        style={{
-          touchAction: editingCell || isResizing ? 'auto' : 'manipulation'
-        }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onWheel={handleWheel}
-      >
+    <>
+      <div className="w-full h-[calc(100vh-200px)] bg-white border border-gray-300 relative overflow-hidden">
         <div 
-          ref={tableRef}
+          ref={containerRef}
+          className="w-full h-full overflow-auto"
           style={{
-            transform: `scale(${zoomLevel})`,
-            transformOrigin: 'top left',
-            transition: isResizing ? 'none' : 'transform 0.2s ease-out',
-            minWidth: `${totalWidth}px`,
-            minHeight: '100%'
+            touchAction: editingCell || isResizing ? 'auto' : 'manipulation'
           }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
         >
-          <div className="bg-white shadow-sm">
-            {/* Header Row */}
-            <div 
-              className="flex bg-gray-100 border-b-2 border-gray-300 sticky top-0 z-20"
-              style={{ height: '32px' }}
-            >
+          <div 
+            ref={tableRef}
+            style={{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: 'top left',
+              transition: isResizing ? 'none' : 'transform 0.2s ease-out',
+              minWidth: `${totalWidth}px`,
+              minHeight: '100%'
+            }}
+          >
+            <div className="bg-white shadow-sm">
+              {/* Header Row */}
               <div 
-                className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
-                style={{ width: `${columnWidths.code}px` }}
+                className="flex bg-gray-100 border-b-2 border-gray-300 sticky top-0 z-20"
+                style={{ height: '32px' }}
               >
-                Code
                 <div 
-                  className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
-                  onMouseDown={(e) => handleResizeStart(e, 'code')}
-                  onTouchStart={(e) => handleResizeStart(e, 'code')}
-                />
-              </div>
-
-              <div 
-                className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
-                style={{ width: `${columnWidths.vendeur}px` }}
-              >
-                Client/Vendeur
-                <div 
-                  className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
-                  onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
-                  onTouchStart={(e) => handleResizeStart(e, 'vendeur')}
-                />
-              </div>
-
-              <div 
-                className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
-                style={{ width: `${columnWidths.numero}px` }}
-              >
-                Numéro
-                <div 
-                  className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
-                  onMouseDown={(e) => handleResizeStart(e, 'numero')}
-                  onTouchStart={(e) => handleResizeStart(e, 'numero')}
-                />
-              </div>
-
-              <div 
-                className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
-                style={{ width: `${columnWidths.prix}px` }}
-              >
-                Prix
-                <div 
-                  className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
-                  onMouseDown={(e) => handleResizeStart(e, 'prix')}
-                  onTouchStart={(e) => handleResizeStart(e, 'prix')}
-                />
-              </div>
-
-              <div 
-                className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
-                style={{ width: `${columnWidths.statut}px` }}
-              >
-                Statut
-                <div 
-                  className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
-                  onMouseDown={(e) => handleResizeStart(e, 'statut')}
-                  onTouchStart={(e) => handleResizeStart(e, 'statut')}
-                />
-              </div>
-
-              <div 
-                className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
-                style={{ width: `${columnWidths.commentaire}px` }}
-              >
-                Commentaire
-                <div 
-                  className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
-                  onMouseDown={(e) => handleResizeStart(e, 'commentaire')}
-                  onTouchStart={(e) => handleResizeStart(e, 'commentaire')}
-                />
-              </div>
-            </div>
-
-            {/* Data Rows */}
-            <div>
-              {sortedOrders.map((order, index) => (
-                <div 
-                  key={order.id}
-                  className={cn(
-                    "flex border-b border-gray-200 hover:bg-blue-50 transition-colors",
-                    order.isScanned && "bg-green-100 border-green-300",
-                    !order.isScanned && (index % 2 === 0 ? "bg-white" : "bg-gray-50")
-                  )}
-                  style={{ height: '36px' }}
+                  className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
+                  style={{ width: `${columnWidths.code}px` }}
                 >
+                  Code
                   <div 
-                    className={cn(
-                      "flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono",
-                      order.isScanned ? "text-green-800 bg-green-200 font-bold" : "text-gray-800"
-                    )}
-                    style={{ width: `${columnWidths.code}px` }}
-                  >
-                    {order.code}
-                  </div>
-
-                  <div 
-                    className="flex items-center px-2 border-r border-gray-200 text-xs text-gray-800"
-                    style={{ width: `${columnWidths.vendeur}px` }}
-                  >
-                    <span className="truncate">{order.vendeur}</span>
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono text-gray-800"
-                    style={{ width: `${columnWidths.numero}px` }}
-                  >
-                    {order.numero}
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-medium text-green-700"
-                    style={{ width: `${columnWidths.prix}px` }}
-                  >
-                    {order.prix.toFixed(2)}
-                  </div>
-
-                  <div 
-                    className="flex items-center justify-center border-r border-gray-200 px-2"
-                    style={{ width: `${columnWidths.statut}px` }}
-                  >
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-md p-1">
-                        {getStatusBadge(order.statut)}
-                        <ChevronDown className="h-3 w-3 text-gray-400 hover:text-gray-600 transition-colors" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="z-50 bg-white shadow-xl border border-gray-200 rounded-lg p-1 min-w-[140px]">
-                        {statusOptions.filter(s => s !== order.statut).map((status) => (
-                          <DropdownMenuItem
-                            key={status}
-                            onClick={() => onUpdateStatus(order.id, status)}
-                            className="cursor-pointer hover:bg-gray-50 rounded-md p-2 focus:bg-gray-50 transition-colors"
-                          >
-                            {getStatusBadge(status)}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-
-                  <div 
-                    className="relative flex items-center border-r border-gray-200 px-2"
-                    style={{ width: `${columnWidths.commentaire}px` }}
-                  >
-                    {editingCell === order.id ? (
-                      <input
-                        value={order.commentaire}
-                        onChange={(e) => onUpdateComment(order.id, e.target.value)}
-                        onBlur={() => setEditingCell(null)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') setEditingCell(null);
-                        }}
-                        className="w-full h-full text-xs border-none outline-none bg-white focus:ring-0 px-0"
-                        placeholder="اكتب تعليق..."
-                        autoFocus
-                      />
-                    ) : (
-                      <div
-                        className="w-full h-full flex items-center cursor-text text-xs text-gray-800"
-                        onClick={() => setEditingCell(order.id)}
-                      >
-                        <span className="truncate">{order.commentaire || 'اكتب تعليق...'}</span>
-                      </div>
-                    )}
-                  </div>
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
+                    onMouseDown={(e) => handleResizeStart(e, 'code')}
+                    onTouchStart={(e) => handleResizeStart(e, 'code')}
+                  />
                 </div>
-              ))}
+
+                <div 
+                  className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
+                  style={{ width: `${columnWidths.vendeur}px` }}
+                >
+                  Client/Vendeur
+                  <div 
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
+                    onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
+                    onTouchStart={(e) => handleResizeStart(e, 'vendeur')}
+                  />
+                </div>
+
+                <div 
+                  className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
+                  style={{ width: `${columnWidths.numero}px` }}
+                >
+                  Numéro
+                  <div 
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
+                    onMouseDown={(e) => handleResizeStart(e, 'numero')}
+                    onTouchStart={(e) => handleResizeStart(e, 'numero')}
+                  />
+                </div>
+
+                <div 
+                  className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
+                  style={{ width: `${columnWidths.prix}px` }}
+                >
+                  Prix
+                  <div 
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
+                    onMouseDown={(e) => handleResizeStart(e, 'prix')}
+                    onTouchStart={(e) => handleResizeStart(e, 'prix')}
+                  />
+                </div>
+
+                <div 
+                  className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
+                  style={{ width: `${columnWidths.statut}px` }}
+                >
+                  Statut
+                  <div 
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
+                    onMouseDown={(e) => handleResizeStart(e, 'statut')}
+                    onTouchStart={(e) => handleResizeStart(e, 'statut')}
+                  />
+                </div>
+
+                <div 
+                  className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
+                  style={{ width: `${columnWidths.commentaire}px` }}
+                >
+                  Commentaire
+                  <div 
+                    className="absolute right-0 top-0 w-2 h-full cursor-col-resize hover:bg-blue-500 hover:opacity-50 z-30"
+                    onMouseDown={(e) => handleResizeStart(e, 'commentaire')}
+                    onTouchStart={(e) => handleResizeStart(e, 'commentaire')}
+                  />
+                </div>
+              </div>
+
+              {/* Data Rows */}
+              <div>
+                {sortedOrders.map((order, index) => (
+                  <div 
+                    key={order.id}
+                    className={cn(
+                      "flex border-b border-gray-200 hover:bg-blue-50 transition-colors",
+                      order.isScanned && "bg-green-100 border-green-300",
+                      !order.isScanned && (index % 2 === 0 ? "bg-white" : "bg-gray-50")
+                    )}
+                    style={{ height: '36px' }}
+                  >
+                    <div 
+                      className={cn(
+                        "flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono",
+                        order.isScanned ? "text-green-800 bg-green-200 font-bold" : "text-gray-800"
+                      )}
+                      style={{ width: `${columnWidths.code}px` }}
+                    >
+                      {order.code}
+                    </div>
+
+                    <div 
+                      className="flex items-center px-2 border-r border-gray-200 text-xs text-gray-800"
+                      style={{ width: `${columnWidths.vendeur}px` }}
+                    >
+                      <span className="truncate">{order.vendeur}</span>
+                    </div>
+
+                    <div 
+                      className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono text-gray-800"
+                      style={{ width: `${columnWidths.numero}px` }}
+                    >
+                      {order.numero}
+                    </div>
+
+                    <div 
+                      className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-medium text-green-700"
+                      style={{ width: `${columnWidths.prix}px` }}
+                    >
+                      {order.prix.toFixed(2)}
+                    </div>
+
+                    <div 
+                      className="flex items-center justify-center border-r border-gray-200 px-2"
+                      style={{ width: `${columnWidths.statut}px` }}
+                    >
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-md p-1">
+                          {getStatusBadge(order.statut)}
+                          <ChevronDown className="h-3 w-3 text-gray-400 hover:text-gray-600 transition-colors" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="z-50 bg-white shadow-xl border border-gray-200 rounded-lg p-1 min-w-[140px]">
+                          {statusOptions.filter(s => s !== order.statut).map((status) => (
+                            <DropdownMenuItem
+                              key={status}
+                              onClick={() => handleStatusChangeRequest(order.id, status)}
+                              className="cursor-pointer hover:bg-gray-50 rounded-md p-2 focus:bg-gray-50 transition-colors"
+                            >
+                              {getStatusBadge(status)}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+
+                    <div 
+                      className="relative flex items-center border-r border-gray-200 px-2"
+                      style={{ width: `${columnWidths.commentaire}px` }}
+                    >
+                      {editingCell === order.id ? (
+                        <input
+                          value={order.commentaire}
+                          onChange={(e) => onUpdateComment(order.id, e.target.value)}
+                          onBlur={() => setEditingCell(null)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') setEditingCell(null);
+                          }}
+                          className="w-full h-full text-xs border-none outline-none bg-white focus:ring-0 px-0"
+                          placeholder="اكتب تعليق..."
+                          autoFocus
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center cursor-text text-xs text-gray-800"
+                          onClick={() => setEditingCell(order.id)}
+                        >
+                          <span className="truncate">{order.commentaire || 'اكتب تعليق...'}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Confirmation Dialog for "Livré" status */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>تأكيد تغيير الحالة</AlertDialogTitle>
+            <AlertDialogDescription>
+              هل أنت متأكد من أنك تريد تغيير حالة هذه الطلبية إلى "Livré"؟
+              هذا يعني أن الطلبية قد تم تسليمها بنجاح.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelStatusChange}>
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmStatusChange}>
+              تأكيد التسليم
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
