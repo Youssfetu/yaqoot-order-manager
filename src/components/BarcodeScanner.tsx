@@ -30,7 +30,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         // صوت نجاح - نوتتان متتاليتان صاعدتان
         oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
         oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime); // زيادة مستوى الصوت من 0.3 إلى 0.5
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.3);
@@ -38,7 +38,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         // صوت فشل - نوتتان متتاليتان هابطتان
         oscillator.frequency.setValueAtTime(330, audioContext.currentTime); // E4
         oscillator.frequency.setValueAtTime(262, audioContext.currentTime + 0.15); // C4
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.5, audioContext.currentTime); // زيادة مستوى الصوت من 0.3 إلى 0.5
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 0.4);
@@ -57,9 +57,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   };
 
   const handleScanResult = (code: string) => {
-    const result = onScan(code);
-    // تشغيل الصوت المناسب بناءً على النتيجة
-    playSound(result === 'success');
+    onScan(code);
+    const foundOrder = document.querySelector(`[data-code="${code}"]`);
+    // تشغيل الصوت المناسب بناءً على وجود الكود
+    playSound(!!foundOrder);
   };
 
   const startScanning = () => {
