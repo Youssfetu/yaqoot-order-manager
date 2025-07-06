@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -52,16 +53,21 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   };
 
   const handleCameraScanResult = (code: string) => {
-    onScan(code);
+    const result = onScan(code);
     const foundOrder = document.querySelector(`[data-code="${code}"]`);
-    playSound(!!foundOrder);
+    playSound(result === 'success');
     
     if (foundOrder) {
+      // إزالة الألوان السابقة
+      foundOrder.classList.remove('bg-green-100', 'border-green-300', 'bg-yellow-100', 'border-yellow-300', 'bg-blue-50', 'border-blue-200');
+      
+      // إضافة لون المسح بالكاميرا (أخضر)
       foundOrder.classList.add('bg-green-100', 'border-green-300');
+      
       setTimeout(() => {
         foundOrder.classList.remove('bg-green-100', 'border-green-300');
         foundOrder.classList.add('bg-blue-50', 'border-blue-200');
-      }, 2000);
+      }, 3000);
     }
     
     stopScanning();
@@ -69,16 +75,21 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   };
 
   const handleManualScanResult = (code: string) => {
-    onScan(code);
+    const result = onScan(code);
     const foundOrder = document.querySelector(`[data-code="${code}"]`);
-    playSound(!!foundOrder);
+    playSound(result === 'success');
     
     if (foundOrder) {
+      // إزالة الألوان السابقة
+      foundOrder.classList.remove('bg-green-100', 'border-green-300', 'bg-yellow-100', 'border-yellow-300', 'bg-blue-50', 'border-blue-200');
+      
+      // إضافة لون الإدخال اليدوي (أصفر)
       foundOrder.classList.add('bg-yellow-100', 'border-yellow-300');
+      
       setTimeout(() => {
         foundOrder.classList.remove('bg-yellow-100', 'border-yellow-300');
         foundOrder.classList.add('bg-blue-50', 'border-blue-200');
-      }, 2000);
+      }, 3000);
     }
     
     setManualCode('');

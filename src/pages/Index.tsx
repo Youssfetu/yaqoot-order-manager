@@ -92,14 +92,6 @@ const Index = () => {
         order.code === code ? { ...order, isScanned: true } : order
       ));
       
-      // إضافة data-code attribute للصف في الجدول
-      setTimeout(() => {
-        const tableRow = document.querySelector(`tr[data-order-id="${foundOrder.id}"]`);
-        if (tableRow) {
-          tableRow.setAttribute('data-code', code);
-        }
-      }, 100);
-      
       return 'success';
     } else {
       return 'not-found';

@@ -420,6 +420,8 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 {sortedOrders.map((order, index) => (
                   <div 
                     key={order.id}
+                    data-code={order.code}
+                    data-order-id={order.id}
                     className={cn(
                       "flex border-b border-gray-200 hover:bg-blue-50 transition-colors",
                       order.isScanned && "bg-green-100 border-green-300",
