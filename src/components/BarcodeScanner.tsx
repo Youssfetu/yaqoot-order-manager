@@ -53,17 +53,18 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + 1.2);
       } else {
-        // صوت التحذير الجديد - صوت تحذير عميق ومتقطع
-        oscillator.type = 'square';
-        oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(200, audioContext.currentTime + 0.2);
-        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.4);
-        oscillator.frequency.setValueAtTime(100, audioContext.currentTime + 0.6);
-        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.8);
-        gainNode.gain.setValueAtTime(1.0, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1.0);
+        // صوت التحذير الجديد - صوت "برن" كلاسيكي
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.2);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.3);
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime + 0.4);
+        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.8, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 1.0);
+        oscillator.stop(audioContext.currentTime + 0.8);
       }
     } catch (error) {
       console.log('Audio not supported');
