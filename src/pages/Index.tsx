@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,7 +43,9 @@ const Index = () => {
   // Focus search input when search opens
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
+      setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
     }
   }, [isSearchOpen]);
 
@@ -116,6 +119,7 @@ const Index = () => {
   };
 
   const handleSearchToggle = () => {
+    console.log('Search toggle clicked, current state:', isSearchOpen);
     setIsSearchOpen(!isSearchOpen);
     if (isSearchOpen) {
       setSearchTerm('');
@@ -123,6 +127,7 @@ const Index = () => {
   };
 
   const handleSearchClear = () => {
+    console.log('Search clear clicked');
     setSearchTerm('');
     setIsSearchOpen(false);
   };
@@ -132,6 +137,8 @@ const Index = () => {
     order.vendeur.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.numero.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  console.log('Search state:', { isSearchOpen, searchTerm, filteredOrdersCount: filteredOrders.length, totalOrders: orders.length });
 
   return (
     <div className="min-h-screen bg-white">
@@ -222,7 +229,10 @@ const Index = () => {
                   type="text"
                   placeholder="ابحث بالكود، العميل، أو الرقم..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => {
+                    console.log('Search input changed:', e.target.value);
+                    setSearchTerm(e.target.value);
+                  }}
                   className="w-full pr-4 pl-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   dir="rtl"
                 />
