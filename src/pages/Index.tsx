@@ -24,53 +24,7 @@ export interface Order {
 }
 
 const Index = () => {
-  const [orders, setOrders] = useState<Order[]>([
-    {
-      id: '1',
-      code: 'CMD001',
-      vendeur: 'Ahmed Mohamed',
-      numero: '123456789',
-      prix: 250.00,
-      statut: 'Confirmé',
-      commentaire: 'Livré avec succès'
-    },
-    {
-      id: '2',
-      code: 'CMD002',
-      vendeur: 'Fatima Ali',
-      numero: '987654321',
-      prix: 180.50,
-      statut: 'En cours',
-      commentaire: ''
-    },
-    {
-      id: '3',
-      code: 'CMD003',
-      vendeur: 'Mohamed Hassan',
-      numero: '456789123',
-      prix: 320.75,
-      statut: 'Annulé',
-      commentaire: 'Client indisponible'
-    },
-    {
-      id: '4',
-      code: 'CMD004',
-      vendeur: 'Sara Ahmed',
-      numero: '789123456',
-      prix: 150.25,
-      statut: 'Programmé',
-      commentaire: 'Livraison demain matin'
-    },
-    {
-      id: '5',
-      code: 'CMD005',
-      vendeur: 'Omar Hassan',
-      numero: '321654987',
-      prix: 420.00,
-      statut: 'Confirmé',
-      commentaire: ''
-    }
-  ]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
