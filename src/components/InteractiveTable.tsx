@@ -27,7 +27,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     vendeur: 180,
     numero: 140,
     prix: 100,
-    statut: 120,
+    statut: 130,
     commentaire: 200
   });
 
@@ -205,25 +205,86 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
   }, [editingCell, zoomLevel]);
 
   const getStatusBadge = (status: string) => {
-    const statusColors = {
-      'Confirmé': 'bg-green-500',
-      'En cours': 'bg-yellow-500',
-      'Livré': 'bg-emerald-500',
-      'Reporté': 'bg-orange-500',
-      'Annulé': 'bg-red-500',
-      'Refusé': 'bg-red-600',
-      'Numéro erroné': 'bg-purple-500',
-      'Hors zone': 'bg-gray-500',
-      'Programmé': 'bg-blue-500',
-      'Nouveau': 'bg-blue-500'
+    const statusConfig = {
+      'Confirmé': { 
+        bg: 'bg-emerald-500 hover:bg-emerald-600', 
+        text: 'text-white',
+        ring: 'ring-emerald-200',
+        label: 'مؤكد'
+      },
+      'En cours': { 
+        bg: 'bg-amber-500 hover:bg-amber-600', 
+        text: 'text-white',
+        ring: 'ring-amber-200',
+        label: 'جاري'
+      },
+      'Livré': { 
+        bg: 'bg-green-600 hover:bg-green-700', 
+        text: 'text-white',
+        ring: 'ring-green-200',
+        label: 'تم التسليم'
+      },
+      'Reporté': { 
+        bg: 'bg-orange-500 hover:bg-orange-600', 
+        text: 'text-white',
+        ring: 'ring-orange-200',
+        label: 'مؤجل'
+      },
+      'Annulé': { 
+        bg: 'bg-red-500 hover:bg-red-600', 
+        text: 'text-white',
+        ring: 'ring-red-200',
+        label: 'ملغي'
+      },
+      'Refusé': { 
+        bg: 'bg-red-600 hover:bg-red-700', 
+        text: 'text-white',
+        ring: 'ring-red-200',
+        label: 'مرفوض'
+      },
+      'Numéro erroné': { 
+        bg: 'bg-purple-500 hover:bg-purple-600', 
+        text: 'text-white',
+        ring: 'ring-purple-200',
+        label: 'رقم خاطئ'
+      },
+      'Hors zone': { 
+        bg: 'bg-gray-500 hover:bg-gray-600', 
+        text: 'text-white',
+        ring: 'ring-gray-200',
+        label: 'خارج المنطقة'
+      },
+      'Programmé': { 
+        bg: 'bg-blue-500 hover:bg-blue-600', 
+        text: 'text-white',
+        ring: 'ring-blue-200',
+        label: 'مبرمج'
+      },
+      'Nouveau': { 
+        bg: 'bg-indigo-500 hover:bg-indigo-600', 
+        text: 'text-white',
+        ring: 'ring-indigo-200',
+        label: 'جديد'
+      }
+    };
+    
+    const config = statusConfig[status as keyof typeof statusConfig] || {
+      bg: 'bg-gray-500 hover:bg-gray-600',
+      text: 'text-white',
+      ring: 'ring-gray-200',
+      label: status
     };
     
     return (
       <div className={cn(
-        'inline-flex items-center justify-center rounded-sm text-white font-medium px-2 py-1 text-[10px]',
-        statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
+        'inline-flex items-center justify-center rounded-md font-medium px-3 py-1.5 text-xs transition-all duration-200 cursor-pointer',
+        'shadow-sm ring-1 ring-inset',
+        config.bg,
+        config.text,
+        config.ring,
+        'hover:shadow-md transform hover:scale-105'
       )}>
-        {status}
+        <span className="font-semibold">{config.label}</span>
       </div>
     );
   };
@@ -345,7 +406,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                     order.isScanned && "bg-green-100 border-green-300",
                     !order.isScanned && (index % 2 === 0 ? "bg-white" : "bg-gray-50")
                   )}
-                  style={{ height: '28px' }}
+                  style={{ height: '36px' }}
                 >
                   <div 
                     className={cn(
@@ -379,20 +440,20 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                   </div>
 
                   <div 
-                    className="flex items-center justify-center border-r border-gray-200 px-1"
+                    className="flex items-center justify-center border-r border-gray-200 px-2"
                     style={{ width: `${columnWidths.statut}px` }}
                   >
                     <DropdownMenu>
-                      <DropdownMenuTrigger className="flex items-center gap-1 focus:outline-none">
+                      <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded-md p-1">
                         {getStatusBadge(order.statut)}
-                        <ChevronDown className="h-2 w-2 text-gray-500" />
+                        <ChevronDown className="h-3 w-3 text-gray-400 hover:text-gray-600 transition-colors" />
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent className="z-50">
+                      <DropdownMenuContent className="z-50 bg-white shadow-xl border border-gray-200 rounded-lg p-1 min-w-[140px]">
                         {statusOptions.filter(s => s !== order.statut).map((status) => (
                           <DropdownMenuItem
                             key={status}
                             onClick={() => onUpdateStatus(order.id, status)}
-                            className="text-xs cursor-pointer"
+                            className="cursor-pointer hover:bg-gray-50 rounded-md p-2 focus:bg-gray-50 transition-colors"
                           >
                             {getStatusBadge(status)}
                           </DropdownMenuItem>
