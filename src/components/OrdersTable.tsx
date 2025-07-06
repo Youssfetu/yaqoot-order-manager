@@ -180,7 +180,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     momentumAnimationRef.current = requestAnimationFrame(animate);
   };
 
-  // Significantly improved column resizing with better touch handling
+  // Fixed column resizing with proper event listener options
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: string) => {
     e.preventDefault();
     e.stopPropagation();
@@ -228,14 +228,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       // Clean up event listeners
       document.removeEventListener('mousemove', handleMove as EventListener);
       document.removeEventListener('mouseup', handleEnd as EventListener);
-      document.removeEventListener('touchmove', handleMove as EventListener, { passive: false });
+      document.removeEventListener('touchmove', handleMove as EventListener);
       document.removeEventListener('touchend', handleEnd as EventListener);
     };
     
     // Add event listeners with proper options for touch devices
     document.addEventListener('mousemove', handleMove as EventListener);
     document.addEventListener('mouseup', handleEnd as EventListener);
-    document.addEventListener('touchmove', handleMove as EventListener, { passive: false });
+    document.addEventListener('touchmove', handleMove as EventListener);
     document.addEventListener('touchend', handleEnd as EventListener);
   };
 
