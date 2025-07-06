@@ -249,18 +249,6 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
               </Button>
             </form>
           </div>
-
-          {/* Instructions */}
-          <div className="bg-amber-50 p-4 rounded-lg">
-            <h5 className="font-medium text-amber-900 mb-2">تعليمات:</h5>
-            <ul className="text-sm text-amber-800 space-y-1">
-              <li>• وجه الكاميرا نحو الكود الشريطي</li>
-              <li>• تأكد من وجود إضاءة كافية</li>
-              <li>• يمكنك إدخال الكود يدوياً إذا لم يعمل المسح</li>
-              <li>• ستسمع صوت تأكيد عند العثور على الكود</li>
-              <li>• اسمح للمتصفح بالوصول إلى الكاميرا عند طلب الإذن</li>
-            </ul>
-          </div>
         </div>
 
         <DialogFooter>
