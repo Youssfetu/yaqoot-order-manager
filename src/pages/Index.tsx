@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -132,6 +133,62 @@ const Index = () => {
     setIsSearchOpen(false);
   };
 
+  const handleShare = async () => {
+    try {
+      // Create a summary of orders data
+      const ordersSummary = orders.map(order => 
+        `الكود: ${order.code} | العميل: ${order.vendeur} | الرقم: ${order.numero} | السعر: ${order.prix} | الحالة: ${order.statut}`
+      ).join('\n');
+
+      const totalOrders = orders.length;
+      const totalAmount = orders.reduce((sum, order) => sum + order.prix, 0);
+      
+      const shareText = `📋 ملخص الطلبيات:
+      
+عدد الطلبيات: ${totalOrders}
+إجمالي المبلغ: ${totalAmount} دج
+
+الطلبيات:
+${ordersSummary}
+
+تم إنشاؤه بواسطة Yaqoot Order Manager`;
+
+      // Check if Web Share API is available (mobile browsers)
+      if (navigator.share) {
+        await navigator.share({
+          title: 'ملخص الطلبيات - Yaqoot',
+          text: shareText,
+        });
+        
+        toast({
+          title: "تم المشاركة بنجاح",
+          description: "تم مشاركة البيانات بنجاح",
+        });
+      } else {
+        // Fallback for desktop browsers - copy to clipboard
+        await navigator.clipboard.writeText(shareText);
+        
+        toast({
+          title: "تم نسخ البيانات",
+          description: "تم نسخ البيانات إلى الحافظة، يمكنك لصقها في أي تطبيق",
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      
+      // Create WhatsApp link as fallback
+      const whatsappText = encodeURIComponent(`📋 ملخص الطلبيات - عدد الطلبيات: ${orders.length}`);
+      const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
+      
+      window.open(whatsappUrl, '_blank');
+      
+      toast({
+        title: "تم فتح الواتساب",
+        description: "تم فتح الواتساب لإرسال ملخص الطلبيات",
+      });
+    }
+  };
+
   const filteredOrders = orders.filter(order =>
     order.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.vendeur.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -204,16 +261,12 @@ const Index = () => {
                 <Upload className="h-6 w-6 text-gray-600" />
               </Button>
 
+              {/* Share Button - Now with real sharing functionality */}
               <Button
                 variant="ghost"
                 size="sm"
                 className="p-2 hover:bg-gray-100 rounded-xl"
-                onClick={() => {
-                  toast({
-                    title: "Données exportées",
-                    description: "Cette fonctionnalité sera développée prochainement",
-                  });
-                }}
+                onClick={handleShare}
               >
                 <Share2 className="h-6 w-6 text-gray-600" />
               </Button>
@@ -309,3 +362,4 @@ const Index = () => {
 };
 
 export default Index;
+
