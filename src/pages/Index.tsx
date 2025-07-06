@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import OrdersTable from '@/components/OrdersTable';
+import InteractiveTable from '@/components/InteractiveTable';
 import AddOrderDialog from '@/components/AddOrderDialog';
 import UploadDialog from '@/components/UploadDialog';
 import BarcodeScanner from '@/components/BarcodeScanner';
@@ -51,6 +51,24 @@ const Index = () => {
       prix: 320.75,
       statut: 'Annulé',
       commentaire: 'Client indisponible'
+    },
+    {
+      id: '4',
+      code: 'CMD004',
+      vendeur: 'Sara Ahmed',
+      numero: '789123456',
+      prix: 150.25,
+      statut: 'Programmé',
+      commentaire: 'Livraison demain matin'
+    },
+    {
+      id: '5',
+      code: 'CMD005',
+      vendeur: 'Omar Hassan',
+      numero: '321654987',
+      prix: 420.00,
+      statut: 'Confirmé',
+      commentaire: ''
     }
   ]);
 
@@ -207,8 +225,8 @@ const Index = () => {
       </div>
 
       <div className="px-0 py-0">
-        {/* Orders Table - Direct without card wrapper */}
-        <OrdersTable
+        {/* Interactive Table - Google Sheets Style */}
+        <InteractiveTable
           orders={filteredOrders}
           onUpdateComment={handleUpdateComment}
           onUpdateStatus={handleUpdateStatus}
