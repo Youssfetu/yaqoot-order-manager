@@ -360,7 +360,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       data-code={order.code}
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        order.isScanned 
+                          ? "bg-green-100 border-green-200" 
+                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       )}
                     >
                       <span className="truncate w-full text-center text-xs font-mono text-gray-800">
@@ -374,7 +376,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        order.isScanned 
+                          ? "bg-green-100 border-green-200" 
+                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       )}
                     >
                       <span className="truncate w-full text-xs text-gray-800">
@@ -388,7 +392,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        order.isScanned 
+                          ? "bg-green-100 border-green-200" 
+                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       )}
                     >
                       <span className="truncate w-full text-center text-xs font-mono text-gray-800">
@@ -402,7 +408,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        order.isScanned 
+                          ? "bg-green-100 border-green-200" 
+                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       )}
                     >
                       <span className="text-xs font-medium text-green-700">
@@ -416,7 +424,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div 
                       className={cn(
                         "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                        order.isScanned 
+                          ? "bg-green-100 border-green-200" 
+                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       )}
                     >
                       <DropdownMenu>
@@ -446,7 +456,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div 
                       className={cn(
                         "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
-                        index % 2 === 0 ? "bg-white" : "bg-gray-50",
+                        order.isScanned 
+                          ? "bg-green-100 border-green-200" 
+                          : index % 2 === 0 ? "bg-white" : "bg-gray-50",
                         editingCell === order.id && "bg-white border-blue-500 shadow-sm"
                       )}
                     >
