@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -207,11 +205,33 @@ ${ordersSummary}
     }
   };
 
+  // Helper function to sort orders - cancelled orders go to bottom
+  const sortOrdersByStatus = (orders: Order[]) => {
+    const cancelledStatuses = ['Annulé', 'Refusé', 'Hors zone'];
+    
+    return [...orders].sort((a, b) => {
+      const aIsCancelled = cancelledStatuses.includes(a.statut);
+      const bIsCancelled = cancelledStatuses.includes(b.statut);
+      
+      // If both are cancelled or both are not cancelled, maintain original order
+      if (aIsCancelled === bIsCancelled) {
+        return 0;
+      }
+      
+      // If only 'a' is cancelled, it goes to bottom (return 1)
+      // If only 'b' is cancelled, it goes to bottom (return -1)
+      return aIsCancelled ? 1 : -1;
+    });
+  };
+
   const filteredOrders = orders.filter(order =>
     order.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.vendeur.toLowerCase().includes(searchTerm.toLowerCase()) ||
     order.numero.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Apply sorting to filtered orders
+  const sortedFilteredOrders = sortOrdersByStatus(filteredOrders);
 
   console.log('Search state:', { isSearchOpen, searchTerm, filteredOrdersCount: filteredOrders.length, totalOrders: orders.length });
 
@@ -325,7 +345,7 @@ ${ordersSummary}
       <div className="px-0 py-0">
         {/* Interactive Table - Google Sheets Style */}
         <InteractiveTable
-          orders={filteredOrders}
+          orders={sortedFilteredOrders}
           onUpdateComment={handleUpdateComment}
           onUpdateStatus={handleUpdateStatus}
         />
@@ -380,4 +400,3 @@ ${ordersSummary}
 };
 
 export default Index;
-
