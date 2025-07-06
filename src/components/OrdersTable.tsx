@@ -23,6 +23,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [editingCell, setEditingCell] = useState<string | null>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const [recentlyScannedOrders, setRecentlyScannedOrders] = useState<Set<string>>(new Set());
   const [columnWidths, setColumnWidths] = useState({
     code: 12,      // 12%
     vendeur: 20,   // 20%
@@ -44,6 +45,31 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Hors zone',
     'Programmé'
   ];
+
+  // Track recently scanned orders and clear highlighting after 3 seconds
+  useEffect(() => {
+    const newlyScannedOrders = orders.filter(order => 
+      order.isScanned && !recentlyScannedOrders.has(order.id)
+    );
+    
+    if (newlyScannedOrders.length > 0) {
+      const newSet = new Set(recentlyScannedOrders);
+      newlyScannedOrders.forEach(order => {
+        newSet.add(order.id);
+        
+        // Clear the highlighting after 3 seconds
+        setTimeout(() => {
+          setRecentlyScannedOrders(prev => {
+            const updated = new Set(prev);
+            updated.delete(order.id);
+            return updated;
+          });
+        }, 3000);
+      });
+      
+      setRecentlyScannedOrders(newSet);
+    }
+  }, [orders, recentlyScannedOrders]);
 
   // Enhanced column resizing with touch support
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: string) => {
@@ -435,152 +461,151 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
             {/* Data Rows */}
             <div className="flex-1">
-              {orders.map((order, index) => (
-                <div key={order.id} className="flex">
-                  {/* Code Column Data */}
-                  <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
-                    <div 
-                      data-code={order.code}
-                      className={cn(
-                        "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
-                        order.isScanned 
-                          ? "bg-green-100 border-green-200" 
-                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      )}
-                    >
-                      <span className="truncate w-full text-center text-xs font-mono text-gray-800">
-                        {order.code}
-                      </span>
-                    </div>
-                  </div>
+              {orders.map((order, index) => {
+                const isRecentlyScanned = recentlyScannedOrders.has(order.id);
+                const rowBackgroundClass = order.isScanned && !isRecentlyScanned
+                  ? "bg-blue-50 border-blue-200"
+                  : isRecentlyScanned
+                  ? "bg-green-200 border-green-300"
+                  : index % 2 === 0 ? "bg-white" : "bg-gray-50";
 
-                  {/* Vendeur Column Data */}
-                  <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
-                    <div 
-                      className={cn(
-                        "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
-                        order.isScanned 
-                          ? "bg-green-100 border-green-200" 
-                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      )}
-                    >
-                      <span className="truncate w-full text-xs text-gray-800">
-                        {order.vendeur}
-                      </span>
+                return (
+                  <div key={order.id} className="flex">
+                    {/* Code Column Data */}
+                    <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
+                      <div 
+                        data-code={order.code}
+                        className={cn(
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          order.isScanned 
+                            ? "bg-green-100 border-green-200" 
+                            : rowBackgroundClass
+                        )}
+                      >
+                        <span className="truncate w-full text-center text-xs font-mono text-gray-800">
+                          {order.code}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Number Column Data */}
-                  <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
-                    <div 
-                      className={cn(
-                        "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
-                        order.isScanned 
-                          ? "bg-green-100 border-green-200" 
-                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      )}
-                    >
-                      <span className="truncate w-full text-center text-xs font-mono text-gray-800">
-                        {order.numero}
-                      </span>
+                    {/* Vendeur Column Data */}
+                    <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
+                      <div 
+                        className={cn(
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          rowBackgroundClass
+                        )}
+                      >
+                        <span className="truncate w-full text-xs text-gray-800">
+                          {order.vendeur}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Price Column Data */}
-                  <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
-                    <div 
-                      className={cn(
-                        "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
-                        order.isScanned 
-                          ? "bg-green-100 border-green-200" 
-                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      )}
-                    >
-                      <span className="text-xs font-medium text-green-700">
-                        {order.prix.toFixed(2)}
-                      </span>
+                    {/* Number Column Data */}
+                    <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
+                      <div 
+                        className={cn(
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          rowBackgroundClass
+                        )}
+                      >
+                        <span className="truncate w-full text-center text-xs font-mono text-gray-800">
+                          {order.numero}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Status Column Data */}
-                  <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
-                    <div 
-                      className={cn(
-                        "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
-                        order.isScanned 
-                          ? "bg-green-100 border-green-200" 
-                          : index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                      )}
-                    >
-                      <DropdownMenu>
-                        <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
-                          <div className="flex items-center gap-1">
-                            {getStatusBadge(order.statut)}
-                            <ChevronDown className="h-2 w-2 text-gray-500 flex-shrink-0" />
-                          </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[120px]">
-                          {getAvailableStatusOptions(order.statut).map((status) => (
-                            <DropdownMenuItem
-                              key={status}
-                              onClick={() => onUpdateStatus(order.id, status)}
-                              className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
-                            >
-                              {getStatusBadge(status)}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                    {/* Price Column Data */}
+                    <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
+                      <div 
+                        className={cn(
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          rowBackgroundClass
+                        )}
+                      >
+                        <span className="text-xs font-medium text-green-700">
+                          {order.prix.toFixed(2)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Comment Column Data */}
-                  <div className="flex-1" style={{ minWidth: '150px' }}>
-                    <div 
-                      className={cn(
-                        "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
-                        order.isScanned 
-                          ? "bg-green-100 border-green-200" 
-                          : index % 2 === 0 ? "bg-white" : "bg-gray-50",
-                        editingCell === order.id && "bg-white border-blue-500 shadow-sm"
-                      )}
-                    >
-                      {editingCell === order.id ? (
-                        <div 
-                          className="absolute inset-0 z-50"
-                          style={{
-                            transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
-                            transformOrigin: 'top left'
-                          }}
-                        >
-                          <input
-                            value={order.commentaire}
-                            onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                            onBlur={handleCommentBlur}
-                            onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
-                            className="w-full h-full px-2 text-xs border-none outline-none bg-white focus:ring-0"
-                            placeholder="اكتب تعليق..."
-                            autoFocus
+                    {/* Status Column Data */}
+                    <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
+                      <div 
+                        className={cn(
+                          "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          rowBackgroundClass
+                        )}
+                      >
+                        <DropdownMenu>
+                          <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
+                            <div className="flex items-center gap-1">
+                              {getStatusBadge(order.statut)}
+                              <ChevronDown className="h-2 w-2 text-gray-500 flex-shrink-0" />
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[120px]">
+                            {getAvailableStatusOptions(order.statut).map((status) => (
+                              <DropdownMenuItem
+                                key={status}
+                                onClick={() => onUpdateStatus(order.id, status)}
+                                className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
+                              >
+                                {getStatusBadge(status)}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+
+                    {/* Comment Column Data */}
+                    <div className="flex-1" style={{ minWidth: '150px' }}>
+                      <div 
+                        className={cn(
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
+                          rowBackgroundClass,
+                          editingCell === order.id && "bg-white border-blue-500 shadow-sm"
+                        )}
+                      >
+                        {editingCell === order.id ? (
+                          <div 
+                            className="absolute inset-0 z-50"
                             style={{
-                              fontSize: `${11 * zoomLevel}px`,
-                              padding: `${1 * zoomLevel}px ${8 * zoomLevel}px`
+                              transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
+                              transformOrigin: 'top left'
                             }}
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          className="w-full h-full flex items-center cursor-text px-0"
-                          onClick={() => handleCommentFocus(order.id)}
-                        >
-                          <span className="text-xs text-gray-800 truncate w-full">
-                            {order.commentaire || 'اكتب تعليق...'}
-                          </span>
-                        </div>
-                      )}
+                          >
+                            <input
+                              value={order.commentaire}
+                              onChange={(e) => handleCommentChange(order.id, e.target.value)}
+                              onBlur={handleCommentBlur}
+                              onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
+                              className="w-full h-full px-2 text-xs border-none outline-none bg-white focus:ring-0"
+                              placeholder="اكتب تعليق..."
+                              autoFocus
+                              style={{
+                                fontSize: `${11 * zoomLevel}px`,
+                                padding: `${1 * zoomLevel}px ${8 * zoomLevel}px`
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <div
+                            className="w-full h-full flex items-center cursor-text px-0"
+                            onClick={() => handleCommentFocus(order.id)}
+                          >
+                            <span className="text-xs text-gray-800 truncate w-full">
+                              {order.commentaire || 'اكتب تعليق...'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
