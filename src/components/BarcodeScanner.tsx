@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -78,15 +79,29 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     
     if (foundOrder) {
       // إزالة الألوان السابقة
-      foundOrder.classList.remove('bg-green-100', 'border-green-300', 'bg-yellow-100', 'border-yellow-300', 'bg-blue-50', 'border-blue-200');
+      foundOrder.classList.remove('bg-green-100', 'border-green-300', 'bg-yellow-100', 'border-yellow-300', 'bg-blue-50', 'border-blue-200', 'bg-red-100', 'border-red-300');
       
-      // إضافة لون المسح بالكاميرا (أخضر)
-      foundOrder.classList.add('bg-green-100', 'border-green-300');
+      // التحقق من حالة الطلبية لتحديد اللون
+      const orderStatusElement = foundOrder.querySelector('[data-status]');
+      const orderStatus = orderStatusElement?.getAttribute('data-status') || '';
       
-      setTimeout(() => {
-        foundOrder.classList.remove('bg-green-100', 'border-green-300');
-        foundOrder.classList.add('bg-blue-50', 'border-blue-200');
-      }, 3000);
+      if (orderStatus === 'Annulé' || orderStatus === 'Refusé' || orderStatus === 'Hors zone') {
+        // إضافة لون أحمر للحالات المحددة
+        foundOrder.classList.add('bg-red-100', 'border-red-300');
+        
+        setTimeout(() => {
+          foundOrder.classList.remove('bg-red-100', 'border-red-300');
+          foundOrder.classList.add('bg-blue-50', 'border-blue-200');
+        }, 3000);
+      } else {
+        // إضافة لون المسح بالكاميرا (أخضر) للحالات العادية
+        foundOrder.classList.add('bg-green-100', 'border-green-300');
+        
+        setTimeout(() => {
+          foundOrder.classList.remove('bg-green-100', 'border-green-300');
+          foundOrder.classList.add('bg-blue-50', 'border-blue-200');
+        }, 3000);
+      }
     }
     
     stopScanning();
@@ -100,15 +115,29 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     
     if (foundOrder) {
       // إزالة الألوان السابقة
-      foundOrder.classList.remove('bg-green-100', 'border-green-300', 'bg-yellow-100', 'border-yellow-300', 'bg-blue-50', 'border-blue-200');
+      foundOrder.classList.remove('bg-green-100', 'border-green-300', 'bg-yellow-100', 'border-yellow-300', 'bg-blue-50', 'border-blue-200', 'bg-red-100', 'border-red-300');
       
-      // إضافة لون الإدخال اليدوي (أصفر)
-      foundOrder.classList.add('bg-yellow-100', 'border-yellow-300');
+      // التحقق من حالة الطلبية لتحديد اللون
+      const orderStatusElement = foundOrder.querySelector('[data-status]');
+      const orderStatus = orderStatusElement?.getAttribute('data-status') || '';
       
-      setTimeout(() => {
-        foundOrder.classList.remove('bg-yellow-100', 'border-yellow-300');
-        foundOrder.classList.add('bg-blue-50', 'border-blue-200');
-      }, 3000);
+      if (orderStatus === 'Annulé' || orderStatus === 'Refusé' || orderStatus === 'Hors zone') {
+        // إضافة لون أحمر للحالات المحددة
+        foundOrder.classList.add('bg-red-100', 'border-red-300');
+        
+        setTimeout(() => {
+          foundOrder.classList.remove('bg-red-100', 'border-red-300');
+          foundOrder.classList.add('bg-blue-50', 'border-blue-200');
+        }, 3000);
+      } else {
+        // إضافة لون الإدخال اليدوي (أصفر) للحالات العادية
+        foundOrder.classList.add('bg-yellow-100', 'border-yellow-300');
+        
+        setTimeout(() => {
+          foundOrder.classList.remove('bg-yellow-100', 'border-yellow-300');
+          foundOrder.classList.add('bg-blue-50', 'border-blue-200');
+        }, 3000);
+      }
     }
     
     setManualCode('');

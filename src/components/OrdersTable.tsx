@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -309,6 +310,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     {orders.map((order, index) => (
                       <div 
                         key={order.id}
+                        data-code={order.code}
+                        data-status={order.statut}
                         className={cn(
                           "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
                           order.isScanned && "bg-green-50 border-green-200",
