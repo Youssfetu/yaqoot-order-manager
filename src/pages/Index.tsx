@@ -1,5 +1,6 @@
+
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import UploadDialog from '@/components/UploadDialog';
 import BarcodeScanner from '@/components/BarcodeScanner';
 import OrderSummary from '@/components/OrderSummary';
 import MenuDrawer from '@/components/MenuDrawer';
+import ArchivedOrdersDialog from '@/components/ArchivedOrdersDialog';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Order {
@@ -25,11 +27,13 @@ export interface Order {
 
 const Index = () => {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [archivedOrders, setArchivedOrders] = useState<Order[]>([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [isArchivedDialogOpen, setIsArchivedDialogOpen] = useState(false);
   const [commission, setCommission] = useState(50);
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
   const { toast } = useToast();
@@ -58,6 +62,21 @@ const Index = () => {
   };
 
   const handleUpdateStatus = (id: string, status: string) => {
+    // إذا تم تغيير الحالة إلى Livré، نقل الطلبية إلى الأرشيف
+    if (status === 'Livré') {
+      const orderToArchive = orders.find(order => order.id === id);
+      if (orderToArchive) {
+        const archivedOrder = { ...orderToArchive, statut: status };
+        setArchivedOrders(prev => [...prev, archivedOrder]);
+        setOrders(orders.filter(order => order.id !== id));
+        toast({
+          title: "Commande archivée",
+          description: `La commande ${orderToArchive.code} a été déplacée vers l'archive`,
+        });
+        return;
+      }
+    }
+    
     setOrders(orders.map(order => 
       order.id === id ? { ...order, statut: status } : order
     ));
@@ -117,6 +136,15 @@ const Index = () => {
                 className="p-2 hover:bg-gray-100 rounded-xl"
               >
                 <QrCode className="h-6 w-6 text-gray-600" />
+              </Button>
+
+              <Button
+                onClick={() => setIsArchivedDialogOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Archive className="h-6 w-6 text-gray-600" />
               </Button>
 
               <Button
@@ -200,6 +228,12 @@ const Index = () => {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onScan={handleBarcodeScanned}
+      />
+
+      <ArchivedOrdersDialog
+        isOpen={isArchivedDialogOpen}
+        onClose={() => setIsArchivedDialogOpen(false)}
+        archivedOrders={archivedOrders}
       />
 
       <MenuDrawer
