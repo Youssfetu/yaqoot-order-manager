@@ -40,6 +40,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   
   const containerRef = useRef<HTMLDivElement>(null);
   const momentumAnimationRef = useRef<number | null>(null);
+  const resizeStartPosRef = useRef<{ x: number; initialWidth: number }>({ x: 0, initialWidth: 0 });
   
   const statusOptions = [
     'Confirmé',
@@ -179,46 +180,63 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     momentumAnimationRef.current = requestAnimationFrame(animate);
   };
 
-  // Enhanced column resizing with improved touch support
+  // Significantly improved column resizing with better touch handling
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: string) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    console.log('Resize start for column:', column);
     setIsResizing(true);
     setResizingColumn(column);
     
     const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const currentWidth = columnWidths[column as keyof typeof columnWidths];
+    
+    // Store initial position and width for smoother calculations
+    resizeStartPosRef.current = { x: startX, initialWidth: currentWidth };
     
     const handleMove = (moveEvent: MouseEvent | TouchEvent) => {
       if (!containerRef.current) return;
       
+      moveEvent.preventDefault();
+      moveEvent.stopPropagation();
+      
       const rect = containerRef.current.getBoundingClientRect();
       const totalWidth = rect.width;
       const currentX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
-      const deltaX = currentX - startX;
+      
+      // Calculate delta from the initial position
+      const deltaX = currentX - resizeStartPosRef.current.x;
       const deltaPercent = (deltaX / totalWidth) * 100;
       
-      setColumnWidths(prev => {
-        const newWidths = { ...prev };
-        const currentWidth = newWidths[column as keyof typeof newWidths];
-        const newWidth = Math.max(8, Math.min(40, currentWidth + deltaPercent));
-        newWidths[column as keyof typeof newWidths] = newWidth;
-        return newWidths;
-      });
+      // Apply the change relative to the initial width
+      const newWidth = Math.max(8, Math.min(40, resizeStartPosRef.current.initialWidth + deltaPercent));
+      
+      console.log(`Resizing ${column}: deltaX=${deltaX}, deltaPercent=${deltaPercent.toFixed(2)}, newWidth=${newWidth.toFixed(2)}`);
+      
+      setColumnWidths(prev => ({
+        ...prev,
+        [column]: newWidth
+      }));
     };
     
-    const handleEnd = () => {
+    const handleEnd = (endEvent?: MouseEvent | TouchEvent) => {
+      console.log('Resize end for column:', column);
       setIsResizing(false);
       setResizingColumn(null);
+      
+      // Clean up event listeners
       document.removeEventListener('mousemove', handleMove as EventListener);
-      document.removeEventListener('mouseup', handleEnd);
-      document.removeEventListener('touchmove', handleMove as EventListener);
-      document.removeEventListener('touchend', handleEnd);
+      document.removeEventListener('mouseup', handleEnd as EventListener);
+      document.removeEventListener('touchmove', handleMove as EventListener, { passive: false });
+      document.removeEventListener('touchend', handleEnd as EventListener);
     };
     
+    // Add event listeners with proper options for touch devices
     document.addEventListener('mousemove', handleMove as EventListener);
-    document.addEventListener('mouseup', handleEnd);
-    document.addEventListener('touchmove', handleMove as EventListener);
-    document.addEventListener('touchend', handleEnd);
+    document.addEventListener('mouseup', handleEnd as EventListener);
+    document.addEventListener('touchmove', handleMove as EventListener, { passive: false });
+    document.addEventListener('touchend', handleEnd as EventListener);
   };
 
   // Check if scrollbar should be visible
@@ -297,9 +315,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     });
   };
 
-  // Enhanced touch handling with improved responsiveness and momentum
+  // Enhanced touch handling that doesn't interfere with column resizing
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Don't handle zoom if we're resizing columns or editing
+    // Don't handle zoom/pan if we're resizing columns or editing
     if (isResizing || editingCell) return;
     
     // Cancel any ongoing momentum animation
@@ -408,6 +426,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    // Don't interfere with column resizing
+    if (isResizing) return;
+    
     if (e.touches.length < 2) {
       (e.currentTarget as any).initialDistance = null;
       (e.currentTarget as any).initialZoom = null;
@@ -497,11 +518,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         )}
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: editingCell || isResizing ? 'auto' : 'pan-x pan-y pinch-zoom',
+          touchAction: editingCell || isResizing ? 'none' : 'pan-x pan-y pinch-zoom',
           scrollbarWidth: showScrollbar ? 'thin' : 'none',
           scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent',
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
+          userSelect: isResizing ? 'none' : 'auto',
+          WebkitUserSelect: isResizing ? 'none' : 'auto',
           WebkitTouchCallout: 'none'
         }}
         onTouchStart={handleTouchStart}
@@ -520,24 +541,36 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             minHeight: '100%',
             fontSize: '11px',
             pointerEvents: editingCell ? 'none' : 'auto',
-            willChange: isPanning ? 'transform' : 'auto'
+            willChange: isPanning || isResizing ? 'transform' : 'auto'
           }}
         >
           <div className="w-full shadow-lg rounded-sm overflow-hidden bg-white">
-            {/* Header Row with Enhanced Resizable Handles for Touch */}
+            {/* Header Row with Significantly Enhanced Resizable Handles for Touch */}
             <div className="flex">
               {/* Code Column Header */}
               <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الكود</span>
                 </div>
-                {/* Enhanced Resize Handle with Better Touch Support */}
+                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-6 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className={cn(
+                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
+                    "border-l-2 border-white shadow-sm",
+                    isResizing && resizingColumn === 'code' && "bg-blue-500 opacity-100 shadow-lg"
+                  )}
                   onMouseDown={(e) => handleResizeStart(e, 'code')}
                   onTouchStart={(e) => handleResizeStart(e, 'code')}
-                  style={{ touchAction: 'none' }}
-                />
+                  style={{ 
+                    touchAction: 'none',
+                    minHeight: '28px',
+                    minWidth: '32px',
+                    zIndex: isResizing ? 50 : 10
+                  }}
+                >
+                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                </div>
               </div>
 
               {/* Vendeur Column Header */}
@@ -545,13 +578,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
                 </div>
-                {/* Enhanced Resize Handle with Better Touch Support */}
+                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-6 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className={cn(
+                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
+                    "border-l-2 border-white shadow-sm",
+                    isResizing && resizingColumn === 'vendeur' && "bg-blue-500 opacity-100 shadow-lg"
+                  )}
                   onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
                   onTouchStart={(e) => handleResizeStart(e, 'vendeur')}
-                  style={{ touchAction: 'none' }}
-                />
+                  style={{ 
+                    touchAction: 'none',
+                    minHeight: '28px',
+                    minWidth: '32px',
+                    zIndex: isResizing ? 50 : 10
+                  }}
+                >
+                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                </div>
               </div>
 
               {/* Number Column Header */}
@@ -559,13 +604,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الرقم</span>
                 </div>
-                {/* Enhanced Resize Handle with Better Touch Support */}
+                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-6 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className={cn(
+                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
+                    "border-l-2 border-white shadow-sm",
+                    isResizing && resizingColumn === 'numero' && "bg-blue-500 opacity-100 shadow-lg"
+                  )}
                   onMouseDown={(e) => handleResizeStart(e, 'numero')}
                   onTouchStart={(e) => handleResizeStart(e, 'numero')}
-                  style={{ touchAction: 'none' }}
-                />
+                  style={{ 
+                    touchAction: 'none',
+                    minHeight: '28px',
+                    minWidth: '32px',
+                    zIndex: isResizing ? 50 : 10
+                  }}
+                >
+                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                </div>
               </div>
 
               {/* Price Column Header */}
@@ -573,13 +630,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">السعر</span>
                 </div>
-                {/* Enhanced Resize Handle with Better Touch Support */}
+                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-6 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className={cn(
+                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
+                    "border-l-2 border-white shadow-sm",
+                    isResizing && resizingColumn === 'prix' && "bg-blue-500 opacity-100 shadow-lg"
+                  )}
                   onMouseDown={(e) => handleResizeStart(e, 'prix')}
                   onTouchStart={(e) => handleResizeStart(e, 'prix')}
-                  style={{ touchAction: 'none' }}
-                />
+                  style={{ 
+                    touchAction: 'none',
+                    minHeight: '28px',
+                    minWidth: '32px',
+                    zIndex: isResizing ? 50 : 10
+                  }}
+                >
+                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                </div>
               </div>
 
               {/* Status Column Header */}
@@ -587,13 +656,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                   <span className="text-xs font-bold text-gray-800">الحالة</span>
                 </div>
-                {/* Enhanced Resize Handle with Better Touch Support */}
+                {/* Significantly Enhanced Resize Handle with Better Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-6 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className={cn(
+                    "absolute top-0 right-0 w-8 h-7 cursor-col-resize touch-manipulation flex items-center justify-center",
+                    "hover:bg-blue-400 bg-gray-500 opacity-60 hover:opacity-100 transition-all duration-200",
+                    "border-l-2 border-white shadow-sm",
+                    isResizing && resizingColumn === 'status' && "bg-blue-500 opacity-100 shadow-lg"
+                  )}
                   onMouseDown={(e) => handleResizeStart(e, 'status')}
                   onTouchStart={(e) => handleResizeStart(e, 'status')}
-                  style={{ touchAction: 'none' }}
-                />
+                  style={{ 
+                    touchAction: 'none',
+                    minHeight: '28px',
+                    minWidth: '32px',
+                    zIndex: isResizing ? 50 : 10
+                  }}
+                >
+                  <div className="w-1 h-4 bg-white rounded-full opacity-80" />
+                </div>
               </div>
 
               {/* Comment Column Header */}
@@ -776,6 +857,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             className="absolute inset-0 bg-transparent z-30 pointer-events-auto"
             onClick={handleCommentBlur}
           />
+        )}
+
+        {/* Resizing Overlay - Shows feedback during column resizing */}
+        {isResizing && (
+          <div className="absolute inset-0 bg-blue-50 bg-opacity-10 z-40 pointer-events-none flex items-center justify-center">
+            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium">
+              تغيير حجم العمود: {resizingColumn}
+            </div>
+          </div>
         )}
       </div>
 
