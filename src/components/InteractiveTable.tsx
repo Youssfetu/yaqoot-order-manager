@@ -45,7 +45,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     'Confirmé', 'Livré', 'Reporté', 'Annulé', 'Refusé', 'Numéro erroné', 'Hors zone', 'Programmé'
   ];
 
-  // Column resize handlers - only from header
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: keyof ColumnWidths) => {
     e.preventDefault();
     e.stopPropagation();
@@ -75,12 +74,10 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     setIsResizing(null);
   }, []);
 
-  // Touch and mouse event handlers for zoom and pan
   const handleTouchStart = (e: React.TouchEvent) => {
     if (editingCell || isResizing) return;
     
     if (e.touches.length === 2) {
-      // Pinch zoom start
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
@@ -101,7 +98,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
       (e.currentTarget as any).initialDistance = distance;
       (e.currentTarget as any).initialZoom = zoomLevel;
     } else if (e.touches.length === 1 && zoomLevel > 1) {
-      // Single touch pan start
       const touch = e.touches[0];
       setIsPanning(true);
       setPanStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
@@ -113,7 +109,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     e.preventDefault();
     
     if (e.touches.length === 2) {
-      // Pinch zoom
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
@@ -130,7 +125,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         setZoomLevel(newZoom);
       }
     } else if (e.touches.length === 1 && isPanning && zoomLevel > 1) {
-      // Single touch pan
       const touch = e.touches[0];
       const newOffsetX = touch.clientX - panStart.x;
       const newOffsetY = touch.clientY - panStart.y;
@@ -149,7 +143,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     }
   };
 
-  // Wheel zoom with focus point
   const handleWheel = (e: React.WheelEvent) => {
     if (editingCell || isResizing) return;
     if (e.ctrlKey || e.metaKey) {
@@ -162,7 +155,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         const deltaZoom = e.deltaY > 0 ? -0.1 : 0.1;
         const newZoom = Math.max(0.5, Math.min(3, zoomLevel + deltaZoom));
         
-        // Calculate pan offset to keep focus point stable
         const zoomFactor = newZoom / zoomLevel;
         const currentFocusX = (focusX - panOffset.x) / zoomLevel;
         const currentFocusY = (focusY - panOffset.y) / zoomLevel;
@@ -175,7 +167,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     }
   };
 
-  // Event listeners for resize
   useEffect(() => {
     if (isResizing) {
       const handleMouseMove = (e: MouseEvent) => handleResizeMove(e);
@@ -197,7 +188,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
     }
   }, [isResizing, handleResizeMove, handleResizeEnd]);
 
-  // Keyboard shortcuts for zoom
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && !editingCell) {
@@ -247,7 +237,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
 
   return (
     <div className="w-full h-[calc(100vh-200px)] bg-white border border-gray-300 relative overflow-hidden">
-      {/* Main container */}
       <div 
         ref={containerRef}
         className="w-full h-full overflow-auto"
@@ -260,7 +249,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         onTouchEnd={handleTouchEnd}
         onWheel={handleWheel}
       >
-        {/* Transformed content */}
         <div 
           ref={tableRef}
           style={{
@@ -271,14 +259,11 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
             minHeight: '100%'
           }}
         >
-          {/* Google Sheets style table */}
           <div className="bg-white shadow-sm">
-            {/* Header Row */}
             <div 
               className="flex bg-gray-100 border-b-2 border-gray-300 sticky top-0 z-20"
               style={{ height: '32px' }}
             >
-              {/* Code Header */}
               <div 
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.code}px` }}
@@ -291,7 +276,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 />
               </div>
 
-              {/* Vendeur Header */}
               <div 
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.vendeur}px` }}
@@ -304,7 +288,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 />
               </div>
 
-              {/* Numero Header */}
               <div 
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.numero}px` }}
@@ -317,7 +300,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 />
               </div>
 
-              {/* Prix Header */}
               <div 
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.prix}px` }}
@@ -330,7 +312,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 />
               </div>
 
-              {/* Status Header */}
               <div 
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.statut}px` }}
@@ -343,7 +324,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                 />
               </div>
 
-              {/* Comment Header */}
               <div 
                 className="relative flex items-center justify-center border-r border-gray-300 bg-gray-200 hover:bg-gray-300 transition-colors font-semibold text-xs text-gray-800"
                 style={{ width: `${columnWidths.commentaire}px` }}
@@ -357,7 +337,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
               </div>
             </div>
 
-            {/* Data Rows */}
             <div>
               {orders.map((order, index) => (
                 <div 
@@ -369,7 +348,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                   )}
                   style={{ height: '28px' }}
                 >
-                  {/* Code Cell */}
                   <div 
                     className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono text-gray-800"
                     style={{ width: `${columnWidths.code}px` }}
@@ -377,7 +355,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                     {order.code}
                   </div>
 
-                  {/* Vendeur Cell */}
                   <div 
                     className="flex items-center px-2 border-r border-gray-200 text-xs text-gray-800"
                     style={{ width: `${columnWidths.vendeur}px` }}
@@ -385,7 +362,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                     <span className="truncate">{order.vendeur}</span>
                   </div>
 
-                  {/* Numero Cell */}
                   <div 
                     className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-mono text-gray-800"
                     style={{ width: `${columnWidths.numero}px` }}
@@ -393,7 +369,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                     {order.numero}
                   </div>
 
-                  {/* Prix Cell */}
                   <div 
                     className="flex items-center justify-center border-r border-gray-200 px-2 text-xs font-medium text-green-700"
                     style={{ width: `${columnWidths.prix}px` }}
@@ -401,7 +376,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                     {order.prix.toFixed(2)}
                   </div>
 
-                  {/* Status Cell */}
                   <div 
                     className="flex items-center justify-center border-r border-gray-200 px-1"
                     style={{ width: `${columnWidths.statut}px` }}
@@ -425,7 +399,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
                     </DropdownMenu>
                   </div>
 
-                  {/* Comment Cell - Editable */}
                   <div 
                     className="relative flex items-center border-r border-gray-200 px-2"
                     style={{ width: `${columnWidths.commentaire}px` }}
@@ -456,16 +429,6 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Instructions */}
-      <div className="absolute bottom-0 left-0 right-0 bg-blue-50 border-t border-blue-200 p-2 text-center">
-        <p className="text-xs text-blue-700">
-          💡 اسحب رؤوس الأعمدة لتغيير الحجم • استخدم إصبعين للتكبير والتصغير • اسحب بإصبع واحد للتنقل عند التكبير
-        </p>
-        <p className="text-xs text-blue-600 mt-1">
-          ⌨️ على الكمبيوتر: Ctrl + / Ctrl - للزوم • Ctrl 0 للعودة للحجم الطبيعي • استخدم Ctrl + عجلة الماوس للزوم
-        </p>
       </div>
     </div>
   );
