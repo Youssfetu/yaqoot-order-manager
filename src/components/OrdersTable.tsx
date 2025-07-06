@@ -24,6 +24,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [isResizing, setIsResizing] = useState(false);
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
   const [recentlyScannedOrders, setRecentlyScannedOrders] = useState<Set<string>>(new Set());
+  const [scannedOrdersTimer, setScannedOrdersTimer] = useState<Map<string, NodeJS.Timeout>>(new Map());
   const [columnWidths, setColumnWidths] = useState({
     code: 12,      // 12%
     vendeur: 20,   // 20%
@@ -46,34 +47,80 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Programmé'
   ];
 
-  // Track recently scanned orders and clear highlighting after 3 seconds
+  // Enhanced tracking for recently scanned orders with better mobile support
   useEffect(() => {
-    const newlyScannedOrders = orders.filter(order => 
-      order.isScanned && !recentlyScannedOrders.has(order.id)
-    );
+    console.log('Current orders scan status:', orders.map(o => ({ id: o.id, code: o.code, isScanned: o.isScanned })));
     
-    if (newlyScannedOrders.length > 0) {
-      const newSet = new Set(recentlyScannedOrders);
-      newlyScannedOrders.forEach(order => {
-        newSet.add(order.id);
+    orders.forEach(order => {
+      if (order.isScanned && !recentlyScannedOrders.has(order.id)) {
+        console.log('New scanned order detected:', order.id, order.code);
         
-        // Clear the highlighting after 3 seconds
-        setTimeout(() => {
+        // Add to recently scanned set immediately
+        setRecentlyScannedOrders(prev => {
+          const newSet = new Set(prev);
+          newSet.add(order.id);
+          console.log('Added to recently scanned:', order.id);
+          return newSet;
+        });
+        
+        // Clear any existing timer for this order
+        const existingTimer = scannedOrdersTimer.get(order.id);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+        }
+        
+        // Set new timer to remove highlighting after 3 seconds
+        const newTimer = setTimeout(() => {
+          console.log('Removing highlighting for order:', order.id);
           setRecentlyScannedOrders(prev => {
             const updated = new Set(prev);
             updated.delete(order.id);
+            console.log('Removed from recently scanned:', order.id);
             return updated;
           });
+          
+          // Clean up timer from map
+          setScannedOrdersTimer(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(order.id);
+            return newMap;
+          });
         }, 3000);
-      });
-      
-      setRecentlyScannedOrders(newSet);
-    }
-  }, [orders, recentlyScannedOrders]);
+        
+        // Store timer reference
+        setScannedOrdersTimer(prev => {
+          const newMap = new Map(prev);
+          newMap.set(order.id, newTimer);
+          return newMap;
+        });
+      }
+    });
+    
+    // Clean up timers for orders that are no longer scanned
+    scannedOrdersTimer.forEach((timer, orderId) => {
+      const order = orders.find(o => o.id === orderId);
+      if (!order || !order.isScanned) {
+        clearTimeout(timer);
+        setScannedOrdersTimer(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(orderId);
+          return newMap;
+        });
+      }
+    });
+  }, [orders]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      scannedOrdersTimer.forEach(timer => clearTimeout(timer));
+    };
+  }, []);
 
   // Enhanced column resizing with touch support
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: string) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsResizing(true);
     setResizingColumn(column);
     
@@ -388,7 +435,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </div>
                 {/* Enhanced Resize Handle with Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-3 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className="absolute top-0 right-0 w-4 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
                   onMouseDown={(e) => handleResizeStart(e, 'code')}
                   onTouchStart={(e) => handleResizeStart(e, 'code')}
                   style={{ touchAction: 'none' }}
@@ -402,7 +449,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </div>
                 {/* Enhanced Resize Handle with Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-3 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className="absolute top-0 right-0 w-4 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
                   onMouseDown={(e) => handleResizeStart(e, 'vendeur')}
                   onTouchStart={(e) => handleResizeStart(e, 'vendeur')}
                   style={{ touchAction: 'none' }}
@@ -416,7 +463,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </div>
                 {/* Enhanced Resize Handle with Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-3 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className="absolute top-0 right-0 w-4 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
                   onMouseDown={(e) => handleResizeStart(e, 'numero')}
                   onTouchStart={(e) => handleResizeStart(e, 'numero')}
                   style={{ touchAction: 'none' }}
@@ -430,7 +477,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </div>
                 {/* Enhanced Resize Handle with Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-3 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className="absolute top-0 right-0 w-4 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
                   onMouseDown={(e) => handleResizeStart(e, 'prix')}
                   onTouchStart={(e) => handleResizeStart(e, 'prix')}
                   style={{ touchAction: 'none' }}
@@ -444,7 +491,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 </div>
                 {/* Enhanced Resize Handle with Touch Support */}
                 <div 
-                  className="absolute top-0 right-0 w-3 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
+                  className="absolute top-0 right-0 w-4 h-7 cursor-col-resize hover:bg-blue-300 bg-gray-400 opacity-50 hover:opacity-100 touch-manipulation"
                   onMouseDown={(e) => handleResizeStart(e, 'status')}
                   onTouchStart={(e) => handleResizeStart(e, 'status')}
                   style={{ touchAction: 'none' }}
@@ -463,22 +510,31 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             <div className="flex-1">
               {orders.map((order, index) => {
                 const isRecentlyScanned = recentlyScannedOrders.has(order.id);
-                const rowBackgroundClass = order.isScanned && !isRecentlyScanned
-                  ? "bg-blue-50 border-blue-200"
-                  : isRecentlyScanned
-                  ? "bg-green-200 border-green-300"
-                  : index % 2 === 0 ? "bg-white" : "bg-gray-50";
+                console.log(`Order ${order.code}: isScanned=${order.isScanned}, isRecentlyScanned=${isRecentlyScanned}`);
+                
+                // Enhanced row background logic for better mobile visibility
+                const getRowBackgroundClass = () => {
+                  if (isRecentlyScanned) {
+                    return "bg-green-200 border-green-300 animate-pulse";
+                  } else if (order.isScanned) {
+                    return "bg-blue-50 border-blue-200";
+                  } else {
+                    return index % 2 === 0 ? "bg-white" : "bg-gray-50";
+                  }
+                };
+
+                const rowBackgroundClass = getRowBackgroundClass();
 
                 return (
                   <div key={order.id} className="flex">
-                    {/* Code Column Data */}
+                    {/* Code Column Data with Enhanced Highlighting */}
                     <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                       <div 
                         data-code={order.code}
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
                           order.isScanned 
-                            ? "bg-green-100 border-green-200" 
+                            ? "bg-green-100 border-green-200 font-semibold" 
                             : rowBackgroundClass
                         )}
                       >
@@ -492,7 +548,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
                           rowBackgroundClass
                         )}
                       >
@@ -506,7 +562,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
                           rowBackgroundClass
                         )}
                       >
@@ -520,7 +576,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300",
                           rowBackgroundClass
                         )}
                       >
@@ -534,7 +590,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-colors duration-150",
+                          "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300",
                           rowBackgroundClass
                         )}
                       >
@@ -564,7 +620,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div className="flex-1" style={{ minWidth: '150px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-colors duration-150 relative",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 relative",
                           rowBackgroundClass,
                           editingCell === order.id && "bg-white border-blue-500 shadow-sm"
                         )}
