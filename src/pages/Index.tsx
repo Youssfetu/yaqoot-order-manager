@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -92,6 +91,15 @@ const Index = () => {
       setOrders(orders.map(order => 
         order.code === code ? { ...order, isScanned: true } : order
       ));
+      
+      // إضافة data-code attribute للصف في الجدول
+      setTimeout(() => {
+        const tableRow = document.querySelector(`tr[data-order-id="${foundOrder.id}"]`);
+        if (tableRow) {
+          tableRow.setAttribute('data-code', code);
+        }
+      }, 100);
+      
       return 'success';
     } else {
       return 'not-found';

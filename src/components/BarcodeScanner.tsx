@@ -51,11 +51,37 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     }
   };
 
-  const handleScanResult = (code: string) => {
+  const handleCameraScanResult = (code: string) => {
     onScan(code);
     const foundOrder = document.querySelector(`[data-code="${code}"]`);
     playSound(!!foundOrder);
+    
+    if (foundOrder) {
+      foundOrder.classList.add('bg-green-100', 'border-green-300');
+      setTimeout(() => {
+        foundOrder.classList.remove('bg-green-100', 'border-green-300');
+        foundOrder.classList.add('bg-blue-50', 'border-blue-200');
+      }, 2000);
+    }
+    
     stopScanning();
+    onClose();
+  };
+
+  const handleManualScanResult = (code: string) => {
+    onScan(code);
+    const foundOrder = document.querySelector(`[data-code="${code}"]`);
+    playSound(!!foundOrder);
+    
+    if (foundOrder) {
+      foundOrder.classList.add('bg-yellow-100', 'border-yellow-300');
+      setTimeout(() => {
+        foundOrder.classList.remove('bg-yellow-100', 'border-yellow-300');
+        foundOrder.classList.add('bg-blue-50', 'border-blue-200');
+      }, 2000);
+    }
+    
+    setManualCode('');
   };
 
   const startCamera = async () => {
@@ -88,7 +114,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
               if (result) {
                 const scannedCode = result.getText();
                 console.log('Barcode scanned:', scannedCode);
-                handleScanResult(scannedCode);
+                handleCameraScanResult(scannedCode);
               }
               if (error && !(error instanceof NotFoundException)) {
                 console.error('Scanning error:', error);
@@ -139,8 +165,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (manualCode.trim()) {
-      handleScanResult(manualCode.trim());
-      setManualCode('');
+      handleManualScanResult(manualCode.trim());
     }
   };
 
