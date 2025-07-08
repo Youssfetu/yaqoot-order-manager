@@ -6,6 +6,7 @@ import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import type { Order } from '@/pages/Index';
 
 interface OrdersTableProps {
@@ -37,11 +38,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     status: 12,    // 12%
     comment: 30    // 30%
   });
-  
+
+  // إضافة حالة للحوار التأكيدي
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    orderId: string;
+    orderCode: string;
+  }>({
+    isOpen: false,
+    orderId: '',
+    orderCode: ''
+  });
+
   const containerRef = useRef<HTMLDivElement>(null);
   const momentumAnimationRef = useRef<number | null>(null);
   const resizeStartPosRef = useRef<{ x: number; initialWidth: number }>({ x: 0, initialWidth: 0 });
-  
+
   const statusOptions = [
     'Confirmé',
     'Livré', 
@@ -507,6 +519,43 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
   };
 
+  // دالة معالجة تغيير الحالة مع إضافة التأكيد للحالة "Livré"
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+    if (newStatus === 'Livré') {
+      // العثور على الطلبية للحصول على الكود
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        setConfirmDialog({
+          isOpen: true,
+          orderId: orderId,
+          orderCode: order.code
+        });
+      }
+    } else {
+      // تغيير الحالة مباشرة للحالات الأخرى
+      onUpdateStatus(orderId, newStatus);
+    }
+  };
+
+  // دالة تأكيد التسليم
+  const handleConfirmDelivery = () => {
+    onUpdateStatus(confirmDialog.orderId, 'Livré');
+    setConfirmDialog({
+      isOpen: false,
+      orderId: '',
+      orderCode: ''
+    });
+  };
+
+  // دالة إلغاء التأكيد
+  const handleCancelConfirmation = () => {
+    setConfirmDialog({
+      isOpen: false,
+      orderId: '',
+      orderCode: ''
+    });
+  };
+
   return (
     <div className="w-full bg-white">
       {/* Google Sheets Style Compact Table Container with Enhanced Touch Support */}
@@ -772,7 +821,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       </div>
                     </div>
 
-                    {/* Status Column Data - Reverted to original static badges */}
+                    {/* Status Column Data - Updated to use confirmation dialog */}
                     <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                       <div 
                         className={cn(
@@ -791,7 +840,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                             {getAvailableStatusOptions(order.statut).map((status) => (
                               <DropdownMenuItem
                                 key={status}
-                                onClick={() => onUpdateStatus(order.id, status)}
+                                onClick={() => handleStatusChange(order.id, status)}
                                 className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
                               >
                                 {getStatusBadge(status)} 
@@ -869,6 +918,32 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           </div>
         )}
       </div>
+
+      {/* حوار التأكيد للتسليم */}
+      <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelConfirmation()}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-right" dir="rtl">
+              تأكيد التسليم
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-right" dir="rtl">
+              هل أنت متأكد من أنك تريد تغيير حالة الطلبية <strong>{confirmDialog.orderCode}</strong> إلى "تم التسليم"؟
+              <br />
+              <span className="text-orange-600 font-medium">
+                سيتم نقل هذه الطلبية إلى الأرشيف ولن تظهر في القائمة الرئيسية.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex gap-2">
+            <AlertDialogCancel onClick={handleCancelConfirmation} className="text-right">
+              إلغاء
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelivery} className="bg-green-600 hover:bg-green-700 text-white">
+              تأكيد التسليم
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Empty State */}
       {orders.length === 0 && (
