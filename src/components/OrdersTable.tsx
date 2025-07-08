@@ -462,7 +462,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  // Updated getStatusBadge function to accept and use zoom level
+  const getStatusBadge = (status: string, currentZoomLevel: number = 1) => {
     const statusColors = {
       'Confirmé': 'bg-green-500',
       'En cours': 'bg-yellow-500',
@@ -476,12 +477,32 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       'Nouveau': 'bg-blue-500'
     };
     
+    // Calculate responsive dimensions based on zoom level
+    const baseWidth = 16; // base width in units
+    const baseHeight = 4; // base height in units
+    const baseFontSize = 9; // base font size in px
+    
+    const scaledWidth = Math.max(12, Math.round(baseWidth * currentZoomLevel));
+    const scaledHeight = Math.max(3, Math.round(baseHeight * currentZoomLevel));
+    const scaledFontSize = Math.max(7, Math.round(baseFontSize * currentZoomLevel));
+    
     return (
-      <div className={cn(
-        'inline-flex items-center justify-center rounded-sm text-white font-medium w-16 h-4 text-center',
-        statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
-      )}>
-        <span className="truncate text-[9px]">{status}</span>
+      <div 
+        className={cn(
+          'inline-flex items-center justify-center rounded-sm text-white font-medium text-center',
+          statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
+        )}
+        style={{
+          width: `${scaledWidth * 4}px`, // Convert to pixels (4px per unit)
+          height: `${scaledHeight * 4}px`,
+          fontSize: `${scaledFontSize}px`,
+          minWidth: `${scaledWidth * 4}px`,
+          minHeight: `${scaledHeight * 4}px`
+        }}
+      >
+        <span className="truncate" style={{ fontSize: `${scaledFontSize}px` }}>
+          {status}
+        </span>
       </div>
     );
   };
@@ -771,7 +792,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       </div>
                     </div>
 
-                    {/* Status Column Data */}
+                    {/* Status Column Data - Updated to use zoom-responsive badges */}
                     <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                       <div 
                         className={cn(
@@ -782,8 +803,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         <DropdownMenu>
                           <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
                             <div className="flex items-center gap-1">
-                              {getStatusBadge(order.statut)}
-                              <ChevronDown className="h-2 w-2 text-gray-500 flex-shrink-0" />
+                              {getStatusBadge(order.statut, zoomLevel)}
+                              <ChevronDown 
+                                className="h-2 w-2 text-gray-500 flex-shrink-0" 
+                                style={{ 
+                                  width: `${Math.max(8, 8 * zoomLevel)}px`,
+                                  height: `${Math.max(8, 8 * zoomLevel)}px`
+                                }}
+                              />
                             </div>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[120px]">
@@ -793,7 +820,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                 onClick={() => onUpdateStatus(order.id, status)}
                                 className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
                               >
-                                {getStatusBadge(status)}
+                                {getStatusBadge(status, 1)} 
                               </DropdownMenuItem>
                             ))}
                           </DropdownMenuContent>
