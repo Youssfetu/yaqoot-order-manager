@@ -12,6 +12,7 @@ import OrderSummary from '@/components/OrderSummary';
 import MenuDrawer from '@/components/MenuDrawer';
 import ArchivedOrdersDialog from '@/components/ArchivedOrdersDialog';
 import { useToast } from '@/hooks/use-toast';
+import { exportOrdersToExcel } from '@/utils/excelExport';
 
 export interface Order {
   id: string;
@@ -135,72 +136,32 @@ const Index = () => {
     try {
       console.log('Share button clicked on mobile');
       
-      // Create a summary of orders data
-      const ordersSummary = orders.map(order => 
-        `الكود: ${order.code} | العميل: ${order.vendeur} | الرقم: ${order.numero} | السعر: ${order.prix} | الحالة: ${order.statut}`
-      ).join('\n');
-
-      const totalOrders = orders.length;
-      const totalAmount = orders.reduce((sum, order) => sum + order.prix, 0);
-      
-      const shareText = `📋 ملخص الطلبيات:
-
-عدد الطلبيات: ${totalOrders}
-إجمالي المبلغ: ${totalAmount} دج
-
-الطلبيات:
-${ordersSummary}
-
-تم إنشاؤه بواسطة Yaqoot Order Manager`;
-
-      console.log('Share data prepared, checking for native share API');
-
-      // Check if Web Share API is available (mobile browsers)
-      if (navigator.share && navigator.canShare && navigator.canShare({ text: shareText })) {
-        console.log('Using native share API');
-        await navigator.share({
-          title: 'ملخص الطلبيات - Yaqoot',
-          text: shareText,
-        });
+      // إذا كان هناك طلبيات، قم بتصدير ملف Excel
+      if (orders.length > 0) {
+        const fileName = exportOrdersToExcel(orders);
         
         toast({
-          title: "تم المشاركة بنجاح",
-          description: "تم مشاركة البيانات بنجاح",
+          title: "تم تصدير الملف بنجاح",
+          description: `تم تصدير ${orders.length} طلبية إلى ملف ${fileName}`,
         });
-      } else if (navigator.clipboard && window.isSecureContext) {
-        console.log('Using clipboard API');
-        // Fallback for desktop browsers - copy to clipboard
-        await navigator.clipboard.writeText(shareText);
         
-        toast({
-          title: "تم نسخ البيانات",
-          description: "تم نسخ البيانات إلى الحافظة، يمكنك لصقها في أي تطبيق",
-        });
-      } else {
-        console.log('Using WhatsApp fallback');
-        // WhatsApp fallback
-        const whatsappText = encodeURIComponent(shareText);
-        const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
-        
-        window.open(whatsappUrl, '_blank');
-        
-        toast({
-          title: "تم فتح الواتساب",
-          description: "تم فتح الواتساب لإرسال ملخص الطلبيات",
-        });
+        return;
       }
+      
+      // إذا لم تكن هناك طلبيات، أظهر رسالة
+      toast({
+        title: "لا توجد طلبيات",
+        description: "لا يوجد طلبيات لتصديرها",
+        variant: "destructive"
+      });
+      
     } catch (error) {
-      console.error('Error sharing:', error);
-      
-      // Final fallback - always try WhatsApp
-      const whatsappText = encodeURIComponent(`📋 ملخص الطلبيات - عدد الطلبيات: ${orders.length} - إجمالي المبلغ: ${orders.reduce((sum, order) => sum + order.prix, 0)} دج`);
-      const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
-      
-      window.open(whatsappUrl, '_blank');
+      console.error('Error exporting to Excel:', error);
       
       toast({
-        title: "تم فتح الواتساب",
-        description: "تم فتح الواتساب لإرسال ملخص الطلبيات",
+        title: "خطأ في التصدير",
+        description: "حدث خطأ أثناء تصدير الملف",
+        variant: "destructive"
       });
     }
   };
