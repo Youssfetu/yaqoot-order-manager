@@ -28,27 +28,27 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
   return (
     <div className="grid grid-cols-4 gap-2 sm:gap-4">
       {/* 1. Total - مجموع أثمان الطلبيات المُسلمة */}
-      <div className="flex flex-col items-center gap-1">
-        <Calculator className="h-6 w-6 sm:h-8 sm:w-8 text-summary-blue" />
-        <p className="text-xs sm:text-sm font-bold text-gray-800">{totalDeliveredAmount.toFixed(0)}</p>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <Calculator className="h-6 w-6 sm:h-8 sm:w-8 text-summary-blue flex-shrink-0" />
+        <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{totalDeliveredAmount.toFixed(0)}</p>
       </div>
 
       {/* 2. Revenue - مجموع أثمان الطلبيات المُسلمة ناقص الكوميسيون */}
-      <div className="flex flex-col items-center gap-1">
-        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-summary-green" />
-        <p className="text-xs sm:text-sm font-bold text-gray-800">{revenue.toFixed(0)}</p>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-summary-green flex-shrink-0" />
+        <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{revenue.toFixed(0)}</p>
       </div>
 
       {/* 3. Commission - مجموع الطلبيات المُسلمة ضرب الكوميسيون */}
-      <div className="flex flex-col items-center gap-1">
-        <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-summary-orange" />
-        <p className="text-xs sm:text-sm font-bold text-gray-800">{totalCommission.toFixed(0)}</p>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-summary-orange flex-shrink-0" />
+        <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{totalCommission.toFixed(0)}</p>
       </div>
 
       {/* 4. Number of delivered orders - عدد الطلبيات المُسلمة */}
-      <div className="flex flex-col items-center gap-1">
-        <Package className="h-6 w-6 sm:h-8 sm:w-8 text-summary-purple" />
-        <p className="text-xs sm:text-sm font-bold text-gray-800">{deliveredOrderCount}</p>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <Package className="h-6 w-6 sm:h-8 sm:w-8 text-summary-purple flex-shrink-0" />
+        <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{deliveredOrderCount}</p>
       </div>
     </div>
   );
