@@ -61,7 +61,29 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				summary: {
+					blue: 'hsl(var(--summary-blue))',
+					'blue-light': 'hsl(var(--summary-blue-light))',
+					green: 'hsl(var(--summary-green))',
+					'green-light': 'hsl(var(--summary-green-light))',
+					orange: 'hsl(var(--summary-orange))',
+					'orange-light': 'hsl(var(--summary-orange-light))',
+					purple: 'hsl(var(--summary-purple))',
+					'purple-light': 'hsl(var(--summary-purple-light))'
 				}
+			},
+			backgroundImage: {
+				'gradient-blue': 'var(--gradient-blue)',
+				'gradient-green': 'var(--gradient-green)',
+				'gradient-orange': 'var(--gradient-orange)',
+				'gradient-purple': 'var(--gradient-purple)'
+			},
+			boxShadow: {
+				'summary-blue': 'var(--shadow-blue)',
+				'summary-green': 'var(--shadow-green)',
+				'summary-orange': 'var(--shadow-orange)',
+				'summary-purple': 'var(--shadow-purple)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
