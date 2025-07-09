@@ -10,13 +10,14 @@ interface OrderSummaryProps {
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
-  const totalAmount = orders.reduce((sum, order) => sum + order.prix, 0);
-  const totalCommission = commission * orders.length;
-  const orderCount = orders.length;
+  // Filter delivered orders
+  const deliveredOrders = orders.filter(order => order.statut === 'Livré');
   
-  // Calculate payment status
-  const confirmedOrders = orders.filter(order => order.statut === 'Confirmé');
-  const totalPaid = confirmedOrders.reduce((sum, order) => sum + order.prix, 0);
+  // Calculate totals for delivered orders
+  const totalDeliveredAmount = deliveredOrders.reduce((sum, order) => sum + order.prix, 0);
+  const totalDeliveredCommission = commission * deliveredOrders.length;
+  const deliveredOrderCount = deliveredOrders.length;
+  const totalDeliveredMinusCommission = totalDeliveredAmount - totalDeliveredCommission;
 
   return (
     <div className="grid grid-cols-4 gap-2">
@@ -26,7 +27,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
             <div className="bg-blue-100 p-2 rounded-full w-10 h-10 mx-auto mb-2 flex items-center justify-center">
               <Calculator className="h-4 w-4 text-blue-600" />
             </div>
-            <p className="text-sm font-bold text-gray-800">{totalAmount.toFixed(0)}</p>
+            <p className="text-sm font-bold text-gray-800">{totalDeliveredMinusCommission.toFixed(0)}</p>
           </div>
         </CardContent>
       </Card>
@@ -37,7 +38,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
             <div className="bg-green-100 p-2 rounded-full w-10 h-10 mx-auto mb-2 flex items-center justify-center">
               <DollarSign className="h-4 w-4 text-green-600" />
             </div>
-            <p className="text-sm font-bold text-gray-800">{totalPaid.toFixed(0)}</p>
+            <p className="text-sm font-bold text-gray-800">{totalDeliveredCommission.toFixed(0)}</p>
           </div>
         </CardContent>
       </Card>
@@ -46,9 +47,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
         <CardContent className="p-3">
           <div className="text-center">
             <div className="bg-orange-100 p-2 rounded-full w-10 h-10 mx-auto mb-2 flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-orange-600" />
+              <Package className="h-4 w-4 text-orange-600" />
             </div>
-            <p className="text-sm font-bold text-gray-800">{totalCommission.toFixed(0)}</p>
+            <p className="text-sm font-bold text-gray-800">{deliveredOrderCount}</p>
           </div>
         </CardContent>
       </Card>
@@ -57,9 +58,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
         <CardContent className="p-3">
           <div className="text-center">
             <div className="bg-purple-100 p-2 rounded-full w-10 h-10 mx-auto mb-2 flex items-center justify-center">
-              <Package className="h-4 w-4 text-purple-600" />
+              <TrendingUp className="h-4 w-4 text-purple-600" />
             </div>
-            <p className="text-sm font-bold text-gray-800">{orderCount}</p>
+            <p className="text-sm font-bold text-gray-800">{totalDeliveredAmount.toFixed(0)}</p>
           </div>
         </CardContent>
       </Card>
