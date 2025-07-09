@@ -1000,69 +1000,57 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             
             {/* قائمة الأيقونات */}
             <div 
-              className="absolute z-[70] bg-white rounded-xl shadow-2xl border border-gray-200 p-3 transform -translate-x-1/2 min-w-[280px] sm:min-w-[320px]"
+              className="fixed z-[70] bg-white rounded-lg shadow-xl border border-gray-200 p-2"
               style={{
                 left: phoneActionsPopup.position.x,
-                top: phoneActionsPopup.position.y,
-                transform: `scale(${1/zoomLevel}) translate(-50%, 0)`,
-                transformOrigin: 'top center'
+                top: phoneActionsPopup.position.y - 50,
+                transform: 'translate(-50%, 0)'
               }}
             >
-              {/* رقم الهاتف */}
-              <div className="text-center mb-4 px-2">
-                <span className="text-sm font-mono text-gray-700 bg-gray-100 px-3 py-2 rounded-lg border">
-                  {phoneActionsPopup.phoneNumber}
-                </span>
-              </div>
-              
               {/* الأيقونات */}
-              <div className="grid grid-cols-2 gap-3 sm:flex sm:justify-center">
+              <div className="flex gap-1">
                 {/* أيقونة الاتصال */}
                 <button
                   onClick={() => handlePhoneCall(phoneActionsPopup.phoneNumber)}
-                  className="flex flex-col items-center gap-2 p-4 hover:bg-green-50 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-green-200 min-h-[80px]"
+                  className="p-2 hover:bg-green-50 rounded-md transition-all duration-200 group"
                   title="اتصال"
                 >
-                  <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors shadow-md">
-                    <Phone className="w-5 h-5 text-white" />
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                    <Phone className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-sm text-green-700 font-medium">اتصال</span>
                 </button>
 
                 {/* أيقونة واتساب */}
                 <button
                   onClick={() => handleWhatsAppMessage(phoneActionsPopup.phoneNumber)}
-                  className="flex flex-col items-center gap-2 p-4 hover:bg-green-50 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-green-200 min-h-[80px]"
+                  className="p-2 hover:bg-green-50 rounded-md transition-all duration-200 group"
                   title="واتساب"
                 >
-                  <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors shadow-md">
-                    <MessageCircle className="w-5 h-5 text-white" />
+                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                    <MessageCircle className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-sm text-green-700 font-medium">واتساب</span>
                 </button>
 
                 {/* أيقونة رسالة نصية */}
                 <button
                   onClick={() => handleSMSMessage(phoneActionsPopup.phoneNumber)}
-                  className="flex flex-col items-center gap-2 p-4 hover:bg-blue-50 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-blue-200 min-h-[80px]"
+                  className="p-2 hover:bg-blue-50 rounded-md transition-all duration-200 group"
                   title="رسالة"
                 >
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-600 transition-colors shadow-md">
-                    <Send className="w-5 h-5 text-white" />
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                    <Send className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-sm text-blue-700 font-medium">رسالة</span>
                 </button>
 
                 {/* أيقونة تحرير */}
                 <button
                   onClick={() => handleEditPhone(phoneActionsPopup.orderId)}
-                  className="flex flex-col items-center gap-2 p-4 hover:bg-orange-50 rounded-xl transition-all duration-200 group border-2 border-transparent hover:border-orange-200 min-h-[80px]"
+                  className="p-2 hover:bg-orange-50 rounded-md transition-all duration-200 group"
                   title="تحرير"
                 >
-                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center group-hover:bg-orange-600 transition-colors shadow-md">
-                    <Edit2 className="w-5 h-5 text-white" />
+                  <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center group-hover:bg-orange-600 transition-colors">
+                    <Edit2 className="w-3 h-3 text-white" />
                   </div>
-                  <span className="text-sm text-orange-700 font-medium">تحرير</span>
                 </button>
               </div>
 
