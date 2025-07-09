@@ -1000,10 +1000,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             
             {/* قائمة الأيقونات */}
             <div 
-              className="fixed z-[70] bg-white rounded-lg shadow-xl border border-gray-200 p-2"
+              className="fixed z-[70] bg-white rounded-lg shadow-xl border border-gray-200 p-1"
               style={{
                 left: phoneActionsPopup.position.x,
-                top: phoneActionsPopup.position.y - 50,
+                top: phoneActionsPopup.position.y - 25,
                 transform: 'translate(-50%, 0)'
               }}
             >
