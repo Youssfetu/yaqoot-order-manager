@@ -894,26 +894,42 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       >
                         {editingCell === `${order.id}-numero` ? (
                           <div 
-                            className="absolute inset-0 z-50"
-                            style={{
-                              transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
-                              transformOrigin: 'top left'
-                            }}
+                            className="fixed inset-0 z-[100] bg-black/20 flex items-center justify-center"
+                            onClick={handlePhoneBlur}
                           >
-                            <input
-                              value={order.numero}
-                              onChange={(e) => handlePhoneChange(order.id, e.target.value)}
-                              onBlur={handlePhoneBlur}
-                              onKeyDown={(e) => handlePhoneKeyDown(e, order.id)}
-                              onFocus={() => handlePhoneFocus(order.id)}
-                              className="w-full h-full px-2 text-xs border-none outline-none bg-white focus:ring-0 text-center font-mono"
-                              placeholder="أدخل رقم الهاتف..."
-                              autoFocus
-                              style={{
-                                fontSize: `${11 * zoomLevel}px`,
-                                padding: `${1 * zoomLevel}px ${8 * zoomLevel}px`
-                              }}
-                            />
+                            <div 
+                              className="bg-white rounded-lg p-4 mx-4 w-full max-w-sm shadow-xl"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="text-center mb-3">
+                                <h3 className="text-lg font-semibold">تعديل رقم الهاتف</h3>
+                              </div>
+                              <input
+                                value={order.numero}
+                                onChange={(e) => handlePhoneChange(order.id, e.target.value)}
+                                onBlur={handlePhoneBlur}
+                                onKeyDown={(e) => handlePhoneKeyDown(e, order.id)}
+                                className="w-full h-12 px-3 text-base border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
+                                placeholder="أدخل رقم الهاتف..."
+                                autoFocus
+                                type="tel"
+                                inputMode="tel"
+                              />
+                              <div className="flex gap-2 mt-4">
+                                <button
+                                  onClick={handlePhoneBlur}
+                                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                >
+                                  حفظ
+                                </button>
+                                <button
+                                  onClick={handlePhoneBlur}
+                                  className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-md text-sm font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                  إلغاء
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         ) : (
                           <span className="truncate w-full text-center text-xs font-mono text-gray-800 select-text">
