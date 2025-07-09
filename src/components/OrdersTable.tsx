@@ -13,9 +13,10 @@ interface OrdersTableProps {
   orders: Order[];
   onUpdateComment: (id: string, comment: string) => void;
   onUpdateStatus: (id: string, status: string) => void;
+  onUpdatePhone: (id: string, phone: string) => void;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone }) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -618,9 +619,30 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   // دالة تحرير رقم الهاتف
   const handleEditPhone = (orderId: string) => {
-    // يمكن إضافة منطق لتحرير رقم الهاتف هنا
-    console.log('Edit phone for order:', orderId);
+    setEditingCell(`${orderId}-numero`);
     closePhoneActionsPopup();
+  };
+
+  // دالة تحديث رقم الهاتف
+  const handlePhoneChange = (id: string, phone: string) => {
+    onUpdatePhone(id, phone);
+  };
+
+  // دالة معالجة فوكس رقم الهاتف
+  const handlePhoneFocus = (id: string) => {
+    setEditingCell(`${id}-numero`);
+  };
+
+  // دالة معالجة blur رقم الهاتف
+  const handlePhoneBlur = () => {
+    setEditingCell(null);
+  };
+
+  // دالة معالجة الضغط على Enter في رقم الهاتف
+  const handlePhoneKeyDown = (e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter') {
+      setEditingCell(null);
+    }
   };
 
   return (
@@ -864,14 +886,40 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 cursor-pointer",
-                          rowBackgroundClass
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 cursor-pointer relative",
+                          rowBackgroundClass,
+                          editingCell === `${order.id}-numero` && "bg-white border-blue-500 shadow-sm"
                         )}
                         onDoubleClick={(e) => handlePhoneDoubleClick(e, order.numero, order.id)}
                       >
-                        <span className="truncate w-full text-center text-xs font-mono text-gray-800 select-text">
-                          {order.numero}
-                        </span>
+                        {editingCell === `${order.id}-numero` ? (
+                          <div 
+                            className="absolute inset-0 z-50"
+                            style={{
+                              transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
+                              transformOrigin: 'top left'
+                            }}
+                          >
+                            <input
+                              value={order.numero}
+                              onChange={(e) => handlePhoneChange(order.id, e.target.value)}
+                              onBlur={handlePhoneBlur}
+                              onKeyDown={(e) => handlePhoneKeyDown(e, order.id)}
+                              onFocus={() => handlePhoneFocus(order.id)}
+                              className="w-full h-full px-2 text-xs border-none outline-none bg-white focus:ring-0 text-center font-mono"
+                              placeholder="أدخل رقم الهاتف..."
+                              autoFocus
+                              style={{
+                                fontSize: `${11 * zoomLevel}px`,
+                                padding: `${1 * zoomLevel}px ${8 * zoomLevel}px`
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <span className="truncate w-full text-center text-xs font-mono text-gray-800 select-text">
+                            {order.numero}
+                          </span>
+                        )}
                       </div>
                     </div>
 

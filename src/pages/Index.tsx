@@ -72,6 +72,12 @@ const Index = () => {
     ));
   };
 
+  const handleUpdatePhone = (id: string, phone: string) => {
+    setOrders(orders.map(order => 
+      order.id === id ? { ...order, numero: phone } : order
+    ));
+  };
+
   const handleUpdateStatus = (id: string, status: string) => {
     // إذا تم تغيير الحالة إلى Livré، نقل الطلبية إلى الأرشيف
     if (status === 'Livré') {
@@ -320,6 +326,7 @@ const Index = () => {
           orders={sortedFilteredOrders}
           onUpdateComment={handleUpdateComment}
           onUpdateStatus={handleUpdateStatus}
+          onUpdatePhone={handleUpdatePhone}
         />
 
         {/* Summary Cards - Now Below Table */}
