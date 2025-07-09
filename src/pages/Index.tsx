@@ -98,14 +98,25 @@ const Index = () => {
   };
 
   const handleBarcodeScanned = (code: string) => {
+    console.log('Scanning for code:', code);
     const foundOrder = orders.find(order => order.code === code);
     if (foundOrder) {
       setOrders(orders.map(order => 
         order.code === code ? { ...order, isScanned: true } : order
       ));
       
+      toast({
+        title: "تم العثور على الطلبية",
+        description: `الطلبية ${code} تم تحديثها`,
+      });
+      
       return 'success';
     } else {
+      toast({
+        title: "لم يتم العثور على الطلبية",
+        description: `الكود ${code} غير موجود في قائمة الطلبيات`,
+        variant: "destructive",
+      });
       return 'not-found';
     }
   };

@@ -18,7 +18,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
-  const scanTimeoutRef = useRef<number | null>(null);
+  const scanIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const playSuccessSound = () => {
     try {
@@ -60,12 +60,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       setCameraError('');
       setIsScanning(true);
 
-      // بسيط للهواتف
+      // إعدادات بسيطة للهواتف
       const constraints = {
         video: {
-          facingMode: 'environment',
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
+          facingMode: 'environment'
         }
       };
 
@@ -80,27 +78,30 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
           readerRef.current = new BrowserMultiFormatReader();
         }
 
-        // مسح بسيط وموثوق
-        const scan = () => {
-          if (!videoRef.current || !readerRef.current || !isScanning) return;
+        // مسح مستمر كل ثانية
+        const scanInterval = setInterval(() => {
+          if (!videoRef.current || !readerRef.current || !isScanning) {
+            clearInterval(scanInterval);
+            return;
+          }
 
-          readerRef.current.decodeFromVideoDevice(undefined, videoRef.current, (result, error) => {
-            if (result) {
-              const scannedCode = result.getText();
-              console.log('Barcode scanned:', scannedCode);
-              handleScanResult(scannedCode);
-            } else if (error && !(error instanceof NotFoundException)) {
-              console.error('Scan error:', error);
-            }
-          });
-        };
+          readerRef.current.decodeOnceFromVideoDevice(undefined, videoRef.current)
+            .then((result) => {
+              if (result) {
+                clearInterval(scanInterval);
+                const scannedCode = result.getText();
+                console.log('Barcode scanned:', scannedCode);
+                handleScanResult(scannedCode);
+              }
+            })
+            .catch((error) => {
+              if (!(error instanceof NotFoundException)) {
+                console.error('Scan error:', error);
+              }
+            });
+        }, 1000);
 
-        // بدء المسح بعد تحميل الفيديو
-        if (videoRef.current.readyState >= 2) {
-          scan();
-        } else {
-          videoRef.current.addEventListener('loadedmetadata', scan);
-        }
+        scanIntervalRef.current = scanInterval;
       }
     } catch (error) {
       console.error('Camera error:', error);
@@ -123,9 +124,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
   const stopScanning = () => {
     setIsScanning(false);
     
-    if (scanTimeoutRef.current) {
-      clearTimeout(scanTimeoutRef.current);
-      scanTimeoutRef.current = null;
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
+      scanIntervalRef.current = null;
     }
     
     if (streamRef.current) {
