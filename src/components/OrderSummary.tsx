@@ -30,9 +30,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
       {/* 1. Total - مجموع أثمان الطلبيات المُسلمة */}
       <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
         <CardContent className="p-1.5 sm:p-2">
-          <div className="flex flex-col items-center text-center gap-1">
-            <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-            <p className="text-xs sm:text-sm font-bold text-gray-800">{totalDeliveredAmount.toFixed(0)}</p>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Calculator className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+            <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{totalDeliveredAmount.toFixed(0)}</p>
           </div>
         </CardContent>
       </Card>
@@ -40,9 +40,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
       {/* 2. Revenue - مجموع أثمان الطلبيات المُسلمة ناقص الكوميسيون */}
       <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
         <CardContent className="p-1.5 sm:p-2">
-          <div className="flex flex-col items-center text-center gap-1">
-            <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-            <p className="text-xs sm:text-sm font-bold text-gray-800">{revenue.toFixed(0)}</p>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <DollarSign className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
+            <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{revenue.toFixed(0)}</p>
           </div>
         </CardContent>
       </Card>
@@ -50,9 +50,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
       {/* 3. Commission - مجموع الطلبيات المُسلمة ضرب الكوميسيون */}
       <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
         <CardContent className="p-1.5 sm:p-2">
-          <div className="flex flex-col items-center text-center gap-1">
-            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
-            <p className="text-xs sm:text-sm font-bold text-gray-800">{totalCommission.toFixed(0)}</p>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600 flex-shrink-0" />
+            <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{totalCommission.toFixed(0)}</p>
           </div>
         </CardContent>
       </Card>
@@ -60,9 +60,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
       {/* 4. Number of delivered orders - عدد الطلبيات المُسلمة */}
       <Card className="bg-white shadow-md border-0 rounded-2xl overflow-hidden">
         <CardContent className="p-1.5 sm:p-2">
-          <div className="flex flex-col items-center text-center gap-1">
-            <Package className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-            <p className="text-xs sm:text-sm font-bold text-gray-800">{deliveredOrderCount}</p>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Package className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 flex-shrink-0" />
+            <p className="text-xs sm:text-sm font-bold text-gray-800 truncate">{deliveredOrderCount}</p>
           </div>
         </CardContent>
       </Card>
