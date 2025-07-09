@@ -78,6 +78,12 @@ const Index = () => {
     ));
   };
 
+  const handleUpdatePrice = (id: string, price: number) => {
+    setOrders(orders.map(order => 
+      order.id === id ? { ...order, prix: price } : order
+    ));
+  };
+
   const handleUpdateStatus = (id: string, status: string) => {
     // إذا تم تغيير الحالة إلى Livré، نقل الطلبية إلى الأرشيف
     if (status === 'Livré') {
@@ -327,6 +333,7 @@ const Index = () => {
           onUpdateComment={handleUpdateComment}
           onUpdateStatus={handleUpdateStatus}
           onUpdatePhone={handleUpdatePhone}
+          onUpdatePrice={handleUpdatePrice}
         />
 
         {/* Summary Cards - Now Below Table */}

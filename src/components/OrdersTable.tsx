@@ -14,9 +14,10 @@ interface OrdersTableProps {
   onUpdateComment: (id: string, comment: string) => void;
   onUpdateStatus: (id: string, status: string) => void;
   onUpdatePhone: (id: string, phone: string) => void;
+  onUpdatePrice: (id: string, price: number) => void;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice }) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -645,6 +646,32 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
   };
 
+  // دوال تحرير السعر
+  const handlePriceDoubleClick = (e: React.MouseEvent, price: number, orderId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEditingCell(`${orderId}-prix`);
+  };
+
+  const handlePriceChange = (id: string, price: string) => {
+    const numPrice = parseFloat(price) || 0;
+    onUpdatePrice(id, numPrice);
+  };
+
+  const handlePriceFocus = (id: string) => {
+    setEditingCell(`${id}-prix`);
+  };
+
+  const handlePriceBlur = () => {
+    setEditingCell(null);
+  };
+
+  const handlePriceKeyDown = (e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter') {
+      setEditingCell(null);
+    }
+  };
+
   return (
     <div className="w-full bg-white">
       {/* Google Sheets Style Compact Table Container with Enhanced Touch Support */}
@@ -943,13 +970,58 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300",
-                          rowBackgroundClass
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer relative",
+                          rowBackgroundClass,
+                          editingCell === `${order.id}-prix` && "bg-white border-blue-500 shadow-sm"
                         )}
+                        onDoubleClick={(e) => handlePriceDoubleClick(e, order.prix, order.id)}
                       >
-                        <span className="text-xs font-medium text-green-700">
-                          {order.prix.toFixed(2)}
-                        </span>
+                        {editingCell === `${order.id}-prix` ? (
+                          <div 
+                            className="fixed inset-0 z-[100] bg-black/20 flex items-center justify-center"
+                            onClick={handlePriceBlur}
+                          >
+                            <div 
+                              className="bg-white rounded-lg p-4 mx-4 w-full max-w-sm shadow-xl"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="text-center mb-3">
+                                <h3 className="text-lg font-semibold">تعديل السعر</h3>
+                              </div>
+                              <input
+                                value={order.prix.toString()}
+                                onChange={(e) => handlePriceChange(order.id, e.target.value)}
+                                onBlur={handlePriceBlur}
+                                onKeyDown={(e) => handlePriceKeyDown(e, order.id)}
+                                className="w-full h-12 px-3 text-base border border-gray-300 rounded-md outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 text-center"
+                                placeholder="أدخل السعر..."
+                                autoFocus
+                                type="number"
+                                inputMode="decimal"
+                                step="0.01"
+                                min="0"
+                              />
+                              <div className="flex gap-2 mt-4">
+                                <button
+                                  onClick={handlePriceBlur}
+                                  className="flex-1 px-4 py-2 bg-green-500 text-white rounded-md text-sm font-medium hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                >
+                                  حفظ
+                                </button>
+                                <button
+                                  onClick={handlePriceBlur}
+                                  className="flex-1 px-4 py-2 bg-gray-500 text-white rounded-md text-sm font-medium hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                >
+                                  إلغاء
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-xs font-medium text-green-700">
+                            {order.prix.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     </div>
 
