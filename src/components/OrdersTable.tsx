@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Phone, MessageCircle, Edit2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
@@ -48,6 +48,19 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     isOpen: false,
     orderId: '',
     orderCode: ''
+  });
+
+  // إضافة حالة لعرض أيقونات التفاعل مع رقم الهاتف
+  const [phoneActionsPopup, setPhoneActionsPopup] = useState<{
+    isOpen: boolean;
+    phoneNumber: string;
+    orderId: string;
+    position: { x: number; y: number };
+  }>({
+    isOpen: false,
+    phoneNumber: '',
+    orderId: '',
+    position: { x: 0, y: 0 }
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -556,6 +569,63 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     });
   };
 
+  // دالة معالجة النقر المزدوج على رقم الهاتف
+  const handlePhoneDoubleClick = (e: React.MouseEvent, phoneNumber: string, orderId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    
+    if (containerRect) {
+      setPhoneActionsPopup({
+        isOpen: true,
+        phoneNumber,
+        orderId,
+        position: {
+          x: rect.left - containerRect.left + rect.width / 2,
+          y: rect.top - containerRect.top - 60
+        }
+      });
+    }
+  };
+
+  // دالة إغلاق قائمة أيقونات الهاتف
+  const closePhoneActionsPopup = () => {
+    setPhoneActionsPopup({
+      isOpen: false,
+      phoneNumber: '',
+      orderId: '',
+      position: { x: 0, y: 0 }
+    });
+  };
+
+  // دالة الاتصال
+  const handlePhoneCall = (phoneNumber: string) => {
+    window.open(`tel:${phoneNumber}`, '_self');
+    closePhoneActionsPopup();
+  };
+
+  // دالة إرسال رسالة واتساب
+  const handleWhatsAppMessage = (phoneNumber: string) => {
+    const cleanNumber = phoneNumber.replace(/[\s-+()]/g, '');
+    window.open(`https://wa.me/${cleanNumber}`, '_blank');
+    closePhoneActionsPopup();
+  };
+
+  // دالة إرسال رسالة عادية
+  const handleSMSMessage = (phoneNumber: string) => {
+    window.open(`sms:${phoneNumber}`, '_self');
+    closePhoneActionsPopup();
+  };
+
+  // دالة تحرير رقم الهاتف
+  const handleEditPhone = (orderId: string) => {
+    // يمكن إضافة منطق لتحرير رقم الهاتف هنا
+    console.log('Edit phone for order:', orderId);
+    closePhoneActionsPopup();
+  };
+
   return (
     <div className="w-full bg-white">
       {/* Google Sheets Style Compact Table Container with Enhanced Touch Support */}
@@ -797,11 +867,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                       <div 
                         className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
+                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 cursor-pointer",
                           rowBackgroundClass
                         )}
+                        onDoubleClick={(e) => handlePhoneDoubleClick(e, order.numero, order.id)}
                       >
-                        <span className="truncate w-full text-center text-xs font-mono text-gray-800">
+                        <span className="truncate w-full text-center text-xs font-mono text-gray-800 select-text">
                           {order.numero}
                         </span>
                       </div>
@@ -916,6 +987,91 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               تغيير حجم العمود: {resizingColumn}
             </div>
           </div>
+        )}
+
+        {/* Phone Actions Popup */}
+        {phoneActionsPopup.isOpen && (
+          <>
+            {/* Backdrop للإغلاق عند النقر خارج القائمة */}
+            <div 
+              className="absolute inset-0 z-[60] bg-transparent"
+              onClick={closePhoneActionsPopup}
+            />
+            
+            {/* قائمة الأيقونات */}
+            <div 
+              className="absolute z-[70] bg-white rounded-xl shadow-2xl border border-gray-200 p-2 transform -translate-x-1/2"
+              style={{
+                left: phoneActionsPopup.position.x,
+                top: phoneActionsPopup.position.y,
+                transform: `scale(${1/zoomLevel}) translate(-50%, 0)`,
+                transformOrigin: 'top center'
+              }}
+            >
+              {/* رقم الهاتف */}
+              <div className="text-center mb-3 px-2">
+                <span className="text-xs font-mono text-gray-600 bg-gray-100 px-2 py-1 rounded-md">
+                  {phoneActionsPopup.phoneNumber}
+                </span>
+              </div>
+              
+              {/* الأيقونات */}
+              <div className="flex gap-2">
+                {/* أيقونة الاتصال */}
+                <button
+                  onClick={() => handlePhoneCall(phoneActionsPopup.phoneNumber)}
+                  className="flex flex-col items-center gap-1 p-3 hover:bg-green-50 rounded-lg transition-all duration-200 group"
+                  title="اتصال"
+                >
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                    <Phone className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-green-700 font-medium">اتصال</span>
+                </button>
+
+                {/* أيقونة واتساب */}
+                <button
+                  onClick={() => handleWhatsAppMessage(phoneActionsPopup.phoneNumber)}
+                  className="flex flex-col items-center gap-1 p-3 hover:bg-green-50 rounded-lg transition-all duration-200 group"
+                  title="واتساب"
+                >
+                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center group-hover:bg-green-600 transition-colors">
+                    <MessageCircle className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-green-700 font-medium">واتساب</span>
+                </button>
+
+                {/* أيقونة رسالة نصية */}
+                <button
+                  onClick={() => handleSMSMessage(phoneActionsPopup.phoneNumber)}
+                  className="flex flex-col items-center gap-1 p-3 hover:bg-blue-50 rounded-lg transition-all duration-200 group"
+                  title="رسالة"
+                >
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                    <Send className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-blue-700 font-medium">رسالة</span>
+                </button>
+
+                {/* أيقونة تحرير */}
+                <button
+                  onClick={() => handleEditPhone(phoneActionsPopup.orderId)}
+                  className="flex flex-col items-center gap-1 p-3 hover:bg-orange-50 rounded-lg transition-all duration-200 group"
+                  title="تحرير"
+                >
+                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center group-hover:bg-orange-600 transition-colors">
+                    <Edit2 className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-xs text-orange-700 font-medium">تحرير</span>
+                </button>
+              </div>
+
+              {/* سهم يشير للأسفل */}
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
+                <div className="w-4 h-4 bg-white border-b border-r border-gray-200 rotate-45"></div>
+              </div>
+            </div>
+          </>
         )}
       </div>
 
