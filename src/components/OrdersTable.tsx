@@ -582,7 +582,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       orderId,
       position: {
         x: rect.left + rect.width / 2,
-        y: rect.top
+        y: rect.top - 35
       }
     });
   };
