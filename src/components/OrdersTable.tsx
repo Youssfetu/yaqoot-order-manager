@@ -575,19 +575,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     e.stopPropagation();
     
     const rect = e.currentTarget.getBoundingClientRect();
-    const containerRect = containerRef.current?.getBoundingClientRect();
     
-    if (containerRect) {
-      setPhoneActionsPopup({
-        isOpen: true,
-        phoneNumber,
-        orderId,
-        position: {
-          x: rect.left - containerRect.left + rect.width / 2,
-          y: rect.top - containerRect.top - 60
-        }
-      });
-    }
+    setPhoneActionsPopup({
+      isOpen: true,
+      phoneNumber,
+      orderId,
+      position: {
+        x: rect.left + rect.width / 2,
+        y: rect.top
+      }
+    });
   };
 
   // دالة إغلاق قائمة أيقونات الهاتف
