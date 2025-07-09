@@ -324,7 +324,7 @@ const Index = () => {
 
         {/* Summary Cards - Now Below Table */}
         <div className="px-4 py-4">
-          <OrderSummary orders={orders} commission={commission} />
+          <OrderSummary orders={archivedOrders} commission={commission} />
         </div>
       </div>
 

@@ -10,21 +10,21 @@ interface OrderSummaryProps {
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({ orders, commission }) => {
-  // Filter delivered orders (these are the ones in archive)
-  const deliveredOrders = orders.filter(order => order.statut === 'Livré');
+  // الطلبيات المرسلة هي الطلبيات الموجودة في archivedOrders (التي تم تغيير حالتها إلى 'Livré')
+  // لذا نحن لا نحتاج لفلترة - جميع الطلبيات المرسلة هنا مُسلمة
   
   // 1. Total - مجموع أثمان الطلبيات المُسلمة (الموجودة في الأرشيف)
-  const totalDeliveredAmount = deliveredOrders.reduce((sum, order) => sum + order.prix, 0);
+  const totalDeliveredAmount = orders.reduce((sum, order) => sum + order.prix, 0);
   
   // 2. Revenue - مجموع أثمان الطلبيات المُسلمة ناقص الكوميسيون
-  const totalCommission = commission * deliveredOrders.length;
+  const totalCommission = commission * orders.length;
   const revenue = totalDeliveredAmount - totalCommission;
   
   // 3. Commission - مجموع الطلبيات المُسلمة ضرب الكوميسيون
   // (already calculated as totalCommission)
   
   // 4. Number of delivered orders - عدد الطلبيات المُسلمة (الموجودة في الأرشيف)
-  const deliveredOrderCount = deliveredOrders.length;
+  const deliveredOrderCount = orders.length;
 
   return (
     <div className="grid grid-cols-4 gap-2">
