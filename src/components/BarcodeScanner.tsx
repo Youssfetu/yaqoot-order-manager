@@ -113,7 +113,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     }
 
     setManualCode('');
-    onClose();
+    // لا نغلق الماسح تلقائياً عند الإدخال اليدوي
   };
 
   const startCamera = async () => {
