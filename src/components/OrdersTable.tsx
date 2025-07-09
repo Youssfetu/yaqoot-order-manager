@@ -919,27 +919,38 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         )}
       </div>
 
-      {/* حوار التأكيد للتسليم */}
+      {/* حوار التأكيد للتسليم - Enhanced styling */}
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelConfirmation()}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-right" dir="rtl">
+        <AlertDialogContent className="max-w-md mx-4 rounded-xl border-0 shadow-2xl bg-white">
+          <AlertDialogHeader className="text-center pb-4">
+            <AlertDialogTitle className="text-xl font-bold text-gray-900 mb-2" dir="rtl">
               تأكيد التسليم
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-right" dir="rtl">
-              هل أنت متأكد من أنك تريد تغيير حالة الطلبية <strong>{confirmDialog.orderCode}</strong> إلى "تم التسليم"؟
-              <br />
-              <span className="text-orange-600 font-medium">
-                سيتم نقل هذه الطلبية إلى الأرشيف ولن تظهر في القائمة الرئيسية.
-              </span>
+            <AlertDialogDescription className="text-base text-gray-700 leading-relaxed" dir="rtl">
+              هل أنت متأكد من أنك تريد تغيير حالة الطلبية{' '}
+              <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                {confirmDialog.orderCode}
+              </span>{' '}
+              إلى "تم التسليم"؟
+              <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <span className="text-orange-700 font-medium text-sm">
+                  ⚠️ سيتم نقل هذه الطلبية إلى الأرشيف ولن تظهر في القائمة الرئيسية.
+                </span>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="flex gap-2">
-            <AlertDialogCancel onClick={handleCancelConfirmation} className="text-right">
+          <AlertDialogFooter className="flex gap-3 pt-4" dir="rtl">
+            <AlertDialogCancel 
+              onClick={handleCancelConfirmation} 
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-0 rounded-lg font-medium py-3"
+            >
               إلغاء
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelivery} className="bg-green-600 hover:bg-green-700 text-white">
-              تأكيد التسليم
+            <AlertDialogAction 
+              onClick={handleConfirmDelivery} 
+              className="flex-1 bg-green-600 hover:bg-green-700 text-white border-0 rounded-lg font-medium py-3 shadow-lg"
+            >
+              تأكيد التسليم ✓
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
