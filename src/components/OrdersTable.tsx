@@ -725,8 +725,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             transition: isPanning || isResizing || momentumAnimationRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             minWidth: '800px',
             minHeight: '100%',
-            fontSize: `${tableSettings.fontSize}px`,
-            fontWeight: tableSettings.fontWeight === 'bold' ? 'bold' : tableSettings.fontWeight === 'light' ? '300' : 'normal',
             pointerEvents: editingCell ? 'none' : 'auto',
             willChange: isPanning || isResizing ? 'transform' : 'auto'
           }}
@@ -738,7 +736,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.code && (
                 <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="font-bold text-gray-800">الكود</span>
+                    <span className="text-xs font-bold text-gray-800">الكود</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -766,7 +764,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.destination && (
                 <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="font-bold text-gray-800">العميل/الموزع</span>
+                    <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -794,7 +792,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.phone && (
                 <div className="relative" style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="font-bold text-gray-800">الرقم</span>
+                    <span className="text-xs font-bold text-gray-800">الرقم</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -822,7 +820,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.price && (
                 <div className="relative" style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="font-bold text-gray-800">السعر</span>
+                    <span className="text-xs font-bold text-gray-800">السعر</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -850,7 +848,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.status && (
                 <div className="relative" style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="font-bold text-gray-800">الحالة</span>
+                    <span className="text-xs font-bold text-gray-800">الحالة</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -878,14 +876,20 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.comment && (
                 <div className="flex-1" style={{ minWidth: '150px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="font-bold text-gray-800">التعليق</span>
+                    <span className="text-xs font-bold text-gray-800">التعليق</span>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Data Rows */}
-            <div className="flex-1">
+            <div 
+              className="flex-1"
+              style={{
+                fontSize: `${tableSettings.fontSize}px`,
+                fontWeight: tableSettings.fontWeight === 'bold' ? 'bold' : tableSettings.fontWeight === 'light' ? '300' : 'normal'
+              }}
+            >
               {orders.map((order, index) => {
                 const isRecentlyScanned = recentlyScannedOrders.has(order.id);
                 const isPermanentlyScanned = permanentlyScannedOrders.has(order.id);
