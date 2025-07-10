@@ -380,6 +380,8 @@ const Index = () => {
         onClose={() => setIsMenuDrawerOpen(false)}
         commission={commission}
         onCommissionChange={setCommission}
+        totalOrders={orders.length + archivedOrders.length}
+        deliveredOrders={archivedOrders.length}
       />
     </div>
   );

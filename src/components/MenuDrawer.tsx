@@ -13,13 +13,17 @@ interface MenuDrawerProps {
   onClose: () => void;
   commission: number;
   onCommissionChange: (value: number) => void;
+  totalOrders: number;
+  deliveredOrders: number;
 }
 
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ 
   isOpen, 
   onClose, 
   commission, 
-  onCommissionChange 
+  onCommissionChange,
+  totalOrders,
+  deliveredOrders
 }) => {
   const [tempCommission, setTempCommission] = useState(commission);
   const { toast } = useToast();
@@ -46,8 +50,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
     });
   };
 
-  // Calcul automatique du pourcentage de livraison (exemple)
-  const deliveryPercentage = 15;
+  // Calcul automatique du pourcentage de livraison
+  const deliveryPercentage = totalOrders > 0 ? Math.round((deliveredOrders / totalOrders) * 100) : 0;
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
@@ -99,7 +103,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">Pourcentage de livraison</h3>
-                  <p className="text-sm text-gray-500">{deliveryPercentage}% calculé automatiquement</p>
+                  <p className="text-sm text-gray-500">{deliveredOrders} sur {totalOrders} commandes livrées</p>
                 </div>
               </div>
               <span className="text-lg font-semibold text-green-600">{deliveryPercentage}%</span>
