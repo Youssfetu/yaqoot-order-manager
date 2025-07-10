@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X, Settings } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X, Settings, Type } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -268,6 +268,16 @@ const Index = () => {
             
             {/* Header Icons */}
             <div className="flex items-center gap-3">
+              {/* Table Settings - First on the left */}
+              <Button
+                onClick={() => setIsTableSettingsOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Type className="h-6 w-6 text-gray-600" />
+              </Button>
+
               <Button
                 onClick={() => setIsScannerOpen(true)}
                 variant="ghost"
@@ -284,15 +294,6 @@ const Index = () => {
                 className="p-2 hover:bg-gray-100 rounded-xl"
               >
                 <Archive className="h-6 w-6 text-gray-600" />
-              </Button>
-
-              <Button
-                onClick={() => setIsTableSettingsOpen(true)}
-                variant="ghost"
-                size="sm"
-                className="p-2 hover:bg-gray-100 rounded-xl"
-              >
-                <Settings className="h-6 w-6 text-gray-600" />
               </Button>
 
 
