@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Download, Receipt, Percent, DollarSign, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { generateInvoicePDF, Order } from '@/utils/pdfGenerator';
 
 interface MenuDrawerProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface MenuDrawerProps {
   onCommissionChange: (value: number) => void;
   totalOrders: number;
   deliveredOrders: number;
+  archivedOrders: Order[];
 }
 
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ 
@@ -23,7 +25,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   commission, 
   onCommissionChange,
   totalOrders,
-  deliveredOrders
+  deliveredOrders,
+  archivedOrders
 }) => {
   const [tempCommission, setTempCommission] = useState(commission);
   const { toast } = useToast();
@@ -44,10 +47,30 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   };
 
   const handleGenerateInvoice = () => {
-    toast({
-      title: 'Générer facture',
-      description: 'La facture sera générée prochainement',
-    });
+    try {
+      if (archivedOrders.length === 0) {
+        toast({
+          title: 'Aucune commande livrée',
+          description: 'Il n\'y a pas de commandes livrées pour générer une facture',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      const fileName = generateInvoicePDF(archivedOrders, commission);
+      
+      toast({
+        title: 'Facture générée avec succès',
+        description: `La facture ${fileName} a été téléchargée`,
+      });
+    } catch (error) {
+      console.error('Error generating invoice:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Une erreur est survenue lors de la génération de la facture',
+        variant: 'destructive'
+      });
+    }
   };
 
   // Calcul automatique du pourcentage de livraison

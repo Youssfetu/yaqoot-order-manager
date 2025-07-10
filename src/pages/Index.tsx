@@ -382,6 +382,7 @@ const Index = () => {
         onCommissionChange={setCommission}
         totalOrders={orders.length + archivedOrders.length}
         deliveredOrders={archivedOrders.length}
+        archivedOrders={archivedOrders}
       />
     </div>
   );
