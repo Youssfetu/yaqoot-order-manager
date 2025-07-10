@@ -161,7 +161,7 @@ const Index = () => {
       
       // إذا كان هناك طلبيات، قم بتصدير ملف Excel
       if (orders.length > 0) {
-        const fileName = exportOrdersToExcel(orders);
+        const fileName = exportOrdersToExcel(orders, archivedOrders);
         
         toast({
           title: "تم تصدير الملف بنجاح",
@@ -187,6 +187,11 @@ const Index = () => {
         variant: "destructive"
       });
     }
+  };
+
+  const handleClearAllData = () => {
+    setOrders([]);
+    setArchivedOrders([]);
   };
 
   // Helper function to sort orders - cancelled orders go to bottom
@@ -383,6 +388,8 @@ const Index = () => {
         totalOrders={orders.length + archivedOrders.length}
         deliveredOrders={archivedOrders.length}
         archivedOrders={archivedOrders}
+        orders={orders}
+        onClearAllData={handleClearAllData}
       />
     </div>
   );

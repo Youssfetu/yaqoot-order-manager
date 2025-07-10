@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Download, Receipt, Percent, DollarSign, ChevronRight } from 'lucide-react';
+import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateInvoicePDF, Order } from '@/utils/pdfGenerator';
+import { exportOrdersToExcel } from '@/utils/excelExport';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 interface MenuDrawerProps {
   isOpen: boolean;
@@ -17,6 +19,8 @@ interface MenuDrawerProps {
   totalOrders: number;
   deliveredOrders: number;
   archivedOrders: Order[];
+  orders: Order[];
+  onClearAllData: () => void;
 }
 
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ 
@@ -26,7 +30,9 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   onCommissionChange,
   totalOrders,
   deliveredOrders,
-  archivedOrders
+  archivedOrders,
+  orders,
+  onClearAllData
 }) => {
   const [tempCommission, setTempCommission] = useState(commission);
   const { toast } = useToast();
@@ -40,10 +46,19 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   };
 
   const handleDownloadExcel = () => {
-    toast({
-      title: 'Télécharger Excel',
-      description: 'Les commandes seront téléchargées en fichier Excel prochainement',
-    });
+    try {
+      const fileName = exportOrdersToExcel(orders, archivedOrders);
+      toast({
+        title: 'Excel téléchargé',
+        description: `Le fichier ${fileName} a été téléchargé avec succès`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: 'Une erreur est survenue lors du téléchargement',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handleGenerateInvoice = () => {
@@ -78,6 +93,15 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
         variant: 'destructive'
       });
     }
+  };
+
+  const handleClearAllData = () => {
+    onClearAllData();
+    toast({
+      title: 'Données supprimées',
+      description: 'Toutes les commandes ont été supprimées avec succès',
+    });
+    onClose();
   };
 
   // Calcul automatique du pourcentage de livraison
@@ -176,6 +200,41 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
             </div>
+          </div>
+
+          {/* Clear All Data */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                      <Trash2 className="h-5 w-5 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">Effacer toutes les données</h3>
+                      <p className="text-sm text-gray-500">Supprimer toutes les commandes</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action supprimera toutes les commandes (actives et archivées). 
+                    Cette action ne peut pas être annulée. Les paramètres de commission seront conservés.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleClearAllData} className="bg-red-600 hover:bg-red-700">
+                    Supprimer tout
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
 

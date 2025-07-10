@@ -2,9 +2,9 @@
 import * as XLSX from 'xlsx';
 import { Order } from '@/pages/Index';
 
-export const exportOrdersToExcel = (orders: Order[]) => {
-  // تحضير البيانات للتصدير
-  const exportData = orders.map(order => ({
+export const exportOrdersToExcel = (orders: Order[], archivedOrders: Order[]) => {
+  // تحضير البيانات للطلبيات المسلمة (من الأرشيف)
+  const deliveredData = archivedOrders.map(order => ({
     'الكود': order.code,
     'العميل': order.vendeur,
     'رقم الهاتف': order.numero,
@@ -13,8 +13,29 @@ export const exportOrdersToExcel = (orders: Order[]) => {
     'التعليق': order.commentaire
   }));
 
+  // تحضير البيانات للطلبيات الملغية والمفقودة
+  const nonDeliveredOrders = orders.filter(order => 
+    order.statut === 'Annulé' || order.statut === 'Pas de réponse'
+  );
+  
+  const nonDeliveredData = nonDeliveredOrders.map(order => ({
+    'الكود': order.code,
+    'العميل': order.vendeur,
+    'رقم الهاتف': order.numero,
+    'السعر': order.prix,
+    'الحالة': order.statut,
+    'التعليق': order.commentaire
+  }));
+
+  // دمج البيانات: المسلمة أولاً ثم الملغية
+  const allData = [
+    ...deliveredData,
+    ...(deliveredData.length > 0 && nonDeliveredData.length > 0 ? [{}] : []), // سطر فارغ للفصل
+    ...nonDeliveredData
+  ];
+
   // إنشاء ورقة عمل Excel
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
+  const worksheet = XLSX.utils.json_to_sheet(allData);
   
   // إنشاء كتاب العمل
   const workbook = XLSX.utils.book_new();
