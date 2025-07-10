@@ -25,7 +25,7 @@ export const generateInvoicePDF = (
     // Calculate totals
     const totalOrders = deliveredOrders.length;
     const totalAmount = deliveredOrders.reduce((sum, order) => sum + order.prix, 0);
-    const commissionAmount = (totalAmount * commission) / 100;
+    const commissionAmount = commission * totalOrders; // Fixed commission per order
     const finalAmount = totalAmount - commissionAmount;
     
     console.log('Calculations done:', { totalOrders, totalAmount, commissionAmount, finalAmount });
@@ -86,7 +86,7 @@ export const generateInvoicePDF = (
     doc.text('RESUME:', 20, summaryY);
     doc.text(`Total des commandes: ${totalOrders}`, 20, summaryY + 15);
     doc.text(`Montant total: ${totalAmount.toFixed(2)} DH`, 20, summaryY + 25);
-    doc.text(`Commission (${commission}%): ${commissionAmount.toFixed(2)} DH`, 20, summaryY + 35);
+    doc.text(`Commission (${commission} DH x ${totalOrders}): ${commissionAmount.toFixed(2)} DH`, 20, summaryY + 35);
     
     // Final amount (highlighted)
     doc.setFontSize(16);
