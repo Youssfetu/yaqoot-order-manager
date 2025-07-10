@@ -9,15 +9,34 @@ import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/componen
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import type { Order } from '@/pages/Index';
 
+interface TableSettings {
+  columnVisibility: {
+    code: boolean;
+    destination: boolean;
+    phone: boolean;
+    price: boolean;
+    comment: boolean;
+    status: boolean;
+  };
+  fontSize: 'small' | 'medium' | 'large';
+  textAlignment: {
+    code: 'left' | 'center' | 'right';
+    phone: 'left' | 'center' | 'right';
+    price: 'left' | 'center' | 'right';
+    comment: 'left' | 'center' | 'right';
+  };
+}
+
 interface OrdersTableProps {
   orders: Order[];
   onUpdateComment: (id: string, comment: string) => void;
   onUpdateStatus: (id: string, status: string) => void;
   onUpdatePhone: (id: string, phone: string) => void;
   onUpdatePrice: (id: string, price: number) => void;
+  tableSettings: TableSettings;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -705,7 +724,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             transition: isPanning || isResizing || momentumAnimationRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             minWidth: '800px',
             minHeight: '100%',
-            fontSize: '11px',
+            fontSize: tableSettings.fontSize === 'small' ? '10px' : tableSettings.fontSize === 'large' ? '14px' : '11px',
             pointerEvents: editingCell ? 'none' : 'auto',
             willChange: isPanning || isResizing ? 'transform' : 'auto'
           }}
@@ -714,10 +733,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             {/* Header Row with Significantly Enhanced Resizable Handles for Touch */}
             <div className="flex">
               {/* Code Column Header */}
-              <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
-                <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800">الكود</span>
-                </div>
+              {tableSettings.columnVisibility.code && (
+                <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-800">الكود</span>
+                  </div>
                 {/* Professional Resize Handle */}
                 <div 
                   className={cn(
@@ -738,12 +758,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
+              )}
 
               {/* Vendeur Column Header */}
-              <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
-                <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
-                </div>
+              {tableSettings.columnVisibility.destination && (
+                <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
+                  </div>
                 {/* Professional Resize Handle */}
                 <div 
                   className={cn(
@@ -764,12 +786,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
+              )}
 
               {/* Number Column Header */}
-              <div className="relative" style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
-                <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800">الرقم</span>
-                </div>
+              {tableSettings.columnVisibility.phone && (
+                <div className="relative" style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-800">الرقم</span>
+                  </div>
                 {/* Professional Resize Handle */}
                 <div 
                   className={cn(
@@ -790,12 +814,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
+              )}
 
               {/* Price Column Header */}
-              <div className="relative" style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
-                <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800">السعر</span>
-                </div>
+              {tableSettings.columnVisibility.price && (
+                <div className="relative" style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-800">السعر</span>
+                  </div>
                 {/* Professional Resize Handle */}
                 <div 
                   className={cn(
@@ -816,12 +842,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
+              )}
 
               {/* Status Column Header */}
-              <div className="relative" style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
-                <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800">الحالة</span>
-                </div>
+              {tableSettings.columnVisibility.status && (
+                <div className="relative" style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-800">الحالة</span>
+                  </div>
                 {/* Professional Resize Handle */}
                 <div 
                   className={cn(
@@ -842,13 +870,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                   <div className="w-0.5 h-3 bg-white rounded-full opacity-60" />
                 </div>
               </div>
+              )}
 
               {/* Comment Column Header */}
-              <div className="flex-1" style={{ minWidth: '150px' }}>
-                <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-800">التعليق</span>
+              {tableSettings.columnVisibility.comment && (
+                <div className="flex-1" style={{ minWidth: '150px' }}>
+                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-800">التعليق</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Data Rows */}
@@ -879,46 +910,56 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 return (
                   <div key={order.id} className="flex">
                     {/* Code Column Data with Enhanced Highlighting */}
-                    <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
-                      <div 
-                        data-code={order.code}
-                        className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
-                          isPermanentlyScanned 
-                            ? "bg-green-100 border-green-200 font-semibold" 
-                            : rowBackgroundClass
-                        )}
-                      >
-                        <span className="truncate w-full text-center text-xs font-mono text-gray-800">
-                          {order.code}
-                        </span>
+                    {tableSettings.columnVisibility.code && (
+                      <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
+                        <div 
+                          data-code={order.code}
+                          className={cn(
+                            "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
+                            isPermanentlyScanned 
+                              ? "bg-green-100 border-green-200 font-semibold" 
+                              : rowBackgroundClass
+                          )}
+                        >
+                          <span 
+                            className={cn(
+                              "truncate w-full text-xs font-mono text-gray-800",
+                              `text-${tableSettings.textAlignment.code}`
+                            )}
+                          >
+                            {order.code}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Vendeur Column Data */}
-                    <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
-                      <div 
-                        className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
-                          rowBackgroundClass
-                        )}
-                      >
-                        <span className="truncate w-full text-xs text-gray-800">
-                          {order.vendeur}
-                        </span>
+                    {tableSettings.columnVisibility.destination && (
+                      <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
+                        <div 
+                          className={cn(
+                            "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
+                            rowBackgroundClass
+                          )}
+                        >
+                          <span className="truncate w-full text-xs text-gray-800">
+                            {order.vendeur}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Number Column Data */}
-                    <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
-                      <div 
-                        className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 cursor-pointer relative",
-                          rowBackgroundClass,
-                          editingCell === `${order.id}-numero` && "bg-white border-blue-500 shadow-sm"
-                        )}
-                        onDoubleClick={(e) => handlePhoneDoubleClick(e, order.numero, order.id)}
-                      >
+                    {tableSettings.columnVisibility.phone && (
+                      <div style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
+                        <div 
+                          className={cn(
+                            "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 cursor-pointer relative",
+                            rowBackgroundClass,
+                            editingCell === `${order.id}-numero` && "bg-white border-blue-500 shadow-sm"
+                          )}
+                          onDoubleClick={(e) => handlePhoneDoubleClick(e, order.numero, order.id)}
+                        >
                         {editingCell === `${order.id}-numero` ? (
                           <div 
                             className="fixed inset-0 z-[100] bg-black/20 flex items-center justify-center"
@@ -959,23 +1000,30 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                             </div>
                           </div>
                         ) : (
-                          <span className="truncate w-full text-center text-xs font-mono text-gray-800 select-text">
+                          <span 
+                            className={cn(
+                              "truncate w-full text-xs font-mono text-gray-800 select-text",
+                              `text-${tableSettings.textAlignment.phone}`
+                            )}
+                          >
                             {order.numero}
                           </span>
                         )}
                       </div>
                     </div>
+                    )}
 
                     {/* Price Column Data */}
-                    <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
-                      <div 
-                        className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer relative",
-                          rowBackgroundClass,
-                          editingCell === `${order.id}-prix` && "bg-white border-blue-500 shadow-sm"
-                        )}
-                        onDoubleClick={(e) => handlePriceDoubleClick(e, order.prix, order.id)}
-                      >
+                    {tableSettings.columnVisibility.price && (
+                      <div style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
+                        <div 
+                          className={cn(
+                            "h-7 px-2 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer relative",
+                            rowBackgroundClass,
+                            editingCell === `${order.id}-prix` && "bg-white border-blue-500 shadow-sm"
+                          )}
+                          onDoubleClick={(e) => handlePriceDoubleClick(e, order.prix, order.id)}
+                        >
                         {editingCell === `${order.id}-prix` ? (
                           <div 
                             className="fixed inset-0 z-[100] bg-black/20 flex items-center justify-center"
@@ -1018,18 +1066,25 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                             </div>
                           </div>
                         ) : (
-                          <span className="text-xs font-medium text-green-700">
+                          <span 
+                            className={cn(
+                              "text-xs font-medium text-green-700",
+                              `text-${tableSettings.textAlignment.price}`
+                            )}
+                          >
                             {order.prix.toFixed(2)}
                           </span>
                         )}
                       </div>
                     </div>
+                    )}
 
                     {/* Status Column Data - Updated to use confirmation dialog */}
-                    <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
-                      <div 
-                        className={cn(
-                          "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300",
+                    {tableSettings.columnVisibility.status && (
+                      <div style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
+                        <div 
+                          className={cn(
+                            "h-7 px-1 py-1 border-b border-gray-300 flex items-center justify-center hover:bg-blue-50 transition-all duration-300",
                           rowBackgroundClass
                         )}
                       >
@@ -1054,9 +1109,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         </DropdownMenu>
                       </div>
                     </div>
+                    )}
 
                     {/* Comment Column Data */}
-                    <div className="flex-1" style={{ minWidth: '150px' }}>
+                    {tableSettings.columnVisibility.comment && (
+                      <div className="flex-1" style={{ minWidth: '150px' }}>
                       <div 
                         className={cn(
                           "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 relative",
@@ -1098,6 +1155,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         )}
                       </div>
                     </div>
+                    )}
                   </div>
                 );
               })}

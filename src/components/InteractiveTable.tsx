@@ -3,15 +3,34 @@ import React from 'react';
 import OrdersTable from './OrdersTable';
 import type { Order } from '@/pages/Index';
 
+interface TableSettings {
+  columnVisibility: {
+    code: boolean;
+    destination: boolean;
+    phone: boolean;
+    price: boolean;
+    comment: boolean;
+    status: boolean;
+  };
+  fontSize: 'small' | 'medium' | 'large';
+  textAlignment: {
+    code: 'left' | 'center' | 'right';
+    phone: 'left' | 'center' | 'right';
+    price: 'left' | 'center' | 'right';
+    comment: 'left' | 'center' | 'right';
+  };
+}
+
 interface InteractiveTableProps {
   orders: Order[];
   onUpdateComment: (id: string, comment: string) => void;
   onUpdateStatus: (id: string, status: string) => void;
   onUpdatePhone: (id: string, phone: string) => void;
   onUpdatePrice: (id: string, price: number) => void;
+  tableSettings: TableSettings;
 }
 
-const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice }) => {
+const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
   return (
     <div className="w-full">
       <OrdersTable
@@ -20,6 +39,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
         onUpdateStatus={onUpdateStatus}
         onUpdatePhone={onUpdatePhone}
         onUpdatePrice={onUpdatePrice}
+        tableSettings={tableSettings}
       />
     </div>
   );

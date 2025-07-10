@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import BarcodeScanner from '@/components/BarcodeScanner';
 import OrderSummary from '@/components/OrderSummary';
 import MenuDrawer from '@/components/MenuDrawer';
 import ArchivedOrdersDialog from '@/components/ArchivedOrdersDialog';
+import TableSettingsDialog from '@/components/TableSettingsDialog';
 
 import { useToast } from '@/hooks/use-toast';
 import { exportOrdersToExcel } from '@/utils/excelExport';
@@ -36,8 +37,27 @@ const Index = () => {
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [isArchivedDialogOpen, setIsArchivedDialogOpen] = useState(false);
+  const [isTableSettingsOpen, setIsTableSettingsOpen] = useState(false);
   const [commission, setCommission] = useState(50);
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
+
+  const [tableSettings, setTableSettings] = useState({
+    columnVisibility: {
+      code: true,
+      destination: true,
+      phone: true,
+      price: true,
+      comment: true,
+      status: true,
+    },
+    fontSize: 'medium' as 'small' | 'medium' | 'large',
+    textAlignment: {
+      code: 'left' as 'left' | 'center' | 'right',
+      phone: 'left' as 'left' | 'center' | 'right',
+      price: 'left' as 'left' | 'center' | 'right',
+      comment: 'left' as 'left' | 'center' | 'right',
+    },
+  });
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -265,6 +285,15 @@ const Index = () => {
                 <Archive className="h-6 w-6 text-gray-600" />
               </Button>
 
+              <Button
+                onClick={() => setIsTableSettingsOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Settings className="h-6 w-6 text-gray-600" />
+              </Button>
+
 
               {/* Search Button - Now Functional */}
               <Button
@@ -345,6 +374,7 @@ const Index = () => {
           onUpdateStatus={handleUpdateStatus}
           onUpdatePhone={handleUpdatePhone}
           onUpdatePrice={handleUpdatePrice}
+          tableSettings={tableSettings}
         />
 
         {/* Summary Cards - Now Below Table */}
@@ -384,6 +414,13 @@ const Index = () => {
         isOpen={isArchivedDialogOpen}
         onClose={() => setIsArchivedDialogOpen(false)}
         archivedOrders={archivedOrders}
+      />
+
+      <TableSettingsDialog
+        open={isTableSettingsOpen}
+        onOpenChange={setIsTableSettingsOpen}
+        settings={tableSettings}
+        onSettingsChange={setTableSettings}
       />
 
       <MenuDrawer
