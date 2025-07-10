@@ -111,12 +111,12 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 
   return (
     <Drawer open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="max-h-[85vh]">
-        <DrawerHeader className="text-center border-b pb-4">
-          <DrawerTitle className="text-xl font-bold text-gray-800">Paramètres</DrawerTitle>
+      <DrawerContent className="max-h-[90vh] flex flex-col">
+        <DrawerHeader className="text-center border-b pb-4 flex-shrink-0">
+          <DrawerTitle className="text-xl font-bold text-gray-800">الإعدادات</DrawerTitle>
         </DrawerHeader>
 
-        <div className="px-4 py-6 space-y-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
           {/* Commission Settings */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
@@ -125,7 +125,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <DollarSign className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">Commission</h3>
+                  <h3 className="font-medium text-gray-900">العمولة</h3>
                   <p className="text-sm text-gray-500">{commission}</p>
                 </div>
               </div>
@@ -137,15 +137,15 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 type="number"
                 value={tempCommission}
                 onChange={(e) => setTempCommission(Number(e.target.value))}
-                placeholder="Entrez la valeur de la commission"
-                className="text-right"
+                placeholder="أدخل قيمة العمولة"
+                className="text-center"
               />
               <Button 
                 onClick={handleSaveCommission} 
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 size="sm"
               >
-                Sauvegarder les modifications
+                حفظ التغييرات
               </Button>
             </div>
           </div>
@@ -158,8 +158,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Percent className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">Pourcentage de livraison</h3>
-                  <p className="text-sm text-gray-500">{deliveredOrders} sur {totalOrders} commandes livrées</p>
+                  <h3 className="font-medium text-gray-900">نسبة التوصيل</h3>
+                  <p className="text-sm text-gray-500">{deliveredOrders} من {totalOrders} طلبيات تم توصيلها</p>
                 </div>
               </div>
               <span className="text-lg font-semibold text-green-600">{deliveryPercentage}%</span>
@@ -177,8 +177,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Receipt className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">Générer facture</h3>
-                  <p className="text-sm text-gray-500">Créer une facture pour les commandes</p>
+                  <h3 className="font-medium text-gray-900">توليد الفاتورة</h3>
+                  <p className="text-sm text-gray-500">إنشاء فاتورة للطلبيات</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -214,8 +214,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                       <Trash2 className="h-5 w-5 text-red-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Effacer toutes les données</h3>
-                      <p className="text-sm text-gray-500">Supprimer toutes les commandes</p>
+                      <h3 className="font-medium text-gray-900">مسح جميع البيانات</h3>
+                      <p className="text-sm text-gray-500">حذف جميع الطلبيات</p>
                     </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -223,16 +223,16 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Cette action supprimera toutes les commandes (actives et archivées). 
-                    Cette action ne peut pas être annulée. Les paramètres de commission seront conservés.
+                    هذا الإجراء سيحذف جميع الطلبيات (النشطة والمؤرشفة). 
+                    لا يمكن التراجع عن هذا الإجراء. ستبقى إعدادات العمولة محفوظة.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
                   <AlertDialogAction onClick={handleClearAllData} className="bg-red-600 hover:bg-red-700">
-                    Supprimer tout
+                    حذف الكل
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -240,9 +240,9 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
           </div>
         </div>
 
-        <DrawerFooter className="border-t pt-4">
+        <DrawerFooter className="border-t pt-4 flex-shrink-0">
           <Button variant="outline" onClick={onClose} className="w-full">
-            Fermer
+            إغلاق
           </Button>
         </DrawerFooter>
       </DrawerContent>
