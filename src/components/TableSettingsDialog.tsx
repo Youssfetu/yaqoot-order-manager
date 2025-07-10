@@ -87,19 +87,19 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-sm mx-auto max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-center">
             <Settings className="h-5 w-5" />
             إعدادات الجدول
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="space-y-4 py-2">
           {/* Column Visibility */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">عرض الأعمدة</h3>
-            <div className="space-y-3">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">عرض الأعمدة</h3>
+            <div className="space-y-2">
               {[
                 { key: 'code', label: 'الكود' },
                 { key: 'destination', label: 'الوجهة' },
@@ -108,7 +108,7 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
                 { key: 'comment', label: 'التعليق' },
                 { key: 'status', label: 'الحالة' },
               ].map((column) => (
-                <div key={column.key} className="flex items-center justify-between">
+                <div key={column.key} className="flex items-center justify-between py-1">
                   <Label htmlFor={column.key} className="text-sm">{column.label}</Label>
                   <Switch
                     id={column.key}
@@ -121,8 +121,8 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
           </div>
 
           {/* Font Size */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">حجم الخط</h3>
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">حجم الخط</h3>
             <Select value={settings.fontSize.toString()} onValueChange={(value) => updateFontSize(Number(value))}>
               <SelectTrigger>
                 <SelectValue />
@@ -140,8 +140,8 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
           </div>
 
           {/* Font Weight */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">سمك الخط</h3>
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">سمك الخط</h3>
             <Select value={settings.fontWeight} onValueChange={updateFontWeight}>
               <SelectTrigger>
                 <SelectValue />
@@ -155,25 +155,25 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
           </div>
 
           {/* Text Alignment for Editable Columns */}
-          <div>
-            <h3 className="text-sm font-medium mb-3">محاذاة النص (للأعمدة القابلة للتحرير)</h3>
-            <div className="space-y-3">
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">محاذاة النص</h3>
+            <div className="space-y-2">
               {[
                 { key: 'code', label: 'الكود' },
                 { key: 'phone', label: 'رقم الهاتف' },
                 { key: 'price', label: 'الثمن' },
                 { key: 'comment', label: 'التعليق' },
               ].map((column) => (
-                <div key={column.key} className="flex items-center justify-between">
+                <div key={column.key} className="flex items-center justify-between py-1">
                   <Label className="text-sm">{column.label}</Label>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 bg-white rounded border p-1">
                     {['left', 'center', 'right'].map((alignment) => (
                       <Button
                         key={alignment}
                         variant={settings.textAlignment[column.key as keyof typeof settings.textAlignment] === alignment ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => updateTextAlignment(column.key, alignment as 'left' | 'center' | 'right')}
-                        className="p-2"
+                        className="p-1.5 w-8 h-8"
                       >
                         {getAlignmentIcon(alignment)}
                       </Button>
@@ -183,6 +183,17 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
               ))}
             </div>
           </div>
+        </div>
+        
+        {/* Close Button */}
+        <div className="pt-3 border-t">
+          <Button 
+            onClick={() => onOpenChange(false)} 
+            className="w-full" 
+            variant="outline"
+          >
+            إغلاق
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
