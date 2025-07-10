@@ -21,7 +21,11 @@ export const generateInvoicePDF = (
   deliveredOrders: Order[],
   commission: number
 ) => {
+  console.log('Starting PDF generation with orders:', deliveredOrders);
+  console.log('Commission rate:', commission);
+  
   const doc = new jsPDF();
+  console.log('jsPDF initialized');
   
   // Calculate totals
   const totalOrders = deliveredOrders.length;

@@ -47,8 +47,13 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   };
 
   const handleGenerateInvoice = () => {
+    console.log('Generate invoice clicked');
+    console.log('Archived orders:', archivedOrders);
+    console.log('Commission:', commission);
+    
     try {
       if (archivedOrders.length === 0) {
+        console.log('No delivered orders found');
         toast({
           title: 'Aucune commande livrée',
           description: 'Il n\'y a pas de commandes livrées pour générer une facture',
@@ -57,7 +62,9 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
         return;
       }
 
+      console.log('Generating PDF...');
       const fileName = generateInvoicePDF(archivedOrders, commission);
+      console.log('PDF generated successfully:', fileName);
       
       toast({
         title: 'Facture générée avec succès',
