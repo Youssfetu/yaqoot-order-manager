@@ -18,7 +18,8 @@ interface TableSettings {
     comment: boolean;
     status: boolean;
   };
-  fontSize: 'small' | 'medium' | 'large';
+  fontSize: number;
+  fontWeight: 'normal' | 'bold' | 'light';
   textAlignment: {
     code: 'left' | 'center' | 'right';
     phone: 'left' | 'center' | 'right';
@@ -724,7 +725,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             transition: isPanning || isResizing || momentumAnimationRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
             minWidth: '800px',
             minHeight: '100%',
-            fontSize: tableSettings.fontSize === 'small' ? '10px' : tableSettings.fontSize === 'large' ? '14px' : '11px',
+            fontSize: `${tableSettings.fontSize}px`,
+            fontWeight: tableSettings.fontWeight === 'bold' ? 'bold' : tableSettings.fontWeight === 'light' ? '300' : 'normal',
             pointerEvents: editingCell ? 'none' : 'auto',
             willChange: isPanning || isResizing ? 'transform' : 'auto'
           }}

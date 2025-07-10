@@ -50,7 +50,8 @@ const Index = () => {
       comment: true,
       status: true,
     },
-    fontSize: 'medium' as 'small' | 'medium' | 'large',
+    fontSize: 14,
+    fontWeight: 'normal' as 'normal' | 'bold' | 'light',
     textAlignment: {
       code: 'left' as 'left' | 'center' | 'right',
       phone: 'left' as 'left' | 'center' | 'right',

@@ -15,7 +15,8 @@ interface TableSettings {
     comment: boolean;
     status: boolean;
   };
-  fontSize: 'small' | 'medium' | 'large';
+  fontSize: number;
+  fontWeight: 'normal' | 'bold' | 'light';
   textAlignment: {
     code: 'left' | 'center' | 'right';
     phone: 'left' | 'center' | 'right';
@@ -47,10 +48,17 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
     });
   };
 
-  const updateFontSize = (fontSize: 'small' | 'medium' | 'large') => {
+  const updateFontSize = (fontSize: number) => {
     onSettingsChange({
       ...settings,
       fontSize,
+    });
+  };
+
+  const updateFontWeight = (fontWeight: 'normal' | 'bold' | 'light') => {
+    onSettingsChange({
+      ...settings,
+      fontWeight,
     });
   };
 
@@ -115,14 +123,33 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
           {/* Font Size */}
           <div>
             <h3 className="text-sm font-medium mb-3">حجم الخط</h3>
-            <Select value={settings.fontSize} onValueChange={updateFontSize}>
+            <Select value={settings.fontSize.toString()} onValueChange={(value) => updateFontSize(Number(value))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="small">صغير</SelectItem>
-                <SelectItem value="medium">متوسط</SelectItem>
-                <SelectItem value="large">كبير</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="12">12</SelectItem>
+                <SelectItem value="14">14</SelectItem>
+                <SelectItem value="16">16</SelectItem>
+                <SelectItem value="18">18</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="24">24</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Font Weight */}
+          <div>
+            <h3 className="text-sm font-medium mb-3">سمك الخط</h3>
+            <Select value={settings.fontWeight} onValueChange={updateFontWeight}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">رقيق</SelectItem>
+                <SelectItem value="normal">عادي</SelectItem>
+                <SelectItem value="bold">عريض</SelectItem>
               </SelectContent>
             </Select>
           </div>

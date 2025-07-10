@@ -12,7 +12,8 @@ interface TableSettings {
     comment: boolean;
     status: boolean;
   };
-  fontSize: 'small' | 'medium' | 'large';
+  fontSize: number;
+  fontWeight: 'normal' | 'bold' | 'light';
   textAlignment: {
     code: 'left' | 'center' | 'right';
     phone: 'left' | 'center' | 'right';
