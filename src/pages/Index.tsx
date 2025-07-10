@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,7 @@ import BarcodeScanner from '@/components/BarcodeScanner';
 import OrderSummary from '@/components/OrderSummary';
 import MenuDrawer from '@/components/MenuDrawer';
 import ArchivedOrdersDialog from '@/components/ArchivedOrdersDialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { exportOrdersToExcel } from '@/utils/excelExport';
 
@@ -37,6 +38,7 @@ const Index = () => {
   const [isArchivedDialogOpen, setIsArchivedDialogOpen] = useState(false);
   const [commission, setCommission] = useState(50);
   const [isMenuDrawerOpen, setIsMenuDrawerOpen] = useState(false);
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -192,6 +194,11 @@ const Index = () => {
   const handleClearAllData = () => {
     setOrders([]);
     setArchivedOrders([]);
+    setIsClearDialogOpen(false);
+    toast({
+      title: 'تم مسح البيانات',
+      description: 'تم مسح جميع الطلبيات بنجاح. يمكنك الآن البدء من جديد.',
+    });
   };
 
   // Helper function to sort orders - cancelled orders go to bottom
@@ -259,6 +266,34 @@ const Index = () => {
               >
                 <Archive className="h-6 w-6 text-gray-600" />
               </Button>
+
+              {/* Clear Data Button */}
+              <AlertDialog open={isClearDialogOpen} onOpenChange={setIsClearDialogOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-2 hover:bg-gray-100 rounded-xl"
+                  >
+                    <Trash2 className="h-6 w-6 text-gray-600" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>مسح جميع البيانات</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      هل أنت متأكد من أنك تريد مسح جميع الطلبيات والبدء من جديد؟ 
+                      سيتم الاحتفاظ بإعدادات الكوميسيون فقط. هذا الإجراء لا يمكن التراجع عنه.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleClearAllData} className="bg-red-600 hover:bg-red-700">
+                      مسح البيانات
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               {/* Search Button - Now Functional */}
               <Button
