@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X, Settings, Type } from 'lucide-react';
+import { Search, Plus, BarChart3, Upload, QrCode, Share2, Calculator, Menu, Package, Archive, X, Settings, ALargeSmall } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -275,7 +275,7 @@ const Index = () => {
                 size="sm"
                 className="p-2 hover:bg-gray-100 rounded-xl"
               >
-                <Type className="h-6 w-6 text-gray-600" />
+                <ALargeSmall className="h-6 w-6 text-gray-600" />
               </Button>
 
               <Button
