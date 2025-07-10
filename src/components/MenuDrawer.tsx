@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2 } from 'lucide-react';
+import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateInvoicePDF, Order } from '@/utils/pdfGenerator';
 import { exportOrdersToExcel } from '@/utils/excelExport';
@@ -21,6 +21,7 @@ interface MenuDrawerProps {
   archivedOrders: Order[];
   orders: Order[];
   onClearAllData: () => void;
+  onShare: () => void;
 }
 
 const MenuDrawer: React.FC<MenuDrawerProps> = ({ 
@@ -32,7 +33,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   deliveredOrders,
   archivedOrders,
   orders,
-  onClearAllData
+  onClearAllData,
+  onShare
 }) => {
   const [tempCommission, setTempCommission] = useState(commission);
   const { toast } = useToast();
@@ -183,6 +185,24 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             </div>
           </div>
 
+          {/* Share Excel File */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div 
+              className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+              onClick={onShare}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Share2 className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">مشاركة ملف إكسل</h3>
+                  <p className="text-sm text-gray-500">مشاركة البيانات كملف إكسل</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </div>
+          </div>
 
           {/* Clear All Data */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">

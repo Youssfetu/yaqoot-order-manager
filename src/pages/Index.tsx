@@ -325,15 +325,6 @@ const Index = () => {
                 <Upload className="h-6 w-6 text-gray-600" />
               </Button>
 
-              {/* Share Button - Now with real sharing functionality */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="p-2 hover:bg-gray-100 rounded-xl"
-                onClick={handleShare}
-              >
-                <Share2 className="h-6 w-6 text-gray-600" />
-              </Button>
             </div>
           </div>
 
@@ -435,6 +426,7 @@ const Index = () => {
         archivedOrders={archivedOrders}
         orders={orders}
         onClearAllData={handleClearAllData}
+        onShare={handleShare}
       />
     </div>
   );
