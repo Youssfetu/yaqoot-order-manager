@@ -738,7 +738,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.code && (
                 <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">الكود</span>
+                    <span className="font-bold text-gray-800">الكود</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -766,7 +766,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.destination && (
                 <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
+                    <span className="font-bold text-gray-800">العميل/الموزع</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -794,7 +794,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.phone && (
                 <div className="relative" style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">الرقم</span>
+                    <span className="font-bold text-gray-800">الرقم</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -822,7 +822,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.price && (
                 <div className="relative" style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">السعر</span>
+                    <span className="font-bold text-gray-800">السعر</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -850,7 +850,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.status && (
                 <div className="relative" style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">الحالة</span>
+                    <span className="font-bold text-gray-800">الحالة</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -878,7 +878,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.comment && (
                 <div className="flex-1" style={{ minWidth: '150px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">التعليق</span>
+                    <span className="font-bold text-gray-800">التعليق</span>
                   </div>
                 </div>
               )}
@@ -925,7 +925,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         >
                           <span 
                             className={cn(
-                              "truncate w-full text-xs font-mono text-gray-800",
+                              "truncate w-full font-mono text-gray-800",
                               `text-${tableSettings.textAlignment.code}`
                             )}
                           >
@@ -944,7 +944,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                             rowBackgroundClass
                           )}
                         >
-                          <span className="truncate w-full text-xs text-gray-800">
+                          <span className="truncate w-full text-gray-800">
                             {order.vendeur}
                           </span>
                         </div>
@@ -1004,7 +1004,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         ) : (
                           <span 
                             className={cn(
-                              "truncate w-full text-xs font-mono text-gray-800 select-text",
+                              "truncate w-full font-mono text-gray-800 select-text",
                               `text-${tableSettings.textAlignment.phone}`
                             )}
                           >
@@ -1070,7 +1070,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         ) : (
                           <span 
                             className={cn(
-                              "text-xs font-medium text-green-700",
+                              "font-medium text-green-700",
                               `text-${tableSettings.textAlignment.price}`
                             )}
                           >
@@ -1102,7 +1102,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                               <DropdownMenuItem
                                 key={status}
                                 onClick={() => handleStatusChange(order.id, status)}
-                                className="text-xs cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
+                                className="cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
                               >
                                 {getStatusBadge(status)} 
                               </DropdownMenuItem>
@@ -1136,7 +1136,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                               onChange={(e) => handleCommentChange(order.id, e.target.value)}
                               onBlur={handleCommentBlur}
                               onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
-                              className="w-full h-full px-2 text-xs border-none outline-none bg-white focus:ring-0"
+                              className="w-full h-full px-2 border-none outline-none bg-white focus:ring-0"
                               placeholder="اكتب تعليق..."
                               autoFocus
                               style={{
@@ -1150,7 +1150,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                             className="w-full h-full flex items-center cursor-text px-0"
                             onClick={() => handleCommentFocus(order.id)}
                           >
-                            <span className="text-xs text-gray-800 truncate w-full">
+                            <span className="text-gray-800 truncate w-full">
                               {order.commentaire || 'اكتب تعليق...'}
                             </span>
                           </div>
