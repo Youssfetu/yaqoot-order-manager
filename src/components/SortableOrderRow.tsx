@@ -84,25 +84,21 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         isPressed ? 'scale-[0.985] bg-muted/30' : ''
       } ${
         longPressActivated ? 'ring-1 ring-primary/40 bg-primary/5 cursor-grabbing' : 'cursor-default'
-      } relative group transition-all duration-150 ease-out hover:bg-muted/20`}
+      } relative group transition-all duration-150 ease-out hover:bg-muted/20 select-none`}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleMouseDown}
       onTouchEnd={handleMouseUp}
+      {...(longPressActivated ? { ref: setActivatorNodeRef, ...attributes, ...listeners } : {})}
     >
-      <div 
-        ref={longPressActivated ? setActivatorNodeRef : undefined}
-        {...(longPressActivated ? attributes : {})}
-        {...(longPressActivated ? listeners : {})}
-        className="flex items-center"
-      >
-        {/* Drag Handle */}
+      <div className="flex items-center pointer-events-none">
+        {/* Drag Handle - Visual indicator only when activated */}
         <div
-          className={`w-8 flex-shrink-0 flex items-center justify-center select-none touch-none
+          className={`w-8 flex-shrink-0 flex items-center justify-center touch-none
             ${isPressed ? 'opacity-100 scale-110 bg-primary/10 rounded' : 'opacity-0 group-hover:opacity-70'} 
             ${longPressActivated ? 'opacity-100 bg-primary/15 rounded' : ''} 
-            transition-all duration-150 ease-out hover:bg-muted/30`}
+            transition-all duration-150 ease-out`}
         >
           <GripVertical 
             size={16} 
@@ -111,7 +107,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         </div>
         
         {/* Order Content */}
-        <div className="flex-1">
+        <div className="flex-1 pointer-events-auto">
           {children}
         </div>
       </div>
