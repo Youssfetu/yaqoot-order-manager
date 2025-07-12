@@ -1,6 +1,7 @@
 
 import React from 'react';
 import OrdersTable from './OrdersTable';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import type { Order } from '@/pages/Index';
 
 interface TableSettings {
@@ -34,14 +35,16 @@ interface InteractiveTableProps {
 const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
   return (
     <div className="w-full relative">
-      <OrdersTable
-        orders={orders}
-        onUpdateComment={onUpdateComment}
-        onUpdateStatus={onUpdateStatus}
-        onUpdatePhone={onUpdatePhone}
-        onUpdatePrice={onUpdatePrice}
-        tableSettings={tableSettings}
-      />
+      <ScrollArea className="h-[calc(100vh-200px)]">
+        <OrdersTable
+          orders={orders}
+          onUpdateComment={onUpdateComment}
+          onUpdateStatus={onUpdateStatus}
+          onUpdatePhone={onUpdatePhone}
+          onUpdatePrice={onUpdatePrice}
+          tableSettings={tableSettings}
+        />
+      </ScrollArea>
     </div>
   );
 };
