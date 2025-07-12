@@ -29,10 +29,11 @@ interface InteractiveTableProps {
   onUpdateStatus: (id: string, status: string) => void;
   onUpdatePhone: (id: string, phone: string) => void;
   onUpdatePrice: (id: string, price: number) => void;
+  onReorderOrders: (newOrders: Order[]) => void;
   tableSettings: TableSettings;
 }
 
-const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
+const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, onReorderOrders, tableSettings }) => {
   return (
     <div className="w-full relative">
       <ScrollArea className="h-[calc(100vh-200px)]">
@@ -42,6 +43,7 @@ const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateCom
           onUpdateStatus={onUpdateStatus}
           onUpdatePhone={onUpdatePhone}
           onUpdatePrice={onUpdatePrice}
+          onReorderOrders={onReorderOrders}
           tableSettings={tableSettings}
         />
       </ScrollArea>

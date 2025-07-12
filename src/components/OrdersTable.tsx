@@ -2,13 +2,33 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Phone, MessageCircle, Edit2, Send } from 'lucide-react';
+import { ChevronDown, Phone, MessageCircle, Edit2, Send, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
 import GoogleSheetsCommentEditor from './GoogleSheetsCommentEditor';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import {
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import SortableOrderRow from './SortableOrderRow';
 import type { Order } from '@/pages/Index';
 
 interface TableSettings {
@@ -36,10 +56,11 @@ interface OrdersTableProps {
   onUpdateStatus: (id: string, status: string) => void;
   onUpdatePhone: (id: string, phone: string) => void;
   onUpdatePrice: (id: string, price: number) => void;
+  onReorderOrders: (newOrders: Order[]) => void;
   tableSettings: TableSettings;
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
+const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, onReorderOrders, tableSettings }) => {
   const { t, isRTL } = useLanguage();
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
@@ -92,6 +113,26 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
+  
+  // DND Kit sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = orders.findIndex((order) => order.id === active.id);
+      const newIndex = orders.findIndex((order) => order.id === over.id);
+
+      const newOrders = arrayMove(orders, oldIndex, newIndex);
+      onReorderOrders(newOrders);
+    }
+  };
   const momentumAnimationRef = useRef<number | null>(null);
   const resizeStartPosRef = useRef<{ x: number; initialWidth: number }>({ x: 0, initialWidth: 0 });
 
@@ -887,14 +928,20 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </div>
 
             {/* Data Rows */}
-            <div 
-              className="flex-1"
-              style={{
-                fontSize: `${tableSettings.fontSize}px`,
-                fontWeight: tableSettings.fontWeight === 'bold' ? 'bold' : tableSettings.fontWeight === 'light' ? '300' : 'normal'
-              }}
+            <DndContext 
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              {orders.map((order, index) => {
+              <SortableContext items={orders.map(order => order.id)} strategy={verticalListSortingStrategy}>
+                <div 
+                  className="flex-1"
+                  style={{
+                    fontSize: `${tableSettings.fontSize}px`,
+                    fontWeight: tableSettings.fontWeight === 'bold' ? 'bold' : tableSettings.fontWeight === 'light' ? '300' : 'normal'
+                  }}
+                >
+                  {orders.map((order, index) => {
                 const isRecentlyScanned = recentlyScannedOrders.has(order.id);
                 const isPermanentlyScanned = permanentlyScannedOrders.has(order.id);
                 const isRejected = isRejectedStatus(order.statut);
@@ -918,7 +965,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 const rowBackgroundClass = getRowBackgroundClass();
 
                 return (
-                  <div key={order.id} className="flex">
+                  <SortableOrderRow 
+                    key={order.id} 
+                    order={order} 
+                    index={index}
+                    className={cn(
+                      "border-b border-gray-300 transition-all duration-300",
+                      rowBackgroundClass
+                    )}
+                  >
+                    <div className="flex">
                     {/* Code Column Data with Enhanced Highlighting */}
                     {tableSettings.columnVisibility.code && (
                       <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
@@ -1138,12 +1194,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                           {order.commentaire || t('add_comment')}
                         </span>
                       </div>
+                     </div>
+                     )}
                     </div>
-                    )}
-                  </div>
+                  </SortableOrderRow>
                 );
               })}
-            </div>
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
         </div>
 

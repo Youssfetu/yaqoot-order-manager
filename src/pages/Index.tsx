@@ -108,6 +108,10 @@ const Index = () => {
     ));
   };
 
+  const handleReorderOrders = (newOrders: Order[]) => {
+    setOrders(newOrders);
+  };
+
   const handleUpdateStatus = (id: string, status: string) => {
     // إذا تم تغيير الحالة إلى Livré، نقل الطلبية إلى الأرشيف
     if (status === 'Livré') {
@@ -369,6 +373,7 @@ const Index = () => {
           onUpdateStatus={handleUpdateStatus}
           onUpdatePhone={handleUpdatePhone}
           onUpdatePrice={handleUpdatePrice}
+          onReorderOrders={handleReorderOrders}
           tableSettings={tableSettings}
         />
 
