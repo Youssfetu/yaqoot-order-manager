@@ -72,7 +72,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         });
         listeners.onPointerDown(syntheticEvent as any);
       }
-    }, 200); // 200ms for long press
+        }, 3000); // 3 seconds for long press
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -154,37 +154,19 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         setActivatorNodeRef(node);
       }}
       style={style}
-      className={`
-        ${className} 
-        ${isDragging ? 'shadow-lg scale-105 bg-white border-2 border-blue-300 rounded-lg' : ''} 
-        ${isLongPress && !isDragging ? 'bg-blue-50 scale-[1.02]' : ''}
-        relative transition-all duration-200 ease-out
-        touch-manipulation
-        min-h-[48px]
-        select-none
-        cursor-grab
-        active:cursor-grabbing
-      `}
+      className={`${className} ${isDragging ? 'shadow-lg' : ''} relative`}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onMouseDown={handleMouseDown}
       {...attributes}
     >
-      {/* Enhanced visual feedback for drag state */}
-      {isDragging && (
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-100 to-indigo-100 opacity-50 rounded-lg pointer-events-none" />
-      )}
-      
-      {/* Long press visual indicator */}
+      {/* Long press visual indicator - only during 3 second wait */}
       {isLongPress && !isDragging && (
-        <div className="absolute inset-0 bg-blue-100 opacity-30 rounded-md pointer-events-none animate-pulse" />
+        <div className="absolute inset-0 bg-blue-100 opacity-20 pointer-events-none animate-pulse" />
       )}
       
-      {/* Order Content */}
-      <div className="relative z-10">
-        {children}
-      </div>
+      {children}
     </div>
   );
 };
