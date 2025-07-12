@@ -148,12 +148,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Refusé',
     'Numéro erroné',
     'Hors zone',
-    'Programmé'
+    'Programmé',
+    'Pas de réponse'
   ];
 
   // Helper function to check if status is rejected/cancelled
   const isRejectedStatus = (status: string) => {
-    return ['Annulé', 'Refusé', 'Hors zone'].includes(status);
+    return ['Annulé', 'Refusé', 'Hors zone', 'Pas de réponse'].includes(status);
   };
 
   // Enhanced tracking for recently scanned orders - show animation only once then keep permanent state

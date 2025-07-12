@@ -51,7 +51,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
               vendeur: rowData[1]?.toString() || 'Vendeur inconnu',
               numero: rowData[2]?.toString() || '0000000000',
               prix: parseFloat(rowData[3]) || 0,
-              statut: rowData[4]?.toString() || 'Nouveau',
+              statut: 'Nouveau',
               commentaire: rowData[5]?.toString() || 'Importé depuis Excel'
             };
           }).filter(order => order.code && order.code !== ''); // Filter out empty rows
@@ -113,7 +113,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
             vendeur: columns[1] || 'Vendeur inconnu',
             numero: columns[2] || '0000000000',
             prix: parseFloat(columns[3]) || 0,
-            statut: columns[4] || 'Nouveau',
+            statut: 'Nouveau',
             commentaire: columns[5] || 'Importé depuis CSV'
           };
         }).filter(order => order.code && order.code !== '');

@@ -36,7 +36,7 @@ interface InteractiveTableProps {
 const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, onReorderOrders, tableSettings }) => {
   return (
     <div className="w-full relative">
-      <ScrollArea className="h-[calc(100vh-200px)] smooth-scroll mobile-scroll">
+      <ScrollArea className="h-[calc(100vh-180px)] sm:h-[calc(100vh-200px)] smooth-scroll mobile-scroll">
         <OrdersTable
           orders={orders}
           onUpdateComment={onUpdateComment}

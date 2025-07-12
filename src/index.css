@@ -161,4 +161,49 @@ All colors MUST be HSL.
   .mobile-scroll::-webkit-scrollbar-thumb:hover {
     background-color: rgba(0, 0, 0, 0.3);
   }
+  
+  /* Mobile responsive utilities */
+  @media (max-width: 640px) {
+    .mobile-text-xs {
+      font-size: 0.75rem;
+    }
+    
+    .mobile-padding-sm {
+      padding: 0.5rem;
+    }
+    
+    .mobile-gap-sm {
+      gap: 0.25rem;
+    }
+    
+    /* Better mobile touch targets */
+    .mobile-touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Improved mobile table cells */
+    .mobile-table-cell {
+      padding: 0.5rem 0.25rem;
+      font-size: 0.875rem;
+    }
+    
+    /* Mobile-friendly buttons */
+    .mobile-button {
+      padding: 0.5rem;
+      min-height: 40px;
+      min-width: 40px;
+    }
+  }
+  
+  /* Tablet responsive utilities */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .tablet-padding {
+      padding: 1rem;
+    }
+    
+    .tablet-gap {
+      gap: 0.75rem;
+    }
+  }
 }

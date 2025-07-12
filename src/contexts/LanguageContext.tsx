@@ -21,7 +21,7 @@ const translations: Translations = {
     
     // Table Headers
     'code': 'الكود',
-    'client': 'العميل/الموزع',
+    'client': 'العميل/البائع',
     'phone': 'الرقم',
     'price': 'الثمن',
     'comment': 'التعليق',
@@ -39,6 +39,7 @@ const translations: Translations = {
     'Hors zone': 'خارج المنطقة',
     'Programmé': 'مبرمج',
     'Nouveau': 'جديد',
+    'Pas de réponse': 'لا يجيب',
     
     // Menu Items
     'commission': 'العمولة',
@@ -166,7 +167,7 @@ const translations: Translations = {
     
     // Table Headers
     'code': 'Code',
-    'client': 'Client/Distributeur',
+    'client': 'Client/Vendeur',
     'phone': 'Numéro',
     'price': 'Prix',
     'comment': 'Commentaire',
@@ -184,6 +185,7 @@ const translations: Translations = {
     'Hors zone': 'Hors zone',
     'Programmé': 'Programmé',
     'Nouveau': 'Nouveau',
+    'Pas de réponse': 'Pas de réponse',
     
     // Menu Items
     'commission': 'Commission',

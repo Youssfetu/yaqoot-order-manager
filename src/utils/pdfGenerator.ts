@@ -106,8 +106,38 @@ export const generateInvoicePDF = (
     // Generate filename with current date
     const fileName = `facture_${new Date().toISOString().split('T')[0]}.pdf`;
     
-    // Save the PDF
-    doc.save(fileName);
+    // Save the PDF with mobile compatibility
+    try {
+      // Check if we're on mobile
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // For mobile devices, use blob and create download link
+        const pdfBlob = doc.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        
+        // Create a temporary link and click it
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+      } else {
+        // Desktop - use normal save
+        doc.save(fileName);
+      }
+    } catch (error) {
+      console.error('Error saving PDF:', error);
+      // Fallback to normal save
+      doc.save(fileName);
+    }
     
     console.log('PDF saved successfully:', fileName);
     
