@@ -38,12 +38,13 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.9 : 1,
     zIndex: isDragging ? 1000 : 'auto',
-    touchAction: 'none',
+    touchAction: isLongPress ? 'none' : 'manipulation',
   };
 
   // Handle long press for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     console.log('Touch start detected on mobile');
+    e.stopPropagation(); // منع الحاوي الرئيسي من التدخل
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     
@@ -98,22 +99,28 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     }
     
     // If we're in drag mode, handle the move
-    if (isLongPress && listeners?.onPointerMove) {
-      console.log('Handling drag move');
-      const syntheticEvent = new PointerEvent('pointermove', {
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-        pointerId: 1,
-        pointerType: 'touch',
-        isPrimary: true,
-        bubbles: true,
-      });
-      listeners.onPointerMove(syntheticEvent as any);
+    if (isLongPress) {
+      e.stopPropagation(); // منع الحاوي الرئيسي من التدخل
+      e.preventDefault(); // منع التمرير الافتراضي
+      if (listeners?.onPointerMove) {
+        console.log('Handling drag move');
+        const syntheticEvent = new PointerEvent('pointermove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          pointerId: 1,
+          pointerType: 'touch',
+          isPrimary: true,
+          bubbles: true,
+        });
+        listeners.onPointerMove(syntheticEvent as any);
+      }
     }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     console.log('Touch end detected');
+    e.stopPropagation(); // منع الحاوي الرئيسي من التدخل
+    
     // Clear long press timer
     if (longPressTimer.current) {
       console.log('Clearing long press timer');

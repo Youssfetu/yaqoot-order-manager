@@ -759,7 +759,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         )}
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: editingCell || isResizing ? 'none' : 'pan-x pan-y pinch-zoom',
+          touchAction: editingCell || isResizing ? 'none' : 'manipulation',
           scrollbarWidth: showScrollbar ? 'thin' : 'none',
           scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent',
           userSelect: isResizing ? 'none' : 'auto',
