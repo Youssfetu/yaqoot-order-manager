@@ -40,9 +40,9 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
       setLongPressActivated(true);
       // Add haptic feedback if available
       if ('vibrate' in navigator) {
-        navigator.vibrate(50);
+        navigator.vibrate([50, 25, 50]);
       }
-    }, 300); // 300ms long press
+    }, 250); // Reduced to 250ms for faster response like Google Sheets
   }, []);
 
   const handleMouseUp = useCallback(() => {
@@ -67,19 +67,24 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: isDragging ? 'none' : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-    opacity: isDragging ? 0.7 : 1,
+    transition: isDragging ? 'none' : transition || 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
+    opacity: isDragging ? 0.9 : 1,
     zIndex: isDragging ? 1000 : 'auto',
-    scale: isDragging ? '1.02' : '1',
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`${className} ${isDragging ? 'shadow-2xl bg-background/95 border border-border rounded-md' : ''} ${
-        isPressed ? 'scale-[0.98]' : ''
-      } ${longPressActivated ? 'ring-2 ring-primary/30' : ''} relative group transition-all duration-200`}
+      className={`${className} ${
+        isDragging 
+          ? 'shadow-[0_8px_30px_rgb(0,0,0,0.12)] bg-background border border-primary/20 rounded-lg scale-105' 
+          : ''
+      } ${
+        isPressed ? 'scale-[0.985] bg-muted/30' : ''
+      } ${
+        longPressActivated ? 'ring-1 ring-primary/40 bg-primary/5' : ''
+      } relative group transition-all duration-150 ease-out hover:bg-muted/20`}
     >
       <div className="flex items-center">
         {/* Drag Handle */}
@@ -94,9 +99,9 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
           onTouchEnd={handleMouseUp}
           className={`w-8 flex-shrink-0 flex items-center justify-center select-none touch-none
             ${longPressActivated ? 'cursor-grabbing' : 'cursor-grab'} 
-            ${isPressed ? 'opacity-100 scale-110' : 'opacity-0 group-hover:opacity-60'} 
-            ${longPressActivated ? 'opacity-100' : ''} 
-            transition-all duration-200 ease-out`}
+            ${isPressed ? 'opacity-100 scale-110 bg-primary/10 rounded' : 'opacity-0 group-hover:opacity-70'} 
+            ${longPressActivated ? 'opacity-100 bg-primary/15 rounded' : ''} 
+            transition-all duration-150 ease-out hover:bg-muted/30`}
         >
           <GripVertical 
             size={16} 
