@@ -83,22 +83,23 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
       } ${
         isPressed ? 'scale-[0.985] bg-muted/30' : ''
       } ${
-        longPressActivated ? 'ring-1 ring-primary/40 bg-primary/5' : ''
+        longPressActivated ? 'ring-1 ring-primary/40 bg-primary/5 cursor-grabbing' : 'cursor-default'
       } relative group transition-all duration-150 ease-out hover:bg-muted/20`}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleMouseDown}
+      onTouchEnd={handleMouseUp}
     >
-      <div className="flex items-center">
+      <div 
+        ref={longPressActivated ? setActivatorNodeRef : undefined}
+        {...(longPressActivated ? attributes : {})}
+        {...(longPressActivated ? listeners : {})}
+        className="flex items-center"
+      >
         {/* Drag Handle */}
         <div
-          ref={setActivatorNodeRef}
-          {...attributes}
-          {...listeners}
-          onMouseDown={handleMouseDown}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleMouseDown}
-          onTouchEnd={handleMouseUp}
           className={`w-8 flex-shrink-0 flex items-center justify-center select-none touch-none
-            ${longPressActivated ? 'cursor-grabbing' : 'cursor-grab'} 
             ${isPressed ? 'opacity-100 scale-110 bg-primary/10 rounded' : 'opacity-0 group-hover:opacity-70'} 
             ${longPressActivated ? 'opacity-100 bg-primary/15 rounded' : ''} 
             transition-all duration-150 ease-out hover:bg-muted/30`}
