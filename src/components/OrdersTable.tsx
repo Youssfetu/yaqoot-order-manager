@@ -491,21 +491,33 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
   };
 
+  const [commentEditValue, setCommentEditValue] = useState('');
+
   const handleCommentChange = (id: string, comment: string) => {
     onUpdateComment(id, comment);
   };
 
-  const handleCommentFocus = (id: string) => {
+  const handleCommentFocus = (id: string, order: any) => {
     setEditingCell(id);
+    setCommentEditValue(order.commentaire || '');
   };
 
-  const handleCommentBlur = () => {
+  const handleCommentSave = (id: string) => {
+    handleCommentChange(id, commentEditValue);
     setEditingCell(null);
+    setCommentEditValue('');
+  };
+
+  const handleCommentCancel = () => {
+    setEditingCell(null);
+    setCommentEditValue('');
   };
 
   const handleCommentKeyDown = (e: React.KeyboardEvent, id: string) => {
     if (e.key === 'Enter') {
-      setEditingCell(null);
+      handleCommentSave(id);
+    } else if (e.key === 'Escape') {
+      handleCommentCancel();
     }
   };
 
@@ -1129,30 +1141,49 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       >
                         {editingCell === order.id ? (
                           <div 
-                            className="absolute inset-0 z-50"
+                            className="absolute inset-0 z-50 bg-white border-2 border-blue-500 rounded-sm shadow-lg"
                             style={{
                               transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
-                              transformOrigin: 'top left'
+                              transformOrigin: 'top left',
+                              minHeight: '40px',
+                              width: `${150 * zoomLevel}px`
                             }}
                           >
-                            <input
-                              value={order.commentaire}
-                              onChange={(e) => handleCommentChange(order.id, e.target.value)}
-                              onBlur={handleCommentBlur}
-                              onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
-                              className="w-full h-full px-2 border-none outline-none bg-white focus:ring-0"
-                              placeholder="اكتب تعليق..."
-                              autoFocus
-                              style={{
-                                fontSize: `${11 * zoomLevel}px`,
-                                padding: `${1 * zoomLevel}px ${8 * zoomLevel}px`
-                              }}
-                            />
+                            <div className="flex items-center h-full">
+                              <input
+                                value={commentEditValue}
+                                onChange={(e) => setCommentEditValue(e.target.value)}
+                                onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
+                                className="flex-1 h-full px-2 border-none outline-none bg-white focus:ring-0"
+                                placeholder="اكتب تعليق..."
+                                autoFocus
+                                style={{
+                                  fontSize: `${11 * zoomLevel}px`,
+                                  padding: `${2 * zoomLevel}px ${6 * zoomLevel}px`
+                                }}
+                              />
+                              <div className="flex items-center gap-1 px-1">
+                                <button
+                                  onClick={() => handleCommentSave(order.id)}
+                                  className="w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded-sm flex items-center justify-center transition-colors"
+                                  title="حفظ"
+                                >
+                                  <span className="text-xs">✓</span>
+                                </button>
+                                <button
+                                  onClick={handleCommentCancel}
+                                  className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-sm flex items-center justify-center transition-colors"
+                                  title="إلغاء"
+                                >
+                                  <span className="text-xs">✕</span>
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         ) : (
                           <div
-                            className="w-full h-full flex items-center cursor-text px-0"
-                            onClick={() => handleCommentFocus(order.id)}
+                            className="w-full h-full flex items-center cursor-text px-2 hover:bg-blue-50 transition-colors"
+                            onClick={() => handleCommentFocus(order.id, order)}
                           >
                             <span className="text-gray-800 truncate w-full">
                               {order.commentaire || 'اكتب تعليق...'}
@@ -1173,7 +1204,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         {editingCell && (
           <div 
             className="absolute inset-0 bg-transparent z-30 pointer-events-auto"
-            onClick={handleCommentBlur}
+            onClick={handleCommentCancel}
           />
         )}
 
