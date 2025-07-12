@@ -766,9 +766,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           WebkitUserSelect: isResizing ? 'none' : 'auto',
           WebkitTouchCallout: 'none'
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onTouchStart={undefined}
+        onTouchMove={undefined}
+        onTouchEnd={undefined}
         onWheel={editingCell ? undefined : handleWheel}
       >
         {/* Enhanced Transform Container with Smooth Transitions */}
