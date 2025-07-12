@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Order } from '@/pages/Index';
 
 interface TableSettings {
@@ -38,6 +39,7 @@ interface OrdersTableProps {
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
+  const { t, isRTL } = useLanguage();
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -541,7 +543,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         'inline-flex items-center justify-center rounded-sm text-white font-medium w-16 h-4 text-center',
         statusColors[status as keyof typeof statusColors] || 'bg-gray-500'
       )}>
-        <span className="truncate text-[9px]">{status}</span>
+        <span className="truncate text-[9px]">{t(status) || status}</span>
       </div>
     );
   };
@@ -748,7 +750,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.code && (
                 <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">الكود</span>
+                    <span className="text-xs font-bold text-gray-800">{t('code')}</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -776,7 +778,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.destination && (
                 <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">العميل/الموزع</span>
+                    <span className="text-xs font-bold text-gray-800">{t('client')}</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -804,7 +806,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.phone && (
                 <div className="relative" style={{ width: `${columnWidths.numero}%`, minWidth: '100px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">الرقم</span>
+                    <span className="text-xs font-bold text-gray-800">{t('phone')}</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -832,7 +834,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.price && (
                 <div className="relative" style={{ width: `${columnWidths.prix}%`, minWidth: '70px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">السعر</span>
+                    <span className="text-xs font-bold text-gray-800">{t('price')}</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -860,7 +862,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.status && (
                 <div className="relative" style={{ width: `${columnWidths.status}%`, minWidth: '90px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">الحالة</span>
+                    <span className="text-xs font-bold text-gray-800">{t('status')}</span>
                   </div>
                 {/* Professional Resize Handle */}
                 <div 
@@ -888,7 +890,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.comment && (
                 <div className="flex-1" style={{ minWidth: '150px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">التعليق</span>
+                    <span className="text-xs font-bold text-gray-800">{t('comment')}</span>
                   </div>
                 </div>
               )}
@@ -1052,7 +1054,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="text-center mb-3">
-                                <h3 className="text-lg font-semibold">تعديل السعر</h3>
+                                <h3 className="text-lg font-semibold">{t('price')}</h3>
                               </div>
                               <input
                                 value={order.prix.toString()}
@@ -1155,7 +1157,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                 onChange={(e) => setCommentEditValue(e.target.value)}
                                 onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
                                 className="flex-1 h-full px-2 border-none outline-none bg-white focus:ring-0"
-                                placeholder="اكتب تعليق..."
+                                placeholder={t('write_comment')}
                                 autoFocus
                                 style={{
                                   fontSize: `${11 * zoomLevel}px`,
@@ -1166,14 +1168,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                 <button
                                   onClick={() => handleCommentSave(order.id)}
                                   className="w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded-sm flex items-center justify-center transition-colors"
-                                  title="حفظ"
+                                  title={t('save')}
                                 >
                                   <span className="text-xs">✓</span>
                                 </button>
                                 <button
                                   onClick={handleCommentCancel}
                                   className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-sm flex items-center justify-center transition-colors"
-                                  title="إلغاء"
+                                  title={t('cancel')}
                                 >
                                   <span className="text-xs">✕</span>
                                 </button>
@@ -1186,7 +1188,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                             onClick={() => handleCommentFocus(order.id, order)}
                           >
                             <span className="text-gray-800 truncate w-full">
-                              {order.commentaire || 'اكتب تعليق...'}
+                              {order.commentaire || t('write_comment')}
                             </span>
                           </div>
                         )}

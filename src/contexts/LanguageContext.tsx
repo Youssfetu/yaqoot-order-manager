@@ -29,12 +29,16 @@ const translations: Translations = {
     'destination': 'الوجهة',
     
     // Status
-    'confirmed': 'مؤكد',
-    'in_progress': 'قيد التنفيذ',
-    'delivered': 'تم التوصيل',
-    'postponed': 'مؤجل',
-    'cancelled': 'ملغي',
-    'refused': 'مرفوض',
+    'Confirmé': 'مؤكد',
+    'En cours': 'قيد التنفيذ', 
+    'Livré': 'تم التوصيل',
+    'Reporté': 'مؤجل',
+    'Annulé': 'ملغي',
+    'Refusé': 'مرفوض',
+    'Numéro erroné': 'رقم خاطئ',
+    'Hors zone': 'خارج المنطقة',
+    'Programmé': 'مبرمج',
+    'Nouveau': 'جديد',
     
     // Menu Items
     'commission': 'العمولة',
@@ -100,12 +104,16 @@ const translations: Translations = {
     'destination': 'Destination',
     
     // Status
-    'confirmed': 'Confirmé',
-    'in_progress': 'En cours',
-    'delivered': 'Livré',
-    'postponed': 'Reporté',
-    'cancelled': 'Annulé',
-    'refused': 'Refusé',
+    'Confirmé': 'Confirmé',
+    'En cours': 'En cours', 
+    'Livré': 'Livré',
+    'Reporté': 'Reporté',
+    'Annulé': 'Annulé',
+    'Refusé': 'Refusé',
+    'Numéro erroné': 'Numéro erroné',
+    'Hors zone': 'Hors zone',
+    'Programmé': 'Programmé',
+    'Nouveau': 'Nouveau',
     
     // Menu Items
     'commission': 'Commission',
