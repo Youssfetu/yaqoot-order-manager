@@ -81,7 +81,33 @@ const translations: Translations = {
     'write_comment': 'اكتب تعليق...',
     'save': 'حفظ',
     'language_changed': 'تم تغيير اللغة',
-    'language_changed_desc': 'تم تغيير اللغة بنجاح'
+    'language_changed_desc': 'تم تغيير اللغة بنجاح',
+    
+    // Toast Messages
+    'order_added': 'تم إضافة الطلبية',
+    'order_added_desc': 'تم إضافة الطلبية بنجاح',
+    'order_archived': 'تم أرشفة الطلبية',
+    'order_archived_desc': 'تم نقل الطلبية إلى الأرشيف',
+    'status_updated': 'تم تحديث الحالة',
+    'status_updated_desc': 'تم تغيير الحالة بنجاح',
+    'order_found': 'تم العثور على الطلبية',
+    'order_found_desc': 'تم تحديث الطلبية',
+    'order_not_found': 'لم يتم العثور على الطلبية',
+    'order_not_found_desc': 'الكود غير موجود في قائمة الطلبيات',
+    'file_uploaded_success': 'تم تحميل الملف بنجاح',
+    'file_uploaded_desc': 'تم إضافة طلبيات جديدة',
+    'export_success': 'تم تصدير الملف بنجاح',
+    'export_success_desc': 'تم تصدير الطلبيات إلى ملف',
+    'no_orders': 'لا توجد طلبيات',
+    'no_orders_desc': 'لا يوجد طلبيات لتصديرها',
+    'export_error': 'خطأ في التصدير',
+    'export_error_desc': 'حدث خطأ أثناء تصدير الملف',
+    'data_cleared': 'تم مسح البيانات',
+    'data_cleared_desc': 'تم مسح جميع الطلبيات بنجاح. يمكنك الآن البدء من جديد.',
+    'search_placeholder': 'ابحث بالكود، العميل، أو الرقم...',
+    'search_results': 'تم العثور على',
+    'search_results_desc': 'طلبية من أصل',
+    'orders': 'طلبية'
   },
   fr: {
     // Header & Navigation
@@ -156,7 +182,33 @@ const translations: Translations = {
     'write_comment': 'Écrire un commentaire...',
     'save': 'Sauvegarder',
     'language_changed': 'Langue modifiée',
-    'language_changed_desc': 'La langue a été modifiée avec succès'
+    'language_changed_desc': 'La langue a été modifiée avec succès',
+    
+    // Toast Messages
+    'order_added': 'Commande ajoutée',
+    'order_added_desc': 'La commande a été ajoutée avec succès',
+    'order_archived': 'Commande archivée',
+    'order_archived_desc': 'La commande a été déplacée vers l\'archive',
+    'status_updated': 'Statut mis à jour',
+    'status_updated_desc': 'Le statut a été modifié avec succès',
+    'order_found': 'Commande trouvée',
+    'order_found_desc': 'La commande a été mise à jour',
+    'order_not_found': 'Commande non trouvée',
+    'order_not_found_desc': 'Le code n\'existe pas dans la liste des commandes',
+    'file_uploaded_success': 'Fichier téléchargé avec succès',
+    'file_uploaded_desc': 'Nouvelles commandes ajoutées',
+    'export_success': 'Fichier exporté avec succès',
+    'export_success_desc': 'Les commandes ont été exportées vers un fichier',
+    'no_orders': 'Aucune commande',
+    'no_orders_desc': 'Il n\'y a pas de commandes à exporter',
+    'export_error': 'Erreur d\'exportation',
+    'export_error_desc': 'Une erreur s\'est produite lors de l\'exportation du fichier',
+    'data_cleared': 'Données supprimées',
+    'data_cleared_desc': 'Toutes les commandes ont été supprimées avec succès. Vous pouvez maintenant recommencer.',
+    'search_placeholder': 'Rechercher par code, client ou numéro...',
+    'search_results': 'Trouvé',
+    'search_results_desc': 'commande(s) sur',
+    'orders': 'commande(s)'
   }
 };
 

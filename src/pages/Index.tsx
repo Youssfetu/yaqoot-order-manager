@@ -14,6 +14,7 @@ import ArchivedOrdersDialog from '@/components/ArchivedOrdersDialog';
 import TableSettingsDialog from '@/components/TableSettingsDialog';
 
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { exportOrdersToExcel } from '@/utils/excelExport';
 
 export interface Order {
@@ -28,6 +29,7 @@ export interface Order {
 }
 
 const Index = () => {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [archivedOrders, setArchivedOrders] = useState<Order[]>([]);
 
@@ -83,8 +85,8 @@ const Index = () => {
     };
     setOrders([...orders, order]);
     toast({
-      title: "Commande ajoutée",
-      description: `La commande ${order.code} a été ajoutée avec succès`,
+      title: t('order_added'),
+      description: `${t('order_added_desc')} ${order.code}`,
     });
   };
 
@@ -115,8 +117,8 @@ const Index = () => {
         setArchivedOrders(prev => [...prev, archivedOrder]);
         setOrders(orders.filter(order => order.id !== id));
         toast({
-          title: "Commande archivée",
-          description: `La commande ${orderToArchive.code} a été déplacée vers l'archive`,
+          title: t('order_archived'),
+          description: `${t('order_archived_desc')} ${orderToArchive.code}`,
         });
         return;
       }
@@ -126,8 +128,8 @@ const Index = () => {
       order.id === id ? { ...order, statut: status } : order
     ));
     toast({
-      title: "Statut mis à jour",
-      description: `Le statut a été changé vers "${status}"`,
+      title: t('status_updated'),
+      description: `${t('status_updated_desc')} "${status}"`,
     });
   };
 
@@ -140,15 +142,15 @@ const Index = () => {
       ));
       
       toast({
-        title: "تم العثور على الطلبية",
-        description: `الطلبية ${code} تم تحديثها`,
+        title: t('order_found'),
+        description: `${t('order_found_desc')} ${code}`,
       });
       
       return 'success';
     } else {
       toast({
-        title: "لم يتم العثور على الطلبية",
-        description: `الكود ${code} غير موجود في قائمة الطلبيات`,
+        title: t('order_not_found'),
+        description: `${t('order_not_found_desc')} ${code}`,
         variant: "destructive",
       });
       return 'not-found';
@@ -158,8 +160,8 @@ const Index = () => {
   const handleFileUpload = (newOrders: Order[]) => {
     setOrders(prevOrders => [...prevOrders, ...newOrders]);
     toast({
-      title: "تم تحميل الملف بنجاح",
-      description: `تم إضافة ${newOrders.length} طلبية جديدة إلى ${orders.length} طلبية موجودة`,
+      title: t('file_uploaded_success'),
+      description: `${t('file_uploaded_desc')} ${newOrders.length}`,
     });
   };
 
@@ -186,8 +188,8 @@ const Index = () => {
         const fileName = exportOrdersToExcel(orders, archivedOrders);
         
         toast({
-          title: "تم تصدير الملف بنجاح",
-          description: `تم تصدير ${orders.length} طلبية إلى ملف ${fileName}`,
+          title: t('export_success'),
+          description: `${t('export_success_desc')} ${fileName}`,
         });
         
         return;
@@ -195,8 +197,8 @@ const Index = () => {
       
       // إذا لم تكن هناك طلبيات، أظهر رسالة
       toast({
-        title: "لا توجد طلبيات",
-        description: "لا يوجد طلبيات لتصديرها",
+        title: t('no_orders'),
+        description: t('no_orders_desc'),
         variant: "destructive"
       });
       
@@ -204,8 +206,8 @@ const Index = () => {
       console.error('Error exporting to Excel:', error);
       
       toast({
-        title: "خطأ في التصدير",
-        description: "حدث خطأ أثناء تصدير الملف",
+        title: t('export_error'),
+        description: t('export_error_desc'),
         variant: "destructive"
       });
     }
@@ -215,8 +217,8 @@ const Index = () => {
     setOrders([]);
     setArchivedOrders([]);
     toast({
-      title: 'تم مسح البيانات',
-      description: 'تم مسح جميع الطلبيات بنجاح. يمكنك الآن البدء من جديد.',
+      title: t('data_cleared'),
+      description: t('data_cleared_desc'),
     });
   };
 
@@ -335,7 +337,7 @@ const Index = () => {
                 <Input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="ابحث بالكود، العميل، أو الرقم..."
+                  placeholder={t('search_placeholder')}
                   value={searchTerm}
                   onChange={(e) => {
                     console.log('Search input changed:', e.target.value);
@@ -380,7 +382,7 @@ const Index = () => {
       {isSearchOpen && searchTerm && (
         <div className="px-4 py-2 bg-blue-50 border-t border-blue-200">
           <p className="text-sm text-blue-700" dir="rtl">
-            تم العثور على {filteredOrders.length} طلبية من أصل {orders.length} طلبية
+            {t('search_results')} {filteredOrders.length} {t('search_results_desc')} {orders.length} {t('orders')}
           </p>
         </div>
       )}
