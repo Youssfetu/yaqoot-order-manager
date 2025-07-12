@@ -975,21 +975,18 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     )}
                   >
                     <div className="flex">
-                    {/* Code Column Data with Enhanced Highlighting */}
+                    {/* Code Column Data */}
                     {tableSettings.columnVisibility.code && (
                       <div style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                         <div 
-                          data-code={order.code}
                           className={cn(
                             "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
-                            isPermanentlyScanned 
-                              ? "bg-green-100 border-green-200 font-semibold" 
-                              : rowBackgroundClass
+                            rowBackgroundClass
                           )}
                         >
                           <span 
                             className={cn(
-                              "truncate w-full font-mono text-gray-800",
+                              "truncate w-full text-gray-800",
                               `text-${tableSettings.textAlignment.code}`
                             )}
                           >
