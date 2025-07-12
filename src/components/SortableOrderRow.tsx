@@ -29,8 +29,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     isDragging,
     setActivatorNodeRef,
   } = useSortable({ 
-    id: order.id,
-    disabled: !isLongPress
+    id: order.id
   });
 
   const style = {
@@ -38,7 +37,6 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.9 : 1,
     zIndex: isDragging ? 1000 : 'auto',
-    touchAction: isDragging ? 'none' : 'auto',
   };
 
   // Handle long press for mobile
@@ -175,23 +173,10 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         setActivatorNodeRef(node);
       }}
       style={style}
-      className={`${className} ${isDragging ? 'shadow-lg' : ''} relative cursor-pointer`}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onMouseDown={handleMouseDown}
+      className={`${className} ${isDragging ? 'shadow-lg' : ''} relative`}
       {...attributes}
+      {...listeners}
     >
-      {/* Long press visual indicator */}
-      {longPressTimer.current && !isDragging && (
-        <div className="absolute inset-0 bg-blue-100 opacity-30 pointer-events-none animate-pulse rounded" />
-      )}
-      
-      {/* Drag mode indicator */}
-      {isDragging && (
-        <div className="absolute inset-0 bg-blue-200 opacity-40 pointer-events-none rounded shadow-lg" />
-      )}
-      
       {children}
     </div>
   );
