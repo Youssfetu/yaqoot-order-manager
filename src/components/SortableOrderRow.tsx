@@ -72,7 +72,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         });
         listeners.onPointerDown(syntheticEvent as any);
       }
-        }, 3000); // 3 seconds for long press
+        }, 500); // 0.5 seconds for long press
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -161,7 +161,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
       onMouseDown={handleMouseDown}
       {...attributes}
     >
-      {/* Long press visual indicator - only during 3 second wait */}
+      {/* Long press visual indicator - only during 0.5 second wait */}
       {isLongPress && !isDragging && (
         <div className="absolute inset-0 bg-blue-100 opacity-20 pointer-events-none animate-pulse" />
       )}
