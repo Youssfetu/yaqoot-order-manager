@@ -130,6 +130,8 @@ const translations: Translations = {
     'order_status': 'حالة الطلبية',
     'order_comment': 'تعليق الطلبية',
     'add_order': 'إضافة الطلبية',
+    'add_comment': 'إضافة تعليق',
+    'shortcuts': 'اختصارات',
     'required_field': 'هذا الحقل مطلوب',
     
     // Scanner
@@ -273,6 +275,8 @@ const translations: Translations = {
     'order_status': 'Statut de la commande',
     'order_comment': 'Commentaire de la commande',
     'add_order': 'Ajouter la commande',
+    'add_comment': 'Ajouter un commentaire',
+    'shortcuts': 'Raccourcis',
     'required_field': 'Ce champ est requis',
     
     // Scanner

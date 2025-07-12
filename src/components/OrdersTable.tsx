@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useLanguage } from '@/contexts/LanguageContext';
+import GoogleSheetsCommentEditor from './GoogleSheetsCommentEditor';
 import type { Order } from '@/pages/Index';
 
 interface TableSettings {
@@ -62,6 +63,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     status: 12,    // 12%
     comment: 30    // 30%
   });
+
+  // Google Sheets style comment editing
+  const [selectedOrderForComment, setSelectedOrderForComment] = useState<Order | null>(null);
 
   // إضافة حالة للحوار التأكيدي
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -493,34 +497,20 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
   };
 
-  const [commentEditValue, setCommentEditValue] = useState('');
-
-  const handleCommentChange = (id: string, comment: string) => {
-    onUpdateComment(id, comment);
+  // Google Sheets style comment editing
+  const handleCommentCellClick = (order: Order) => {
+    setSelectedOrderForComment(order);
   };
 
-  const handleCommentFocus = (id: string, order: any) => {
-    setEditingCell(id);
-    setCommentEditValue(order.commentaire || '');
-  };
-
-  const handleCommentSave = (id: string) => {
-    handleCommentChange(id, commentEditValue);
-    setEditingCell(null);
-    setCommentEditValue('');
+  const handleCommentSave = (comment: string) => {
+    if (selectedOrderForComment) {
+      onUpdateComment(selectedOrderForComment.id, comment);
+      setSelectedOrderForComment(null);
+    }
   };
 
   const handleCommentCancel = () => {
-    setEditingCell(null);
-    setCommentEditValue('');
-  };
-
-  const handleCommentKeyDown = (e: React.KeyboardEvent, id: string) => {
-    if (e.key === 'Enter') {
-      handleCommentSave(id);
-    } else if (e.key === 'Escape') {
-      handleCommentCancel();
-    }
+    setSelectedOrderForComment(null);
   };
 
   // Reverted getStatusBadge function to original static version
@@ -1134,96 +1124,19 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     {/* Comment Column Data */}
                     {tableSettings.columnVisibility.comment && (
                       <div className="flex-1" style={{ minWidth: '150px' }}>
-                      <div 
-                        className={cn(
-                          "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300 relative",
-                          rowBackgroundClass,
-                          editingCell === order.id && "bg-white border-blue-500 shadow-sm"
-                        )}
-                      >
-                        {editingCell === order.id ? (
-                          <div 
-                            className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
-                            onClick={handleCommentCancel}
-                          >
-                            <div 
-                              className="bg-white w-full sm:max-w-md sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-200 animate-slide-in-right sm:animate-scale-in"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {/* Header */}
-                              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100">
-                                <div>
-                                  <h3 className="text-lg font-semibold text-gray-800">
-                                    {t('edit_comment')}
-                                  </h3>
-                                  <p className="text-sm text-gray-600 mt-1">
-                                    {t('order_code')}: {order.code}
-                                  </p>
-                                </div>
-                                <button
-                                  onClick={handleCommentCancel}
-                                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-                                >
-                                  <span className="text-xl">×</span>
-                                </button>
-                              </div>
-                              
-                              {/* Content */}
-                              <div className="p-4 sm:p-6">
-                                <div className="relative">
-                                  <textarea
-                                    value={commentEditValue}
-                                    onChange={(e) => setCommentEditValue(e.target.value)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter' && e.ctrlKey) {
-                                        handleCommentSave(order.id);
-                                      }
-                                      if (e.key === 'Escape') {
-                                        handleCommentCancel();
-                                      }
-                                    }}
-                                    className="w-full h-32 sm:h-24 px-4 py-3 border border-gray-300 rounded-xl resize-none outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-gray-50 focus:bg-white text-base leading-relaxed"
-                                    placeholder={t('write_comment')}
-                                    autoFocus
-                                    style={{
-                                      fontSize: '16px',
-                                      lineHeight: '1.5',
-                                      fontFamily: 'system-ui, -apple-system, sans-serif'
-                                    }}
-                                  />
-                                  <div className="hidden sm:block absolute bottom-2 right-3 text-xs text-gray-400">
-                                    Ctrl+Enter {t('to_save')}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Footer */}
-                              <div className="flex items-center justify-end gap-3 p-4 sm:p-6 border-t border-gray-100 bg-gray-50/50">
-                                <button
-                                  onClick={handleCommentCancel}
-                                  className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors rounded-lg hover:bg-white/50"
-                                >
-                                  {t('cancel')}
-                                </button>
-                                <button
-                                  onClick={() => handleCommentSave(order.id)}
-                                  className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-lg transform hover:scale-105 active:scale-95"
-                                >
-                                  {t('save')}
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            className="w-full h-full flex items-center cursor-text px-2 hover:bg-blue-50 transition-colors"
-                            onClick={() => handleCommentFocus(order.id, order)}
-                          >
-                            <span className="text-gray-800 truncate w-full">
-                              {order.commentaire || t('write_comment')}
-                            </span>
-                          </div>
-                        )}
+                       <div 
+                         className={cn(
+                           "h-7 px-2 py-1 border-b border-gray-300 flex items-center cursor-pointer transition-all duration-300 relative",
+                           `text-${tableSettings.textAlignment.comment}`,
+                           rowBackgroundClass,
+                           selectedOrderForComment?.id === order.id && "bg-blue-50 border-blue-300 ring-2 ring-blue-200",
+                           "hover:bg-blue-50"
+                         )}
+                         onClick={() => handleCommentCellClick(order)}
+                       >
+                        <span className="text-gray-800 truncate w-full">
+                          {order.commentaire || t('add_comment')}
+                        </span>
                       </div>
                     </div>
                     )}
@@ -1235,10 +1148,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
 
         {/* Editing Overlay - Prevents zoom/pan when editing */}
-        {editingCell && (
+        {(editingCell || selectedOrderForComment) && (
           <div 
             className="absolute inset-0 bg-transparent z-30 pointer-events-auto"
-            onClick={handleCommentCancel}
+            onClick={() => {
+              setEditingCell(null);
+              setSelectedOrderForComment(null);
+            }}
           />
         )}
 
@@ -1390,6 +1306,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           background: ${showScrollbar ? '#a0aec0' : 'transparent'};
         }
       `}</style>
+
+      {/* Google Sheets Style Comment Editor */}
+      <GoogleSheetsCommentEditor
+        selectedOrder={selectedOrderForComment}
+        onSave={handleCommentSave}
+        onCancel={handleCommentCancel}
+      />
     </div>
   );
 };

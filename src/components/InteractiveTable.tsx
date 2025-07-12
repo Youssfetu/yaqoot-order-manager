@@ -33,7 +33,7 @@ interface InteractiveTableProps {
 
 const InteractiveTable: React.FC<InteractiveTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, tableSettings }) => {
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       <OrdersTable
         orders={orders}
         onUpdateComment={onUpdateComment}
