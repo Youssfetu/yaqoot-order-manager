@@ -38,13 +38,12 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     transition: isDragging ? 'none' : transition,
     opacity: isDragging ? 0.9 : 1,
     zIndex: isDragging ? 1000 : 'auto',
-    touchAction: isLongPress ? 'none' : 'manipulation',
+    touchAction: isDragging ? 'none' : 'auto',
   };
 
   // Handle long press for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     console.log('Touch start detected on mobile');
-    e.stopPropagation(); // منع الحاوي الرئيسي من التدخل
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     
@@ -96,12 +95,13 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
       console.log('Cancelling long press due to movement');
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
+      return; // السماح بالسكرول الطبيعي
     }
     
-    // If we're in drag mode, handle the move
+    // If we're in drag mode, handle the move and prevent scrolling
     if (isLongPress) {
-      e.stopPropagation(); // منع الحاوي الرئيسي من التدخل
-      e.preventDefault(); // منع التمرير الافتراضي
+      e.stopPropagation();
+      e.preventDefault();
       if (listeners?.onPointerMove) {
         console.log('Handling drag move');
         const syntheticEvent = new PointerEvent('pointermove', {
@@ -119,7 +119,6 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     console.log('Touch end detected');
-    e.stopPropagation(); // منع الحاوي الرئيسي من التدخل
     
     // Clear long press timer
     if (longPressTimer.current) {
@@ -131,6 +130,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     // If we were dragging, end the drag
     if (isLongPress && listeners?.onPointerUp) {
       console.log('Ending drag');
+      e.stopPropagation();
       const changedTouch = e.changedTouches[0];
       const syntheticEvent = new PointerEvent('pointerup', {
         clientX: changedTouch.clientX,

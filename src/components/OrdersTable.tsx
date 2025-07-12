@@ -759,16 +759,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         )}
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          touchAction: editingCell || isResizing ? 'none' : 'manipulation',
+          touchAction: editingCell || isResizing ? 'none' : 'auto',
           scrollbarWidth: showScrollbar ? 'thin' : 'none',
           scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent',
           userSelect: isResizing ? 'none' : 'auto',
           WebkitUserSelect: isResizing ? 'none' : 'auto',
           WebkitTouchCallout: 'none'
         }}
-        onTouchStart={undefined}
-        onTouchMove={undefined}
-        onTouchEnd={undefined}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         onWheel={editingCell ? undefined : handleWheel}
       >
         {/* Enhanced Transform Container with Smooth Transitions */}
