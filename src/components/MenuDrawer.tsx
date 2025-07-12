@@ -6,9 +6,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2, Share2, Languages } from 'lucide-react';
+import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2, Share2, Languages, LogOut, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { generateInvoicePDF, Order } from '@/utils/pdfGenerator';
 import { exportOrdersToExcel } from '@/utils/excelExport';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -41,6 +42,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   const [tempCommission, setTempCommission] = useState(commission);
   const { toast } = useToast();
   const { language, setLanguage, t, isRTL } = useLanguage();
+  const { user, signOut } = useAuth();
 
   const handleLanguageChange = (newLanguage: Language) => {
     setLanguage(newLanguage);
@@ -128,6 +130,40 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          {/* User Information */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">{t('user_account')}</h3>
+                  <p className="text-sm text-gray-500">{user?.email}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Logout Button */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div 
+              className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer"
+              onClick={signOut}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <LogOut className="h-5 w-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">{t('logout')}</h3>
+                  <p className="text-sm text-gray-500">{t('logout_desc')}</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+
           {/* Language Settings */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">

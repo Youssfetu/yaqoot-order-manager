@@ -305,15 +305,6 @@ const Index = () => {
             
             {/* Header Icons */}
             <div className="flex items-center gap-1 sm:gap-3">
-              {/* Logout Button */}
-              <Button
-                onClick={signOut}
-                variant="outline"
-                size="sm"
-                className="text-xs p-1.5 sm:p-2 hover:bg-red-50 border-red-200 text-red-600"
-              >
-                خروج
-              </Button>
               {/* Table Settings - First on the left */}
               <Button
                 onClick={() => setIsTableSettingsOpen(true)}

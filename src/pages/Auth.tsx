@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Loader2 } from 'lucide-react';
 
 const Auth = () => {
@@ -16,7 +17,21 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
+  const { t, setLanguage, isRTL } = useLanguage();
   const navigate = useNavigate();
+
+  // Auto-detect language based on device language
+  useEffect(() => {
+    const deviceLanguage = navigator.language || navigator.languages[0];
+    if (deviceLanguage.startsWith('ar')) {
+      setLanguage('ar');
+    } else if (deviceLanguage.startsWith('fr')) {
+      setLanguage('fr');
+    } else {
+      // Default to Arabic if language not supported
+      setLanguage('ar');
+    }
+  }, [setLanguage]);
 
   useEffect(() => {
     if (user) {
@@ -39,11 +54,11 @@ const Auth = () => {
     setIsLoading(true);
     const { error } = await signUp(email, password, displayName);
     if (!error) {
-      // إضافة رسالة إضافية حول انتظار التفعيل
+      // Show approval waiting message
       setTimeout(() => {
         toast({
-          title: "انتظار التفعيل",
-          description: "تم إنشاء حسابك بنجاح. يرجى انتظار تفعيل الحساب من قبل الإدارة قبل المحاولة مرة أخرى.",
+          title: t('account_pending'),
+          description: t('account_pending_desc'),
           variant: "default",
         });
       }, 2000);
@@ -52,29 +67,29 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4" dir={isRTL ? 'rtl' : 'ltr'}>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">إدارة الحساب</CardTitle>
+          <CardTitle className="text-2xl text-center">{t('account_management')}</CardTitle>
           <CardDescription className="text-center">
-            سجل دخولك أو أنشئ حساباً جديداً
+            {t('auth_description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">تسجيل الدخول</TabsTrigger>
-              <TabsTrigger value="signup">حساب جديد</TabsTrigger>
+              <TabsTrigger value="signin">{t('sign_in')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('create_account')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">البريد الإلكتروني</Label>
+                  <Label htmlFor="signin-email">{t('email')}</Label>
                   <Input
                     id="signin-email"
                     type="email"
-                    placeholder="أدخل بريدك الإلكتروني"
+                    placeholder={t('enter_email')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -82,11 +97,11 @@ const Auth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signin-password">كلمة المرور</Label>
+                  <Label htmlFor="signin-password">{t('password')}</Label>
                   <Input
                     id="signin-password"
                     type="password"
-                    placeholder="أدخل كلمة المرور"
+                    placeholder={t('enter_password')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -94,8 +109,8 @@ const Auth = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  تسجيل الدخول
+                  {isLoading && <Loader2 className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4 animate-spin`} />}
+                  {t('sign_in')}
                 </Button>
               </form>
             </TabsContent>
@@ -103,21 +118,21 @@ const Auth = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">الاسم (اختياري)</Label>
+                  <Label htmlFor="signup-name">{t('display_name')} ({t('optional')})</Label>
                   <Input
                     id="signup-name"
                     type="text"
-                    placeholder="أدخل اسمك"
+                    placeholder={t('enter_name')}
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">البريد الإلكتروني</Label>
+                  <Label htmlFor="signup-email">{t('email')}</Label>
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="أدخل بريدك الإلكتروني"
+                    placeholder={t('enter_email')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -125,11 +140,11 @@ const Auth = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">كلمة المرور</Label>
+                  <Label htmlFor="signup-password">{t('password')}</Label>
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="أدخل كلمة المرور"
+                    placeholder={t('enter_password')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -137,8 +152,8 @@ const Auth = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  إنشاء حساب
+                  {isLoading && <Loader2 className={`${isRTL ? 'ml-2' : 'mr-2'} h-4 w-4 animate-spin`} />}
+                  {t('create_account')}
                 </Button>
               </form>
             </TabsContent>
