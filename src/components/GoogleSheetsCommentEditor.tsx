@@ -83,7 +83,7 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
             style={{ fontSize: '16px' }} // Prevent zoom on iOS
           />
           
-          <div className="flex gap-2 justify-end">
+          <div className="flex gap-2 justify-center">
             <Button
               onClick={onCancel}
               variant="outline"
@@ -102,10 +102,6 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
               {t('save')}
             </Button>
           </div>
-        </div>
-        
-        <div className="text-xs text-muted-foreground mt-2">
-          {t('shortcuts')}: Ctrl+Enter {t('to_save')}, Esc {t('to_cancel')}
         </div>
       </div>
     </div>
