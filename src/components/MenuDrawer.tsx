@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2, Share2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Download, Receipt, Percent, DollarSign, ChevronRight, Trash2, Share2, Languages } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage, Language } from '@/contexts/LanguageContext';
 import { generateInvoicePDF, Order } from '@/utils/pdfGenerator';
 import { exportOrdersToExcel } from '@/utils/excelExport';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -38,12 +40,21 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 }) => {
   const [tempCommission, setTempCommission] = useState(commission);
   const { toast } = useToast();
+  const { language, setLanguage, t, isRTL } = useLanguage();
+
+  const handleLanguageChange = (newLanguage: Language) => {
+    setLanguage(newLanguage);
+    toast({
+      title: t('language_changed'),
+      description: t('language_changed_desc'),
+    });
+  };
 
   const handleSaveCommission = () => {
     onCommissionChange(tempCommission);
     toast({
-      title: 'Paramètres sauvegardés',
-      description: 'Commission mise à jour avec succès',
+      title: t('settings_saved'),
+      description: t('commission_updated'),
     });
   };
 
@@ -51,13 +62,13 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
     try {
       const fileName = exportOrdersToExcel(orders, archivedOrders);
       toast({
-        title: 'Excel téléchargé',
-        description: `Le fichier ${fileName} a été téléchargé avec succès`,
+        title: t('excel_downloaded'),
+        description: `${t('file_downloaded_success')} ${fileName}`,
       });
     } catch (error) {
       toast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue lors du téléchargement',
+        title: t('error'),
+        description: t('download_error'),
         variant: 'destructive'
       });
     }
@@ -72,8 +83,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
       if (archivedOrders.length === 0) {
         console.log('No delivered orders found');
         toast({
-          title: 'Aucune commande livrée',
-          description: 'Il n\'y a pas de commandes livrées pour générer une facture',
+          title: t('no_delivered_orders'),
+          description: t('no_delivered_orders_desc'),
           variant: 'destructive'
         });
         return;
@@ -84,14 +95,14 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
       console.log('PDF generated successfully:', fileName);
       
       toast({
-        title: 'Facture générée avec succès',
-        description: `La facture ${fileName} a été téléchargée`,
+        title: t('invoice_generated'),
+        description: `${t('invoice_downloaded')} ${fileName}`,
       });
     } catch (error) {
       console.error('Error generating invoice:', error);
       toast({
-        title: 'Erreur',
-        description: 'Une erreur est survenue lors de la génération de la facture',
+        title: t('error'),
+        description: t('invoice_error'),
         variant: 'destructive'
       });
     }
@@ -100,8 +111,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
   const handleClearAllData = () => {
     onClearAllData();
     toast({
-      title: 'Données supprimées',
-      description: 'Toutes les commandes ont été supprimées avec succès',
+      title: t('data_deleted'),
+      description: t('all_orders_deleted'),
     });
     onClose();
   };
@@ -113,10 +124,38 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
     <Drawer open={isOpen} onOpenChange={onClose}>
       <DrawerContent className="max-h-[90vh] flex flex-col">
         <DrawerHeader className="text-center border-b pb-4 flex-shrink-0">
-          <DrawerTitle className="text-xl font-bold text-gray-800">الإعدادات</DrawerTitle>
+          <DrawerTitle className="text-xl font-bold text-gray-800">{t('settings')}</DrawerTitle>
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          {/* Language Settings */}
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                  <Languages className="h-5 w-5 text-indigo-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">{t('language')}</h3>
+                  <p className="text-sm text-gray-500">{t('select_language')}</p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-gray-400" />
+            </div>
+            
+            <div className="px-4 pb-4">
+              <Select value={language} onValueChange={handleLanguageChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ar">{t('arabic')}</SelectItem>
+                  <SelectItem value="fr">{t('french')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {/* Commission Settings */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
             <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
@@ -125,7 +164,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <DollarSign className="h-5 w-5 text-blue-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">العمولة</h3>
+                  <h3 className="font-medium text-gray-900">{t('commission')}</h3>
                   <p className="text-sm text-gray-500">{commission}</p>
                 </div>
               </div>
@@ -137,7 +176,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 type="number"
                 value={tempCommission}
                 onChange={(e) => setTempCommission(Number(e.target.value))}
-                placeholder="أدخل قيمة العمولة"
+                placeholder={t('enter_commission')}
                 className="text-center"
               />
               <Button 
@@ -145,7 +184,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 size="sm"
               >
-                حفظ التغييرات
+                {t('save_changes')}
               </Button>
             </div>
           </div>
@@ -158,8 +197,10 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Percent className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">نسبة التوصيل</h3>
-                  <p className="text-sm text-gray-500">{deliveredOrders} من {totalOrders} طلبيات تم توصيلها</p>
+                  <h3 className="font-medium text-gray-900">{t('delivery_percentage')}</h3>
+                  <p className="text-sm text-gray-500">
+                    {deliveredOrders} {t('from')} {totalOrders} {t('orders_delivered')}
+                  </p>
                 </div>
               </div>
               <span className="text-lg font-semibold text-green-600">{deliveryPercentage}%</span>
@@ -177,8 +218,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Receipt className="h-5 w-5 text-orange-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">توليد الفاتورة</h3>
-                  <p className="text-sm text-gray-500">إنشاء فاتورة للطلبيات</p>
+                  <h3 className="font-medium text-gray-900">{t('generate_invoice')}</h3>
+                  <p className="text-sm text-gray-500">{t('create_invoice')}</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -196,8 +237,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   <Share2 className="h-5 w-5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">مشاركة ملف إكسل</h3>
-                  <p className="text-sm text-gray-500">مشاركة البيانات كملف إكسل</p>
+                  <h3 className="font-medium text-gray-900">{t('share_excel')}</h3>
+                  <p className="text-sm text-gray-500">{t('share_excel_desc')}</p>
                 </div>
               </div>
               <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -214,8 +255,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                       <Trash2 className="h-5 w-5 text-red-600" />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">مسح جميع البيانات</h3>
-                      <p className="text-sm text-gray-500">حذف جميع الطلبيات</p>
+                      <h3 className="font-medium text-gray-900">{t('clear_all_data')}</h3>
+                      <p className="text-sm text-gray-500">{t('delete_all_desc')}</p>
                     </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-gray-400" />
@@ -223,16 +264,15 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>هل أنت متأكد؟</AlertDialogTitle>
+                  <AlertDialogTitle>{t('are_you_sure')}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    هذا الإجراء سيحذف جميع الطلبيات (النشطة والمؤرشفة). 
-                    لا يمكن التراجع عن هذا الإجراء. ستبقى إعدادات العمولة محفوظة.
+                    {t('delete_confirmation')}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>إلغاء</AlertDialogCancel>
+                  <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleClearAllData} className="bg-red-600 hover:bg-red-700">
-                    حذف الكل
+                    {t('delete_all')}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -242,7 +282,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 
         <DrawerFooter className="border-t pt-4 flex-shrink-0">
           <Button variant="outline" onClick={onClose} className="w-full">
-            إغلاق
+            {t('close')}
           </Button>
         </DrawerFooter>
       </DrawerContent>
