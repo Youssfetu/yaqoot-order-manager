@@ -148,7 +148,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50">
                   <SelectItem value="ar">{t('arabic')}</SelectItem>
                   <SelectItem value="fr">{t('french')}</SelectItem>
                 </SelectContent>
