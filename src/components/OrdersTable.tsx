@@ -461,6 +461,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     // Don't handle zoom/pan if we're resizing columns or editing
     if (isResizing || editingCell) return;
     
+    // Allow natural scrolling for single touch
+    if (e.touches.length === 1) {
+      // Don't prevent default to allow native scrolling
+      return;
+    }
+    
     e.preventDefault();
     
     if (e.touches.length === 2) {
