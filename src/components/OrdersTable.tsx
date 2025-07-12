@@ -682,15 +682,20 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   // دالة إرسال رسالة واتساب
-  const handleWhatsAppMessage = (phoneNumber: string) => {
+  const handleWhatsAppMessage = (phoneNumber: string, orderCode: string) => {
     const cleanNumber = phoneNumber.replace(/[\s-+()]/g, '');
-    window.open(`https://wa.me/${cleanNumber}`, '_blank');
+    // Template message: "Bonjour, je vous (nom livreur) appelé à propos de votre commande N° (code) , Merci de me répondre."
+    const message = `Bonjour, je vous appelé à propos de votre commande N° ${orderCode}, Merci de me répondre.`;
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${cleanNumber}?text=${encodedMessage}`, '_blank');
     closePhoneActionsPopup();
   };
 
   // دالة إرسال رسالة عادية
-  const handleSMSMessage = (phoneNumber: string) => {
-    window.open(`sms:${phoneNumber}`, '_self');
+  const handleSMSMessage = (phoneNumber: string, orderCode: string) => {
+    // Template message: "Bonjour, je vous (nom livreur) appelé à propos de votre commande N° (code) , Merci de me répondre."
+    const message = `Bonjour, je vous appelé à propos de votre commande N° ${orderCode}, Merci de me répondre.`;
+    window.open(`sms:${phoneNumber}?body=${encodeURIComponent(message)}`, '_self');
     closePhoneActionsPopup();
   };
 
@@ -1266,7 +1271,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
                 {/* أيقونة واتساب */}
                 <button
-                  onClick={() => handleWhatsAppMessage(phoneActionsPopup.phoneNumber)}
+                  onClick={() => {
+                    const order = orders.find(o => o.id === phoneActionsPopup.orderId);
+                    const orderCode = order?.code || '';
+                    handleWhatsAppMessage(phoneActionsPopup.phoneNumber, orderCode);
+                  }}
                   className="p-2 hover:bg-green-50 rounded-md transition-all duration-200 group"
                   title="واتساب"
                 >
@@ -1277,7 +1286,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
                 {/* أيقونة رسالة نصية */}
                 <button
-                  onClick={() => handleSMSMessage(phoneActionsPopup.phoneNumber)}
+                  onClick={() => {
+                    const order = orders.find(o => o.id === phoneActionsPopup.orderId);
+                    const orderCode = order?.code || '';
+                    handleSMSMessage(phoneActionsPopup.phoneNumber, orderCode);
+                  }}
                   className="p-2 hover:bg-blue-50 rounded-md transition-all duration-200 group"
                   title="رسالة"
                 >
