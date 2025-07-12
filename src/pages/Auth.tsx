@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 const Auth = () => {
@@ -14,6 +15,7 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +38,16 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
     const { error } = await signUp(email, password, displayName);
+    if (!error) {
+      // إضافة رسالة إضافية حول انتظار التفعيل
+      setTimeout(() => {
+        toast({
+          title: "انتظار التفعيل",
+          description: "تم إنشاء حسابك بنجاح. يرجى انتظار تفعيل الحساب من قبل الإدارة قبل المحاولة مرة أخرى.",
+          variant: "default",
+        });
+      }, 2000);
+    }
     setIsLoading(false);
   };
 

@@ -683,7 +683,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   // دالة إرسال رسالة واتساب
   const handleWhatsAppMessage = (phoneNumber: string, orderCode: string) => {
-    const cleanNumber = phoneNumber.replace(/[\s-+()]/g, '');
+    let cleanNumber = phoneNumber.replace(/[\s-+()]/g, '');
+    
+    // إضافة كود المغرب +212 إذا لم يكن موجوداً
+    if (!cleanNumber.startsWith('212')) {
+      // إزالة الصفر الأول إذا كان موجوداً
+      if (cleanNumber.startsWith('0')) {
+        cleanNumber = cleanNumber.substring(1);
+      }
+      cleanNumber = '212' + cleanNumber;
+    }
+    
     // Template message: "Bonjour, je vous (nom livreur) appelé à propos de votre commande N° (code) , Merci de me répondre."
     const message = `Bonjour, je vous appelé à propos de votre commande N° ${orderCode}, Merci de me répondre.`;
     const encodedMessage = encodeURIComponent(message);

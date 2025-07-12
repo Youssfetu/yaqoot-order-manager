@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isApproved: boolean | null;
   signUp: (email: string, password: string, displayName?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -26,7 +27,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isApproved, setIsApproved] = useState<boolean | null>(null);
   const { toast } = useToast();
+
+  // Check user approval status
+  const checkApprovalStatus = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_approved')
+        .eq('user_id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error checking approval status:', error);
+        setIsApproved(false);
+        return;
+      }
+      
+      setIsApproved(data?.is_approved || false);
+    } catch (error) {
+      console.error('Error checking approval status:', error);
+      setIsApproved(false);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -35,6 +59,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Check approval status when user is authenticated
+        if (session?.user) {
+          setTimeout(() => {
+            checkApprovalStatus(session.user.id);
+          }, 0);
+        } else {
+          setIsApproved(null);
+        }
       }
     );
 
@@ -43,6 +76,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Check approval status for existing session
+      if (session?.user) {
+        setTimeout(() => {
+          checkApprovalStatus(session.user.id);
+        }, 0);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -79,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -90,7 +130,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: error.message,
         variant: "destructive",
       });
-    } else {
+    } else if (data?.user) {
+      // Check approval status after successful login
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_approved')
+        .eq('user_id', data.user.id)
+        .single();
+      
+      if (!profile?.is_approved) {
+        // Sign out the user if not approved
+        await supabase.auth.signOut();
+        toast({
+          title: "الحساب قيد المراجعة",
+          description: "حسابك قيد المراجعة من قبل الإدارة. يرجى الانتظار حتى يتم تفعيل حسابك.",
+          variant: "destructive",
+        });
+        return { error: { message: "Account not approved" } };
+      }
+      
       toast({
         title: "مرحباً بك",
         description: "تم تسجيل الدخول بنجاح",
@@ -120,6 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     loading,
+    isApproved,
     signUp,
     signIn,
     signOut,
