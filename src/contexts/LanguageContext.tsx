@@ -135,6 +135,19 @@ const translations: Translations = {
     'camera_permission': 'يرجى السماح للكاميرا',
     'scan_success': 'تم المسح بنجاح',
     'scan_failed': 'فشل المسح',
+    
+    // Table Settings
+    'column_visibility': 'عرض الأعمدة',
+    'font_size': 'حجم الخط',
+    'font_weight': 'سمك الخط',
+    'text_alignment': 'محاذاة النص',
+    'editable_columns': 'للأعمدة القابلة للتحرير',
+    'normal': 'عادي',
+    'bold': 'عريض',
+    'light': 'رفيع',
+    'left': 'يسار',
+    'center': 'وسط',
+    'right': 'يمين'
   },
   fr: {
     // Header & Navigation
@@ -262,7 +275,20 @@ const translations: Translations = {
     'scan_instruction': 'Pointez la caméra vers le code-barres',
     'camera_permission': 'Veuillez autoriser l\'accès à la caméra',
     'scan_success': 'Scan réussi',
-    'scan_failed': 'Échec du scan'
+    'scan_failed': 'Échec du scan',
+    
+    // Table Settings
+    'column_visibility': 'Visibilité des colonnes',
+    'font_size': 'Taille de police',
+    'font_weight': 'Épaisseur de police',
+    'text_alignment': 'Alignement du texte',
+    'editable_columns': 'colonnes modifiables',
+    'normal': 'Normal',
+    'bold': 'Gras',
+    'light': 'Léger',
+    'left': 'Gauche',
+    'center': 'Centre',
+    'right': 'Droite'
   }
 };
 

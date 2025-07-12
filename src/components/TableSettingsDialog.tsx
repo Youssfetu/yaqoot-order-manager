@@ -39,6 +39,7 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
   settings,
   onSettingsChange,
 }) => {
+  const { t } = useLanguage();
   const updateColumnVisibility = (column: string, visible: boolean) => {
     onSettingsChange({
       ...settings,
@@ -92,22 +93,22 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-center">
             <Settings className="h-5 w-5" />
-            إعدادات الجدول
+            {t('table_settings')}
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4 py-2">
           {/* Column Visibility */}
           <div className="bg-gray-50 rounded-lg p-3">
-            <h3 className="text-sm font-medium mb-2 text-center">عرض الأعمدة</h3>
+            <h3 className="text-sm font-medium mb-2 text-center">{t('column_visibility')}</h3>
             <div className="space-y-2">
               {[
-                { key: 'code', label: 'الكود' },
-                { key: 'destination', label: 'الوجهة' },
-                { key: 'phone', label: 'رقم الهاتف' },
-                { key: 'price', label: 'الثمن' },
-                { key: 'comment', label: 'التعليق' },
-                { key: 'status', label: 'الحالة' },
+                { key: 'code', label: t('code') },
+                { key: 'destination', label: t('client') },
+                { key: 'phone', label: t('phone') },
+                { key: 'price', label: t('price') },
+                { key: 'comment', label: t('comment') },
+                { key: 'status', label: t('status') },
               ].map((column) => (
                 <div key={column.key} className="flex items-center justify-between py-1">
                   <Label htmlFor={column.key} className="text-sm">{column.label}</Label>
@@ -123,12 +124,12 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
 
           {/* Font Size */}
           <div className="bg-gray-50 rounded-lg p-3">
-            <h3 className="text-sm font-medium mb-2 text-center">حجم الخط</h3>
+            <h3 className="text-sm font-medium mb-2 text-center">{t('font_size')}</h3>
             <Select value={settings.fontSize.toString()} onValueChange={(value) => updateFontSize(Number(value))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50">
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="12">12</SelectItem>
                 <SelectItem value="14">14</SelectItem>
@@ -142,28 +143,28 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
 
           {/* Font Weight */}
           <div className="bg-gray-50 rounded-lg p-3">
-            <h3 className="text-sm font-medium mb-2 text-center">سمك الخط</h3>
+            <h3 className="text-sm font-medium mb-2 text-center">{t('font_weight')}</h3>
             <Select value={settings.fontWeight} onValueChange={updateFontWeight}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">رقيق</SelectItem>
-                <SelectItem value="normal">عادي</SelectItem>
-                <SelectItem value="bold">عريض</SelectItem>
+              <SelectContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50">
+                <SelectItem value="light">{t('light')}</SelectItem>
+                <SelectItem value="normal">{t('normal')}</SelectItem>
+                <SelectItem value="bold">{t('bold')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Text Alignment for Editable Columns */}
           <div className="bg-gray-50 rounded-lg p-3">
-            <h3 className="text-sm font-medium mb-2 text-center">محاذاة النص</h3>
+            <h3 className="text-sm font-medium mb-2 text-center">{t('text_alignment')}</h3>
             <div className="space-y-2">
               {[
-                { key: 'code', label: 'الكود' },
-                { key: 'phone', label: 'رقم الهاتف' },
-                { key: 'price', label: 'الثمن' },
-                { key: 'comment', label: 'التعليق' },
+                { key: 'code', label: t('code') },
+                { key: 'phone', label: t('phone') },
+                { key: 'price', label: t('price') },
+                { key: 'comment', label: t('comment') },
               ].map((column) => (
                 <div key={column.key} className="flex items-center justify-between py-1">
                   <Label className="text-sm">{column.label}</Label>
@@ -175,6 +176,7 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
                         size="sm"
                         onClick={() => updateTextAlignment(column.key, alignment as 'left' | 'center' | 'right')}
                         className="p-1.5 w-8 h-8"
+                        title={t(alignment)}
                       >
                         {getAlignmentIcon(alignment)}
                       </Button>
@@ -193,7 +195,7 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
             className="w-full" 
             variant="outline"
           >
-            إغلاق
+            {t('close')}
           </Button>
         </div>
       </DialogContent>
