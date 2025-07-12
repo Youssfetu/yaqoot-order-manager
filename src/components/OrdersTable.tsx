@@ -114,9 +114,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // DND Kit sensors
+  // DND Kit sensors - optimized for mobile
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Allow a little movement before activating
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })

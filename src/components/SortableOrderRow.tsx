@@ -43,6 +43,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
 
   // Handle long press for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
+    console.log('Touch start detected on mobile');
     const touch = e.touches[0];
     touchStartPos.current = { x: touch.clientX, y: touch.clientY };
     
@@ -51,16 +52,20 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
       clearTimeout(longPressTimer.current);
     }
     
+    console.log('Starting long press timer...');
     // Start long press timer
     longPressTimer.current = setTimeout(() => {
+      console.log('Long press activated!');
       setIsLongPress(true);
       
       // Add haptic feedback on mobile
       if ('vibrate' in navigator) {
+        console.log('Vibrating device');
         navigator.vibrate(50);
       }
       
-      // Trigger drag start
+      console.log('Triggering drag start manually');
+      // Force enable dragging and trigger pointer event
       if (listeners?.onPointerDown) {
         const syntheticEvent = new PointerEvent('pointerdown', {
           clientX: touch.clientX,
@@ -72,24 +77,29 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         });
         listeners.onPointerDown(syntheticEvent as any);
       }
-        }, 500); // 0.5 seconds for long press
+    }, 500); // 0.5 seconds for long press
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    console.log('Touch move detected');
     if (!touchStartPos.current) return;
     
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
     
+    console.log(`Touch movement: deltaX=${deltaX}, deltaY=${deltaY}`);
+    
     // Cancel long press if finger moves too much (more than 10px)
     if ((deltaX > 10 || deltaY > 10) && longPressTimer.current) {
+      console.log('Cancelling long press due to movement');
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
     
     // If we're in drag mode, handle the move
     if (isLongPress && listeners?.onPointerMove) {
+      console.log('Handling drag move');
       const syntheticEvent = new PointerEvent('pointermove', {
         clientX: touch.clientX,
         clientY: touch.clientY,
@@ -103,14 +113,17 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    console.log('Touch end detected');
     // Clear long press timer
     if (longPressTimer.current) {
+      console.log('Clearing long press timer');
       clearTimeout(longPressTimer.current);
       longPressTimer.current = null;
     }
     
     // If we were dragging, end the drag
     if (isLongPress && listeners?.onPointerUp) {
+      console.log('Ending drag');
       const changedTouch = e.changedTouches[0];
       const syntheticEvent = new PointerEvent('pointerup', {
         clientX: changedTouch.clientX,
@@ -124,6 +137,7 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     }
     
     // Reset states
+    console.log('Resetting drag state');
     setIsLongPress(false);
     touchStartPos.current = null;
   };
