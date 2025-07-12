@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
@@ -17,10 +17,6 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
   children, 
   className 
 }) => {
-  const [isPressed, setIsPressed] = useState(false);
-  const [longPressActivated, setLongPressActivated] = useState(false);
-  const pressTimer = useRef<NodeJS.Timeout>();
-  
   const {
     attributes,
     listeners,
@@ -28,66 +24,12 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     transform,
     transition,
     isDragging,
-    setActivatorNodeRef,
-  } = useSortable({ 
-    id: order.id,
-    disabled: !longPressActivated
-  });
-
-  const handleTouchStart = useCallback(() => {
-    setIsPressed(true);
-    pressTimer.current = setTimeout(() => {
-      setLongPressActivated(true);
-      // Enhanced haptic feedback for mobile
-      if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100]);
-      }
-    }, 200); // Faster for mobile - 200ms
-  }, []);
-
-  const handleMouseDown = useCallback(() => {
-    setIsPressed(true);
-    pressTimer.current = setTimeout(() => {
-      setLongPressActivated(true);
-      // Lighter haptic feedback for desktop
-      if ('vibrate' in navigator) {
-        navigator.vibrate([50, 25, 50]);
-      }
-    }, 250);
-  }, []);
-
-  const handleEnd = useCallback(() => {
-    setIsPressed(false);
-    if (pressTimer.current) {
-      clearTimeout(pressTimer.current);
-    }
-    // Reset after a short delay if not dragging
-    setTimeout(() => {
-      if (!isDragging) {
-        setLongPressActivated(false);
-      }
-    }, 150);
-  }, [isDragging]);
-
-  const handleLeave = useCallback(() => {
-    setIsPressed(false);
-    if (pressTimer.current) {
-      clearTimeout(pressTimer.current);
-    }
-    // Don't reset on mobile when finger moves slightly
-    if (!('ontouchstart' in window)) {
-      setTimeout(() => {
-        if (!isDragging) {
-          setLongPressActivated(false);
-        }
-      }, 100);
-    }
-  }, [isDragging]);
+  } = useSortable({ id: order.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition: isDragging ? 'none' : transition || 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
-    opacity: isDragging ? 0.9 : 1,
+    transition,
+    opacity: isDragging ? 0.8 : 1,
     zIndex: isDragging ? 1000 : 'auto',
   };
 
@@ -95,39 +37,20 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`${className} ${
-        isDragging 
-          ? 'shadow-[0_8px_30px_rgb(0,0,0,0.12)] bg-background border border-primary/20 rounded-lg scale-105' 
-          : ''
-      } ${
-        isPressed ? 'scale-[0.985] bg-muted/30' : ''
-      } ${
-        longPressActivated ? 'ring-1 ring-primary/40 bg-primary/5 cursor-grabbing' : 'cursor-default'
-      } relative group transition-all duration-150 ease-out hover:bg-muted/20 select-none touch-manipulation`}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleEnd}
-      onMouseLeave={handleLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleEnd}
-      onContextMenu={(e) => e.preventDefault()}
-      {...(longPressActivated ? { ref: setActivatorNodeRef, ...attributes, ...listeners } : {})}
+      className={`${className} ${isDragging ? 'shadow-lg' : ''} relative group`}
     >
-      <div className="flex items-center pointer-events-none min-h-[48px]">
-        {/* Drag Handle - Visual indicator only when activated */}
+      <div className="flex items-center">
+        {/* Drag Handle */}
         <div
-          className={`w-8 flex-shrink-0 flex items-center justify-center touch-none
-            ${isPressed ? 'opacity-100 scale-110 bg-primary/10 rounded' : 'opacity-0 group-hover:opacity-70'} 
-            ${longPressActivated ? 'opacity-100 bg-primary/15 rounded' : ''} 
-            transition-all duration-150 ease-out`}
+          {...attributes}
+          {...listeners}
+          className="w-8 flex-shrink-0 flex items-center justify-center cursor-grab active:cursor-grabbing opacity-30 hover:opacity-100 transition-opacity"
         >
-          <GripVertical 
-            size={16} 
-            className={`${longPressActivated ? 'text-primary' : 'text-muted-foreground'} transition-colors duration-200`} 
-          />
+          <GripVertical size={16} className="text-gray-500" />
         </div>
         
         {/* Order Content */}
-        <div className="flex-1 pointer-events-auto">
+        <div className="flex-1">
           {children}
         </div>
       </div>
