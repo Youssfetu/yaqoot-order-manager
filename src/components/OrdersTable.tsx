@@ -1143,58 +1143,71 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       >
                         {editingCell === order.id ? (
                           <div 
-                            className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex items-center justify-center"
+                            className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4"
                             onClick={handleCommentCancel}
                           >
                             <div 
-                              className="bg-white rounded-xl shadow-2xl border border-gray-200 p-6 mx-4 max-w-md w-full"
+                              className="bg-white w-full sm:max-w-md sm:rounded-2xl shadow-2xl border-0 sm:border border-gray-200 animate-slide-in-right sm:animate-scale-in"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <div className="mb-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                                  {t('edit_comment')}
-                                </h3>
-                                <p className="text-sm text-gray-600">
-                                  {t('order_code')}: {order.code}
-                                </p>
+                              {/* Header */}
+                              <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-gray-800">
+                                    {t('edit_comment')}
+                                  </h3>
+                                  <p className="text-sm text-gray-600 mt-1">
+                                    {t('order_code')}: {order.code}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={handleCommentCancel}
+                                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                  <span className="text-xl">×</span>
+                                </button>
                               </div>
                               
-                              <div className="relative mb-6">
-                                <textarea
-                                  value={commentEditValue}
-                                  onChange={(e) => setCommentEditValue(e.target.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && e.ctrlKey) {
-                                      handleCommentSave(order.id);
-                                    }
-                                    if (e.key === 'Escape') {
-                                      handleCommentCancel();
-                                    }
-                                  }}
-                                  className="w-full h-24 px-4 py-3 border border-gray-300 rounded-lg resize-none outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-gray-50 focus:bg-white"
-                                  placeholder={t('write_comment')}
-                                  autoFocus
-                                  style={{
-                                    fontSize: '16px',
-                                    lineHeight: '1.5',
-                                    fontFamily: 'system-ui, -apple-system, sans-serif'
-                                  }}
-                                />
-                                <div className="absolute bottom-2 right-2 text-xs text-gray-400">
-                                  Ctrl+Enter {t('to_save')}
+                              {/* Content */}
+                              <div className="p-4 sm:p-6">
+                                <div className="relative">
+                                  <textarea
+                                    value={commentEditValue}
+                                    onChange={(e) => setCommentEditValue(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' && e.ctrlKey) {
+                                        handleCommentSave(order.id);
+                                      }
+                                      if (e.key === 'Escape') {
+                                        handleCommentCancel();
+                                      }
+                                    }}
+                                    className="w-full h-32 sm:h-24 px-4 py-3 border border-gray-300 rounded-xl resize-none outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-gray-50 focus:bg-white text-base leading-relaxed"
+                                    placeholder={t('write_comment')}
+                                    autoFocus
+                                    style={{
+                                      fontSize: '16px',
+                                      lineHeight: '1.5',
+                                      fontFamily: 'system-ui, -apple-system, sans-serif'
+                                    }}
+                                  />
+                                  <div className="hidden sm:block absolute bottom-2 right-3 text-xs text-gray-400">
+                                    Ctrl+Enter {t('to_save')}
+                                  </div>
                                 </div>
                               </div>
                               
-                              <div className="flex items-center justify-end gap-3">
+                              {/* Footer */}
+                              <div className="flex items-center justify-end gap-3 p-4 sm:p-6 border-t border-gray-100 bg-gray-50/50">
                                 <button
                                   onClick={handleCommentCancel}
-                                  className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
+                                  className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors rounded-lg hover:bg-white/50"
                                 >
                                   {t('cancel')}
                                 </button>
                                 <button
                                   onClick={() => handleCommentSave(order.id)}
-                                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105"
+                                  className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-all duration-200 hover:shadow-lg transform hover:scale-105 active:scale-95"
                                 >
                                   {t('save')}
                                 </button>
