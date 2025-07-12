@@ -34,18 +34,29 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     disabled: !longPressActivated
   });
 
+  const handleTouchStart = useCallback(() => {
+    setIsPressed(true);
+    pressTimer.current = setTimeout(() => {
+      setLongPressActivated(true);
+      // Enhanced haptic feedback for mobile
+      if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]);
+      }
+    }, 200); // Faster for mobile - 200ms
+  }, []);
+
   const handleMouseDown = useCallback(() => {
     setIsPressed(true);
     pressTimer.current = setTimeout(() => {
       setLongPressActivated(true);
-      // Add haptic feedback if available
+      // Lighter haptic feedback for desktop
       if ('vibrate' in navigator) {
         navigator.vibrate([50, 25, 50]);
       }
-    }, 250); // Reduced to 250ms for faster response like Google Sheets
+    }, 250);
   }, []);
 
-  const handleMouseUp = useCallback(() => {
+  const handleEnd = useCallback(() => {
     setIsPressed(false);
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
@@ -55,15 +66,23 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
       if (!isDragging) {
         setLongPressActivated(false);
       }
-    }, 100);
+    }, 150);
   }, [isDragging]);
 
-  const handleMouseLeave = useCallback(() => {
+  const handleLeave = useCallback(() => {
     setIsPressed(false);
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
     }
-  }, []);
+    // Don't reset on mobile when finger moves slightly
+    if (!('ontouchstart' in window)) {
+      setTimeout(() => {
+        if (!isDragging) {
+          setLongPressActivated(false);
+        }
+      }, 100);
+    }
+  }, [isDragging]);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -84,15 +103,16 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         isPressed ? 'scale-[0.985] bg-muted/30' : ''
       } ${
         longPressActivated ? 'ring-1 ring-primary/40 bg-primary/5 cursor-grabbing' : 'cursor-default'
-      } relative group transition-all duration-150 ease-out hover:bg-muted/20 select-none`}
+      } relative group transition-all duration-150 ease-out hover:bg-muted/20 select-none touch-manipulation`}
       onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleMouseDown}
-      onTouchEnd={handleMouseUp}
+      onMouseUp={handleEnd}
+      onMouseLeave={handleLeave}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleEnd}
+      onContextMenu={(e) => e.preventDefault()}
       {...(longPressActivated ? { ref: setActivatorNodeRef, ...attributes, ...listeners } : {})}
     >
-      <div className="flex items-center pointer-events-none">
+      <div className="flex items-center pointer-events-none min-h-[48px]">
         {/* Drag Handle - Visual indicator only when activated */}
         <div
           className={`w-8 flex-shrink-0 flex items-center justify-center touch-none
