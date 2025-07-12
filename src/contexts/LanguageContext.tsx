@@ -80,6 +80,8 @@ const translations: Translations = {
     'delete_all_desc': 'حذف جميع الطلبيات',
     'write_comment': 'اكتب تعليق...',
     'save': 'حفظ',
+    'edit_comment': 'تعديل التعليق',
+    'to_save': 'للحفظ',
     'language_changed': 'تم تغيير اللغة',
     'language_changed_desc': 'تم تغيير اللغة بنجاح',
     
@@ -221,6 +223,8 @@ const translations: Translations = {
     'delete_all_desc': 'Supprimer toutes les commandes',
     'write_comment': 'Écrire un commentaire...',
     'save': 'Sauvegarder',
+    'edit_comment': 'Modifier le commentaire',
+    'to_save': 'pour sauvegarder',
     'language_changed': 'Langue modifiée',
     'language_changed_desc': 'La langue a été modifiée avec succès',
     

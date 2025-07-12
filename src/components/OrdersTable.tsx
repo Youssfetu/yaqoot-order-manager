@@ -1143,41 +1143,60 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       >
                         {editingCell === order.id ? (
                           <div 
-                            className="absolute inset-0 z-50 bg-white border-2 border-blue-500 rounded-sm shadow-lg"
-                            style={{
-                              transform: `scale(${1/zoomLevel}) translate(${-panOffset.x/zoomLevel}px, ${-panOffset.y/zoomLevel}px)`,
-                              transformOrigin: 'top left',
-                              minHeight: '40px',
-                              width: `${150 * zoomLevel}px`
-                            }}
+                            className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm flex items-center justify-center"
+                            onClick={handleCommentCancel}
                           >
-                            <div className="flex items-center h-full">
-                              <input
-                                value={commentEditValue}
-                                onChange={(e) => setCommentEditValue(e.target.value)}
-                                onKeyDown={(e) => handleCommentKeyDown(e, order.id)}
-                                className="flex-1 h-full px-2 border-none outline-none bg-white focus:ring-0"
-                                placeholder={t('write_comment')}
-                                autoFocus
-                                style={{
-                                  fontSize: `${11 * zoomLevel}px`,
-                                  padding: `${2 * zoomLevel}px ${6 * zoomLevel}px`
-                                }}
-                              />
-                              <div className="flex items-center gap-1 px-1">
-                                <button
-                                  onClick={() => handleCommentSave(order.id)}
-                                  className="w-6 h-6 bg-green-500 hover:bg-green-600 text-white rounded-sm flex items-center justify-center transition-colors"
-                                  title={t('save')}
-                                >
-                                  <span className="text-xs">✓</span>
-                                </button>
+                            <div 
+                              className="bg-white rounded-xl shadow-2xl border border-gray-200 p-6 mx-4 max-w-md w-full"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="mb-4">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                                  {t('edit_comment')}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  {t('order_code')}: {order.code}
+                                </p>
+                              </div>
+                              
+                              <div className="relative mb-6">
+                                <textarea
+                                  value={commentEditValue}
+                                  onChange={(e) => setCommentEditValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && e.ctrlKey) {
+                                      handleCommentSave(order.id);
+                                    }
+                                    if (e.key === 'Escape') {
+                                      handleCommentCancel();
+                                    }
+                                  }}
+                                  className="w-full h-24 px-4 py-3 border border-gray-300 rounded-lg resize-none outline-none transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-gray-50 focus:bg-white"
+                                  placeholder={t('write_comment')}
+                                  autoFocus
+                                  style={{
+                                    fontSize: '16px',
+                                    lineHeight: '1.5',
+                                    fontFamily: 'system-ui, -apple-system, sans-serif'
+                                  }}
+                                />
+                                <div className="absolute bottom-2 right-2 text-xs text-gray-400">
+                                  Ctrl+Enter {t('to_save')}
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center justify-end gap-3">
                                 <button
                                   onClick={handleCommentCancel}
-                                  className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-sm flex items-center justify-center transition-colors"
-                                  title={t('cancel')}
+                                  className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors"
                                 >
-                                  <span className="text-xs">✕</span>
+                                  {t('cancel')}
+                                </button>
+                                <button
+                                  onClick={() => handleCommentSave(order.id)}
+                                  className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg transform hover:scale-105"
+                                >
+                                  {t('save')}
                                 </button>
                               </div>
                             </div>
