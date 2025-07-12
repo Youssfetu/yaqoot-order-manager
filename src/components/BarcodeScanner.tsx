@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { QrCode, Camera, X, AlertCircle, Volume2, VolumeX } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface BarcodeScannerProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface BarcodeScannerProps {
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
+  const { t } = useLanguage();
   const [manualCode, setManualCode] = useState('');
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState<string>('');
@@ -246,7 +248,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       <DialogContent className="sm:max-w-md animate-scale-in">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-right">مسح الكود الشريطي</DialogTitle>
+            <DialogTitle className="text-right">{t('barcode_scanner')}</DialogTitle>
             <Button
               onClick={toggleSound}
               variant="ghost"
@@ -263,9 +265,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Manual Input - الأولوية للإدخال اليدوي */}
+          {/* Manual Input */}
           <div className="space-y-4 animate-fade-in">
-            <h4 className="font-medium text-right text-gray-800">📝 إدخال يدوي</h4>
+            <h4 className="font-medium text-right text-gray-800">{t('order_code')}</h4>
             <form onSubmit={handleManualSubmit} className="flex gap-2">
               <Button 
                 type="submit" 
@@ -273,12 +275,12 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                 disabled={!manualCode.trim()}
                 className="px-6 bg-blue-600 hover:bg-blue-700 transition-all duration-200"
               >
-                🔍 بحث
+                {t('search')}
               </Button>
               <Input
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                placeholder="أدخل كود الطلبية..."
+                placeholder={t('order_code')}
                 className="flex-1 text-right border-2 border-gray-200 focus:border-blue-400 transition-colors duration-200"
                 autoComplete="off"
                 inputMode="text"
@@ -289,7 +291,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
 
           {/* Camera Scanner */}
           <div className="space-y-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-            <h4 className="font-medium text-right text-gray-800">📷 مسح بالكاميرا</h4>
+            <h4 className="font-medium text-right text-gray-800">{t('scan_barcode')}</h4>
             
             <div className="border-2 border-dashed border-gray-300 rounded-lg overflow-hidden hover:border-blue-300 transition-colors duration-200">
               {isScanning ? (
@@ -321,7 +323,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                     {/* حالة التهدئة */}
                     {scanCooldown && (
                       <div className="absolute top-4 left-4 bg-yellow-500 bg-opacity-90 text-white px-3 py-1 rounded-lg text-xs animate-fade-in">
-                        ⏳ معالجة...
+                        ⏳ {t('scan_instruction')}
                       </div>
                     )}
                   </div>
@@ -334,7 +336,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                       className="gap-2 bg-red-600 hover:bg-red-700 transition-all duration-200 hover-scale"
                     >
                       <X className="h-4 w-4" />
-                      إيقاف المسح
+                      {t('close')}
                     </Button>
                   </div>
                 </div>
@@ -345,15 +347,15 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                     <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600 font-medium">📱 مسح الكود الشريطي</p>
-                    <p className="text-xs text-gray-500">وجه الكاميرا نحو الكود بوضوح</p>
+                    <p className="text-sm text-gray-600 font-medium">{t('scan_barcode')}</p>
+                    <p className="text-xs text-gray-500">{t('scan_instruction')}</p>
                   </div>
                   <Button
                     onClick={startCamera}
                     className="gap-2 bg-green-600 hover:bg-green-700 transition-all duration-200 hover-scale"
                   >
                     <Camera className="h-4 w-4" />
-                    🚀 بدء المسح السريع
+                    {t('scan_barcode')}
                   </Button>
                 </div>
               )}
@@ -365,9 +367,9 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
                   <div className="text-right flex-1">
-                    <h5 className="font-medium text-red-900 mb-1">⚠️ خطأ في الكاميرا</h5>
+                    <h5 className="font-medium text-red-900 mb-1">⚠️ {t('error')}</h5>
                     <p className="text-sm text-red-800">{cameraError}</p>
-                    <p className="text-xs text-red-600 mt-2">💡 يمكنك استخدام الإدخال اليدوي بدلاً من ذلك</p>
+                    <p className="text-xs text-red-600 mt-2">💡 {t('camera_permission')}</p>
                   </div>
                 </div>
               </div>
@@ -382,10 +384,10 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
               onClick={handleClose}
               className="hover-scale transition-all duration-200"
             >
-              ❌ إغلاق
+              {t('close')}
             </Button>
             <div className="text-xs text-gray-500">
-              {soundEnabled ? '🔊 الصوت مفعل' : '🔇 الصوت مُعطل'}
+              {soundEnabled ? '🔊' : '🔇'}
             </div>
           </div>
         </DialogFooter>

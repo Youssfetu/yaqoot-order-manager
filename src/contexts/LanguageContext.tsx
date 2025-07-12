@@ -107,7 +107,34 @@ const translations: Translations = {
     'search_placeholder': 'ابحث بالكود، العميل، أو الرقم...',
     'search_results': 'تم العثور على',
     'search_results_desc': 'طلبية من أصل',
-    'orders': 'طلبية'
+    'orders': 'طلبية',
+    
+    // Dialog titles and buttons
+    'add_new_order': 'إضافة طلبية جديدة',
+    'upload_file': 'رفع ملف',
+    'barcode_scanner': 'ماسح الباركود',
+    'archived_orders': 'الطلبيات المؤرشفة',
+    'table_settings': 'إعدادات الجدول',
+    'scan_barcode': 'امسح الباركود',
+    'upload_excel': 'رفع ملف إكسل',
+    'view_archived': 'عرض المؤرشف',
+    'configure_table': 'تكوين الجدول',
+    
+    // Form fields
+    'order_code': 'كود الطلبية',
+    'client_name': 'اسم العميل',
+    'phone_number': 'رقم الهاتف',
+    'order_price': 'سعر الطلبية',
+    'order_status': 'حالة الطلبية',
+    'order_comment': 'تعليق الطلبية',
+    'add_order': 'إضافة الطلبية',
+    'required_field': 'هذا الحقل مطلوب',
+    
+    // Scanner
+    'scan_instruction': 'وجه الكاميرا نحو الباركود',
+    'camera_permission': 'يرجى السماح للكاميرا',
+    'scan_success': 'تم المسح بنجاح',
+    'scan_failed': 'فشل المسح',
   },
   fr: {
     // Header & Navigation
@@ -208,7 +235,34 @@ const translations: Translations = {
     'search_placeholder': 'Rechercher par code, client ou numéro...',
     'search_results': 'Trouvé',
     'search_results_desc': 'commande(s) sur',
-    'orders': 'commande(s)'
+    'orders': 'commande(s)',
+    
+    // Dialog titles and buttons
+    'add_new_order': 'Ajouter nouvelle commande',
+    'upload_file': 'Télécharger fichier',
+    'barcode_scanner': 'Scanner de codes-barres',
+    'archived_orders': 'Commandes archivées',
+    'table_settings': 'Paramètres du tableau',
+    'scan_barcode': 'Scanner le code-barres',
+    'upload_excel': 'Télécharger fichier Excel',
+    'view_archived': 'Voir les archives',
+    'configure_table': 'Configurer le tableau',
+    
+    // Form fields
+    'order_code': 'Code de commande',
+    'client_name': 'Nom du client',
+    'phone_number': 'Numéro de téléphone',
+    'order_price': 'Prix de la commande',
+    'order_status': 'Statut de la commande',
+    'order_comment': 'Commentaire de la commande',
+    'add_order': 'Ajouter la commande',
+    'required_field': 'Ce champ est requis',
+    
+    // Scanner
+    'scan_instruction': 'Pointez la caméra vers le code-barres',
+    'camera_permission': 'Veuillez autoriser l\'accès à la caméra',
+    'scan_success': 'Scan réussi',
+    'scan_failed': 'Échec du scan'
   }
 };
 

@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Upload, FileText, FileSpreadsheet } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 import * as XLSX from 'xlsx';
 import type { Order } from '@/pages/Index';
 
@@ -17,6 +18,7 @@ const UploadDialog: React.FC<UploadDialogProps> = ({ isOpen, onClose, onUpload }
   const [isProcessing, setIsProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const parseExcelFile = (file: File): Promise<Order[]> => {
     return new Promise((resolve, reject) => {

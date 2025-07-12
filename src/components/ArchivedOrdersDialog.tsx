@@ -3,6 +3,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Order } from '@/pages/Index';
 
 interface ArchivedOrdersDialogProps {
@@ -16,6 +17,7 @@ const ArchivedOrdersDialog: React.FC<ArchivedOrdersDialogProps> = ({
   onClose,
   archivedOrders
 }) => {
+  const { t } = useLanguage();
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[80vh] overflow-hidden flex flex-col">

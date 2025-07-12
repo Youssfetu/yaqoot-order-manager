@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Order } from '@/pages/Index';
 
 interface AddOrderDialogProps {
@@ -15,6 +16,7 @@ interface AddOrderDialogProps {
 }
 
 const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd }) => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     code: '',
     vendeur: '',
@@ -57,13 +59,13 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Ajouter une nouvelle commande</DialogTitle>
+          <DialogTitle>{t('add_new_order')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="code">Code de commande *</Label>
+              <Label htmlFor="code">{t('order_code')} *</Label>
               <Input
                 id="code"
                 value={formData.code}
@@ -74,7 +76,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vendeur">Nom du client/distributeur *</Label>
+              <Label htmlFor="vendeur">{t('client_name')} *</Label>
               <Input
                 id="vendeur"
                 value={formData.vendeur}
@@ -87,7 +89,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="numero">Numéro de téléphone</Label>
+              <Label htmlFor="numero">{t('phone_number')}</Label>
               <Input
                 id="numero"
                 value={formData.numero}
@@ -97,7 +99,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="prix">Prix (€) *</Label>
+              <Label htmlFor="prix">{t('order_price')} *</Label>
               <Input
                 id="prix"
                 type="number"
@@ -111,7 +113,7 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="statut">Statut de la commande</Label>
+            <Label htmlFor="statut">{t('order_status')}</Label>
             <Select
               value={formData.statut}
               onValueChange={(value) => handleInputChange('statut', value)}
@@ -119,35 +121,35 @@ const AddOrderDialog: React.FC<AddOrderDialogProps> = ({ isOpen, onClose, onAdd 
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Nouveau">Nouveau</SelectItem>
-                <SelectItem value="Confirmé">Confirmé</SelectItem>
-                <SelectItem value="En cours">En cours</SelectItem>
-                <SelectItem value="Annulé">Annulé</SelectItem>
+              <SelectContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50">
+                <SelectItem value="Nouveau">{t('Nouveau')}</SelectItem>
+                <SelectItem value="Confirmé">{t('Confirmé')}</SelectItem>
+                <SelectItem value="En cours">{t('En cours')}</SelectItem>
+                <SelectItem value="Annulé">{t('Annulé')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="commentaire">Commentaire</Label>
+            <Label htmlFor="commentaire">{t('order_comment')}</Label>
             <Textarea
               id="commentaire"
               value={formData.commentaire}
               onChange={(e) => handleInputChange('commentaire', e.target.value)}
-              placeholder="Remarques supplémentaires..."
+              placeholder={t('write_comment')}
               rows={3}
             />
           </div>
 
           <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={onClose}>
-              Annuler
+              {t('cancel')}
             </Button>
             <Button 
               type="submit"
               className="bg-gradient-to-r from-blue-600 to-orange-600 hover:from-blue-700 hover:to-orange-700"
             >
-              Ajouter la commande
+              {t('add_order')}
             </Button>
           </DialogFooter>
         </form>

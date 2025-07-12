@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Settings, Type, AlignLeft, AlignCenter, AlignRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TableSettings {
   columnVisibility: {
