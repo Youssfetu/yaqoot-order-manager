@@ -15,7 +15,9 @@ import TableSettingsDialog from '@/components/TableSettingsDialog';
 
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { exportOrdersToExcel } from '@/utils/excelExport';
+import { useNavigate } from 'react-router-dom';
 
 export interface Order {
   id: string;
@@ -30,6 +32,8 @@ export interface Order {
 
 const Index = () => {
   const { t } = useLanguage();
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [archivedOrders, setArchivedOrders] = useState<Order[]>([]);
 
@@ -256,24 +260,60 @@ const Index = () => {
 
   console.log('Search state:', { isSearchOpen, searchTerm, filteredOrdersCount: filteredOrders.length, totalOrders: orders.length });
 
+  // Redirect to auth if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth page
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Android Style Header */}
       <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="px-2 sm:px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            {/* Menu Icon */}
-            <Button
-              onClick={() => setIsMenuDrawerOpen(true)}
-              variant="ghost"
-              size="sm"
-              className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
-            >
-              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
-            </Button>
+            {/* Menu Icon and User Info */}
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setIsMenuDrawerOpen(true)}
+                variant="ghost"
+                size="sm"
+                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+              </Button>
+              <span className="text-sm text-gray-600">
+                مرحباً {user?.email}
+              </span>
+            </div>
             
             {/* Header Icons */}
             <div className="flex items-center gap-1 sm:gap-3">
+              {/* Logout Button */}
+              <Button
+                onClick={signOut}
+                variant="outline"
+                size="sm"
+                className="text-xs p-1.5 sm:p-2 hover:bg-red-50 border-red-200 text-red-600"
+              >
+                خروج
+              </Button>
               {/* Table Settings - First on the left */}
               <Button
                 onClick={() => setIsTableSettingsOpen(true)}
