@@ -1,71 +1,24 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Textarea } from '@/components/ui/textarea';
 import type { Order } from '@/pages/Index';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { cn } from '@/lib/utils';
-
-interface TableSettings {
-  columnVisibility: {
-    code: boolean;
-    destination: boolean;
-    phone: boolean;
-    price: boolean;
-    comment: boolean;
-    status: boolean;
-  };
-  fontSize: number;
-  fontWeight: 'normal' | 'bold' | 'light';
-  textAlignment: {
-    code: 'left' | 'center' | 'right';
-    phone: 'left' | 'center' | 'right';
-    price: 'left' | 'center' | 'right';
-    comment: 'left' | 'center' | 'right';
-  };
-}
 
 interface SortableOrderRowProps {
   order: Order;
   index: number;
-  onUpdateComment: (id: string, comment: string) => void;
-  onUpdateStatus: (id: string, status: string) => void;
-  onUpdatePhone: (id: string, phone: string) => void;
-  onUpdatePrice: (id: string, price: number) => void;
-  tableSettings: TableSettings;
-  visibleColumns: string[];
-  getColumnWidth: (column: string) => string;
-  getColumnAlignment: (column: string) => string;
-  isHighlighted?: boolean;
-  isScanned?: boolean;
+  children: React.ReactNode;
+  className?: string;
 }
 
-const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
-  order,
-  index,
-  onUpdateComment,
-  onUpdateStatus,
-  onUpdatePhone,
-  onUpdatePrice,
-  tableSettings,
-  visibleColumns,
-  getColumnWidth,
-  getColumnAlignment,
-  isHighlighted = false,
-  isScanned = false,
+const SortableOrderRow: React.FC<SortableOrderRowProps> = ({ 
+  order, 
+  index, 
+  children, 
+  className 
 }) => {
-  const { t } = useLanguage();
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isLongPress, setIsLongPress] = useState(false);
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   
   const {
     attributes,
@@ -74,172 +27,157 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: order.id });
+    setActivatorNodeRef,
+  } = useSortable({ 
+    id: order.id
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? 'none' : transition,
+    opacity: isDragging ? 0.9 : 1,
+    zIndex: isDragging ? 1000 : 'auto',
   };
 
-  const statuses = [
-    { value: 'Nouveau', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-    { value: 'Confirmé', color: 'bg-green-100 text-green-800 border-green-200' },
-    { value: 'Expédié', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-    { value: 'Livré', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-    { value: 'Annulé', color: 'bg-red-100 text-red-800 border-red-200' },
-    { value: 'Refusé', color: 'bg-gray-100 text-gray-800 border-gray-200' },
-    { value: 'Hors zone', color: 'bg-orange-100 text-orange-800 border-orange-200' },
-    { value: 'Pas de réponse', color: 'bg-purple-100 text-purple-800 border-purple-200' },
-  ];
+  // Handle long press for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    console.log('Touch start detected on mobile');
+    const touch = e.touches[0];
+    touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+    
+    // Clear any existing timer
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+    }
+    
+    console.log('Starting long press timer...');
+    // Start long press timer
+    longPressTimer.current = setTimeout(() => {
+      console.log('Long press activated!');
+      setIsLongPress(true);
+      
+      // Add haptic feedback on mobile
+      if ('vibrate' in navigator) {
+        console.log('Vibrating device');
+        navigator.vibrate(50);
+      }
+      
+      console.log('Triggering drag start manually');
+      // Force enable dragging and trigger pointer event
+      if (listeners?.onPointerDown) {
+        const syntheticEvent = new PointerEvent('pointerdown', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          pointerId: 1,
+          pointerType: 'touch',
+          isPrimary: true,
+          bubbles: true,
+        });
+        listeners.onPointerDown(syntheticEvent as any);
+      }
+    }, 200); // 0.2 seconds for faster response
+  };
 
-  const currentStatus = statuses.find(s => s.value === order.statut) || statuses[0];
-
-  const handleDropdownToggle = (dropdownId: string, isOpen: boolean) => {
-    if (isOpen) {
-      setOpenDropdown(dropdownId);
-    } else {
-      setOpenDropdown(null);
+  const handleTouchMove = (e: React.TouchEvent) => {
+    console.log('Touch move detected');
+    if (!touchStartPos.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartPos.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.current.y);
+    
+    console.log(`Touch movement: deltaX=${deltaX}, deltaY=${deltaY}`);
+    
+    // Cancel long press if finger moves too much (more than 10px)
+    if ((deltaX > 10 || deltaY > 10) && longPressTimer.current) {
+      console.log('Cancelling long press due to movement');
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+      return; // السماح بالسكرول الطبيعي
+    }
+    
+    // If we're in drag mode, handle the move and prevent scrolling
+    if (isLongPress) {
+      e.stopPropagation();
+      e.preventDefault();
+      if (listeners?.onPointerMove) {
+        console.log('Handling drag move');
+        const syntheticEvent = new PointerEvent('pointermove', {
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          pointerId: 1,
+          pointerType: 'touch',
+          isPrimary: true,
+          bubbles: true,
+        });
+        listeners.onPointerMove(syntheticEvent as any);
+      }
     }
   };
 
-  const handleStatusChange = (newStatus: string) => {
-    onUpdateStatus(order.id, newStatus);
-    setOpenDropdown(null);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    console.log('Touch end detected');
+    
+    // Clear long press timer
+    if (longPressTimer.current) {
+      console.log('Clearing long press timer');
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+    
+    // If we were dragging, end the drag
+    if (isLongPress && listeners?.onPointerUp) {
+      console.log('Ending drag');
+      e.stopPropagation();
+      const changedTouch = e.changedTouches[0];
+      const syntheticEvent = new PointerEvent('pointerup', {
+        clientX: changedTouch.clientX,
+        clientY: changedTouch.clientY,
+        pointerId: 1,
+        pointerType: 'touch',
+        isPrimary: true,
+        bubbles: true,
+      });
+      listeners.onPointerUp(syntheticEvent as any);
+    }
+    
+    // Reset states
+    console.log('Resetting drag state');
+    setIsLongPress(false);
+    touchStartPos.current = null;
   };
 
-  const getCellContent = (column: string) => {
-    switch (column) {
-      case 'code':
-        return (
-          <div 
-            className={cn(
-              "px-2 py-1 rounded font-mono text-sm",
-              isScanned ? "bg-green-100 text-green-800 border border-green-200" : ""
-            )}
-          >
-            {order.code}
-          </div>
-        );
-      case 'destination':
-        return order.vendeur;
-      case 'phone':
-        return (
-          <Input
-            value={order.numero}
-            onChange={(e) => onUpdatePhone(order.id, e.target.value)}
-            className="h-8 text-sm border-0 bg-transparent hover:bg-muted/50 focus:bg-background focus:border-primary/20"
-            style={{
-              fontSize: `${tableSettings.fontSize}px`,
-              fontWeight: tableSettings.fontWeight,
-            }}
-          />
-        );
-      case 'price':
-        return (
-          <Input
-            type="number"
-            value={order.prix}
-            onChange={(e) => onUpdatePrice(order.id, parseFloat(e.target.value) || 0)}
-            className="h-8 text-sm border-0 bg-transparent hover:bg-muted/50 focus:bg-background focus:border-primary/20"
-            style={{
-              fontSize: `${tableSettings.fontSize}px`,
-              fontWeight: tableSettings.fontWeight,
-            }}
-          />
-        );
-      case 'comment':
-        return (
-          <Textarea
-            value={order.commentaire}
-            onChange={(e) => onUpdateComment(order.id, e.target.value)}
-            className="min-h-[32px] h-8 text-sm border-0 bg-transparent hover:bg-muted/50 focus:bg-background focus:border-primary/20 resize-none"
-            style={{
-              fontSize: `${tableSettings.fontSize}px`,
-              fontWeight: tableSettings.fontWeight,
-            }}
-          />
-        );
-      case 'status':
-        return (
-          <DropdownMenu 
-            open={openDropdown === `status-${order.id}`}
-            onOpenChange={(isOpen) => handleDropdownToggle(`status-${order.id}`, isOpen)}
-          >
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={cn(
-                  "h-8 px-2 text-xs font-medium border rounded-md hover:shadow-sm transition-all",
-                  currentStatus.color
-                )}
-                style={{
-                  fontSize: `${tableSettings.fontSize}px`,
-                  fontWeight: tableSettings.fontWeight,
-                }}
-              >
-                {order.statut}
-                <ChevronDown className="ml-1 h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              {statuses.map((status) => (
-                <DropdownMenuItem
-                  key={status.value}
-                  onClick={() => handleStatusChange(status.value)}
-                  className={cn(
-                    "text-xs font-medium cursor-pointer",
-                    status.color
-                  )}
-                >
-                  {status.value}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      default:
-        return null;
+  // Handle mouse events for desktop
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // Only left click
+    
+    setIsLongPress(true);
+    if (listeners?.onPointerDown) {
+      listeners.onPointerDown(e as any);
     }
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (longPressTimer.current) {
+        clearTimeout(longPressTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node);
+        setActivatorNodeRef(node);
+      }}
       style={style}
-      className={cn(
-        "group flex items-center min-h-[48px] hover:bg-muted/30 transition-all duration-200",
-        isDragging && "opacity-50 shadow-lg bg-background border border-primary/20 rounded-lg z-50",
-        isHighlighted && "bg-green-50 border-l-4 border-green-400 animate-pulse",
-        index % 2 === 0 ? "bg-background/50" : "bg-muted/20"
-      )}
+      className={`${className} ${isDragging ? 'shadow-lg' : ''} relative`}
       {...attributes}
+      {...listeners}
     >
-      {/* Drag Handle */}
-      <div 
-        className="px-2 py-2 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
-        {...listeners}
-      >
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
-      </div>
-
-      {/* Table Cells */}
-      {visibleColumns.map((column) => (
-        <div
-          key={column}
-          className={cn(
-            getColumnWidth(column),
-            getColumnAlignment(column),
-            "px-2 flex items-center min-h-[48px]"
-          )}
-          style={{
-            fontSize: `${tableSettings.fontSize}px`,
-            fontWeight: tableSettings.fontWeight,
-          }}
-        >
-          {getCellContent(column)}
-        </div>
-      ))}
+      {children}
     </div>
   );
 };
