@@ -6,6 +6,35 @@
 All colors MUST be HSL.
 */
 
+/* Mobile optimizations for Capacitor */
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Make sure touch interactions work properly on mobile */
+button, .hover\:bg-blue-50:hover {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Improve scrolling performance on mobile */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Enhanced mobile touch target sizes */
+@media (max-width: 768px) {
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 @layer base {
   :root {
     --background: 240 10% 98%;
