@@ -316,7 +316,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       if (column === 'vendeur' || column === 'code') {
         minWidth = 1; // Very small minimum for vendor and code columns
       } else if (column === 'numero' || column === 'prix') {
-        minWidth = 4; // Small minimum for phone and price
+        minWidth = 1; // Very small minimum for phone and price
       }
       
       const newWidth = Math.max(minWidth, Math.min(50, resizeStartPosRef.current.initialWidth + deltaPercent));
