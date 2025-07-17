@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import GoogleSheetsCommentEditor from './GoogleSheetsCommentEditor';
+import { Textarea } from '@/components/ui/textarea';
 import type { Order } from '@/pages/Index';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
@@ -149,9 +149,10 @@ const SortableOrderRow: React.FC<SortableOrderRowProps> = ({
         );
       case 'comment':
         return (
-          <GoogleSheetsCommentEditor
+          <Textarea
             value={order.commentaire}
-            onChange={(value) => onUpdateComment(order.id, value)}
+            onChange={(e) => onUpdateComment(order.id, e.target.value)}
+            className="min-h-[32px] h-8 text-sm border-0 bg-transparent hover:bg-muted/50 focus:bg-background focus:border-primary/20 resize-none"
             style={{
               fontSize: `${tableSettings.fontSize}px`,
               fontWeight: tableSettings.fontWeight,
