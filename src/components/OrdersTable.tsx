@@ -1008,13 +1008,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                         <div 
                           className={cn(
                             "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
-                            rowBackgroundClass
+                            rowBackgroundClass,
+                            // تلوين خانة الكود بالأخضر عند مسح الطلبية
+                            (order.isScanned || isPermanentlyScanned) && "bg-green-100 border-green-300"
                           )}
                         >
                           <span 
                             className={cn(
-                              "truncate w-full text-gray-800",
-                              `text-${tableSettings.textAlignment.code}`
+                              "truncate w-full",
+                              `text-${tableSettings.textAlignment.code}`,
+                              // تلوين النص بالأخضر الداكن عند مسح الطلبية
+                              (order.isScanned || isPermanentlyScanned) ? "text-green-800 font-medium" : "text-gray-800"
                             )}
                           >
                             {order.code}
