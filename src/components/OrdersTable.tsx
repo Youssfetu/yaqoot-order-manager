@@ -1359,14 +1359,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               </svg>
             </div>
             
-            <AlertDialogTitle className="text-lg sm:text-xl font-bold text-foreground mb-3" dir="rtl">
-              تأكيد التسليم
+            <AlertDialogTitle className="text-lg sm:text-xl font-bold text-foreground mb-3" dir={isRTL ? 'rtl' : 'ltr'}>
+              {t('confirm_delivery')}
             </AlertDialogTitle>
             
-            <AlertDialogDescription className="text-sm sm:text-base text-muted-foreground leading-relaxed" dir="rtl">
+            <AlertDialogDescription className="text-sm sm:text-base text-muted-foreground leading-relaxed" dir={isRTL ? 'rtl' : 'ltr'}>
               <div className="space-y-3">
                 <p>
-                  هل أنت متأكد من تسليم الطلبية
+                  {t('confirm_delivery_question')}
                 </p>
                 <div className="inline-flex items-center bg-primary/10 px-3 py-2 rounded-lg">
                   <span className="font-bold text-primary text-lg">
@@ -1382,7 +1382,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                       <line x1="12" y1="17" x2="12.01" y2="17"></line>
                     </svg>
                     <span className="text-amber-700 font-medium text-sm leading-relaxed">
-                      سيتم نقل الطلبية إلى الأرشيف
+                      {t('archive_warning')}
                     </span>
                   </div>
                 </div>
@@ -1390,12 +1390,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             </AlertDialogDescription>
           </AlertDialogHeader>
           
-          <AlertDialogFooter className="flex flex-col sm:flex-row gap-3 px-6 pb-6" dir="rtl">
+          <AlertDialogFooter className="flex flex-col sm:flex-row gap-3 px-6 pb-6" dir={isRTL ? 'rtl' : 'ltr'}>
             <AlertDialogCancel 
               onClick={handleCancelConfirmation} 
               className="w-full sm:w-auto order-2 sm:order-1 bg-muted hover:bg-muted/80 text-muted-foreground border-0 rounded-xl font-medium py-4 px-6 text-base touch-manipulation"
             >
-              إلغاء
+              {t('cancel')}
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDelivery} 
@@ -1405,7 +1405,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                 <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                تأكيد التسليم
+                {t('confirm_delivery_action')}
               </span>
             </AlertDialogAction>
           </AlertDialogFooter>

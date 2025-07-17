@@ -258,6 +258,12 @@ const translations: Translations = {
     'search_results_desc': 'commande(s) sur',
     'orders': 'commande(s)',
     
+    // Delivery confirmation dialog
+    'confirm_delivery': 'Confirmer la livraison',
+    'confirm_delivery_question': 'Êtes-vous sûr de livrer la commande',
+    'archive_warning': 'La commande sera déplacée vers les archives',
+    'confirm_delivery_action': 'Confirmer la livraison',
+    
     // Dialog titles and buttons
     'add_new_order': 'Ajouter nouvelle commande',
     'upload_file': 'Télécharger fichier',
