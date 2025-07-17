@@ -330,7 +330,7 @@ const Index = () => {
             title: t('order_archived'),
             description: `${t('order_archived_desc')} ${orderToArchive.code}`,
             duration: 4000,
-            className: "border-l-4 border-l-primary bg-primary/10 text-primary-foreground shadow-lg backdrop-blur-sm",
+            className: "border-l-4 border-l-primary bg-primary/10 text-primary-foreground font-medium shadow-lg backdrop-blur-sm rounded-md flex items-center gap-2 before:content-['✅'] before:mr-2",
           });
           return;
         } catch (error) {
