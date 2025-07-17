@@ -68,6 +68,34 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
         </div>
         
         <div className="space-y-3">
+          {/* Priority Icons */}
+          <div className="flex items-center gap-2 justify-center mb-2">
+            <span className="text-xs text-muted-foreground">{isRTL ? "أولوية التسليم:" : "Priorité de livraison:"}</span>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((priority) => (
+                <button
+                  key={priority}
+                  onClick={() => {
+                    const priorityText = isRTL ? `${priority}. ` : `${priority}. `;
+                    const newComment = comment.startsWith(priorityText) 
+                      ? comment.substring(priorityText.length)
+                      : priorityText + comment.replace(/^\d+\.\s*/, '');
+                    setComment(newComment);
+                  }}
+                  className={cn(
+                    "w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all",
+                    comment.startsWith(`${priority}. `) 
+                      ? "bg-primary text-white border-primary shadow-lg scale-110" 
+                      : "bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/10"
+                  )}
+                  type="button"
+                >
+                  {priority}
+                </button>
+              ))}
+            </div>
+          </div>
+          
           <Textarea
             ref={textareaRef}
             value={comment}
