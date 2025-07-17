@@ -578,7 +578,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       'Numéro erroné': 'bg-purple-500',
       'Hors zone': 'bg-gray-500',
       'Programmé': 'bg-blue-500',
-      'Nouveau': 'bg-blue-500'
+      'Nouveau': 'bg-blue-500',
+      'Pas de réponse': 'bg-yellow-500'
     };
     
     return (
