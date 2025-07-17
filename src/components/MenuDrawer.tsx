@@ -269,8 +269,8 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               onClick={onShare}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Share2 className="h-5 w-5 text-purple-600" />
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <Share2 className="h-5 w-5 text-blue-800" />
                 </div>
                 <div>
                   <h3 className="font-medium text-gray-900">{t('share_excel')}</h3>

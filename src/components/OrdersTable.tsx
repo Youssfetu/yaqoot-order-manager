@@ -590,7 +590,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       'Reporté': 'bg-orange-500',
       'Annulé': 'bg-red-500',
       'Refusé': 'bg-red-600',
-      'Numéro erroné': 'bg-purple-500',
+      'Numéro erroné': 'bg-blue-700',
       'Hors zone': 'bg-gray-500',
       'Programmé': 'bg-blue-500',
       'Nouveau': 'bg-blue-500',
@@ -794,7 +794,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
           scrollbarWidth: 'auto',
-          scrollbarColor: 'hsl(262 83% 58%) rgba(0, 0, 0, 0.05)',
+          scrollbarColor: 'hsl(210 100% 14%) rgba(0, 0, 0, 0.05)',
           userSelect: isResizing ? 'none' : 'auto',
           WebkitUserSelect: isResizing ? 'none' : 'auto',
           WebkitTouchCallout: 'none'
@@ -1476,17 +1476,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           border-radius: 10px;
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb {
-          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(262 83% 58%), hsl(262 83% 48%))' : 'transparent'};
+          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(210 100% 14%), hsl(210 100% 24%))' : 'transparent'};
           border-radius: 10px;
           border: 2px solid transparent;
           background-clip: content-box;
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb:hover {
-          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(262 83% 48%), hsl(262 83% 38%))' : 'transparent'};
+          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(210 100% 24%), hsl(210 100% 34%))' : 'transparent'};
           background-clip: content-box;
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb:active {
-          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(262 83% 38%), hsl(262 83% 28%))' : 'transparent'};
+          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(210 100% 34%), hsl(210 100% 44%))' : 'transparent'};
           background-clip: content-box;
         }
         
@@ -1497,7 +1497,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
             width: 10px !important;
           }
           div[data-scrollbar="show"]::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, hsl(262 83% 58%), hsl(262 83% 48%)) !important;
+            background: linear-gradient(45deg, hsl(210 100% 14%), hsl(210 100% 24%)) !important;
             border-radius: 12px !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
             background-clip: padding-box !important;
