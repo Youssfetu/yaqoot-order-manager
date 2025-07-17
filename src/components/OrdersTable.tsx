@@ -1350,20 +1350,35 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
       {/* حوار التأكيد للتسليم - Enhanced styling */}
       <AlertDialog open={confirmDialog.isOpen} onOpenChange={(open) => !open && handleCancelConfirmation()}>
-        <AlertDialogContent className="max-w-md mx-4 rounded-xl border-0 shadow-2xl bg-white">
-          <AlertDialogHeader className="text-center pb-4">
-            <AlertDialogTitle className="text-xl font-bold text-gray-900 mb-2" dir="rtl">
+        <AlertDialogContent className="max-w-md mx-4 rounded-xl border-0 shadow-2xl bg-background">
+          <div className="absolute -top-14 left-1/2 transform -translate-x-1/2">
+            <div className="w-28 h-28 rounded-full bg-primary/10 backdrop-blur-md flex items-center justify-center border-4 border-background shadow-xl">
+              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center">
+                <svg className="w-10 h-10 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <AlertDialogHeader className="text-center pb-4 pt-12">
+            <AlertDialogTitle className="text-xl font-bold text-foreground mb-2" dir="rtl">
               تأكيد التسليم
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-base text-gray-700 leading-relaxed" dir="rtl">
+            <AlertDialogDescription className="text-base text-muted-foreground leading-relaxed" dir="rtl">
               هل أنت متأكد من أنك تريد تغيير حالة الطلبية{' '}
-              <span className="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+              <span className="font-bold text-primary bg-primary/10 px-2 py-1 rounded-md">
                 {confirmDialog.orderCode}
               </span>{' '}
               إلى "تم التسليم"؟
-              <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                <span className="text-orange-700 font-medium text-sm">
-                  ⚠️ سيتم نقل هذه الطلبية إلى الأرشيف ولن تظهر في القائمة الرئيسية.
+              <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <span className="text-amber-700 font-medium text-sm flex items-center gap-2">
+                  <svg className="w-5 h-5 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  سيتم نقل هذه الطلبية إلى الأرشيف ولن تظهر في القائمة الرئيسية.
                 </span>
               </div>
             </AlertDialogDescription>
@@ -1371,15 +1386,20 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           <AlertDialogFooter className="flex gap-3 pt-4" dir="rtl">
             <AlertDialogCancel 
               onClick={handleCancelConfirmation} 
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-0 rounded-lg font-medium py-3"
+              className="flex-1 bg-muted hover:bg-muted/80 text-muted-foreground border-0 rounded-lg font-medium py-3"
             >
               إلغاء
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleConfirmDelivery} 
-              className="flex-1 bg-green-600 hover:bg-green-700 text-white border-0 rounded-lg font-medium py-3 shadow-lg"
+              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground border-0 rounded-lg font-medium py-3 shadow-lg"
             >
-              تأكيد التسليم ✓
+              <span className="flex items-center justify-center gap-2">
+                تأكيد التسليم
+                <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </span>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
