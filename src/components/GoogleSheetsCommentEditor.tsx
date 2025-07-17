@@ -68,31 +68,65 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
         </div>
         
         <div className="space-y-3">
-          {/* Priority Icons */}
-          <div className="flex items-center gap-2 justify-center mb-2">
-            <span className="text-xs text-muted-foreground">{isRTL ? "أولوية التسليم:" : "Priorité de livraison:"}</span>
-            <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((priority) => (
-                <button
-                  key={priority}
-                  onClick={() => {
-                    const priorityText = isRTL ? `${priority}. ` : `${priority}. `;
-                    const newComment = comment.startsWith(priorityText) 
-                      ? comment.substring(priorityText.length)
-                      : priorityText + comment.replace(/^\d+\.\s*/, '');
-                    setComment(newComment);
-                  }}
-                  className={cn(
-                    "w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm font-bold transition-all",
-                    comment.startsWith(`${priority}. `) 
-                      ? "bg-primary text-white border-primary shadow-lg scale-110" 
-                      : "bg-white text-primary border-primary/30 hover:border-primary hover:bg-primary/10"
-                  )}
-                  type="button"
-                >
-                  {priority}
-                </button>
-              ))}
+          {/* Smart Priority Icons */}
+          <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-3 mb-3">
+            <div className="text-center mb-2">
+              <span className="text-sm font-semibold text-primary">{isRTL ? "🎯 أولوية التسليم الذكية" : "🎯 Priorité intelligente"}</span>
+            </div>
+            <div className="flex gap-2 justify-center">
+              {[
+                { num: 1, color: "red", label: isRTL ? "عاجل" : "Urgent", icon: "⚡" },
+                { num: 2, color: "orange", label: isRTL ? "مهم" : "Important", icon: "🔥" },
+                { num: 3, color: "yellow", label: isRTL ? "عادي" : "Normal", icon: "⭐" },
+                { num: 4, color: "blue", label: isRTL ? "مؤجل" : "Différé", icon: "📅" },
+                { num: 5, color: "gray", label: isRTL ? "أخير" : "Dernier", icon: "📦" }
+              ].map((priority) => {
+                const isSelected = comment.startsWith(`${priority.num}. `);
+                return (
+                  <div key={priority.num} className="flex flex-col items-center">
+                    <button
+                      onClick={() => {
+                        const priorityText = `${priority.num}. `;
+                        const newComment = comment.startsWith(priorityText) 
+                          ? comment.substring(priorityText.length)
+                          : priorityText + comment.replace(/^\d+\.\s*/, '');
+                        setComment(newComment);
+                      }}
+                      className={cn(
+                        "w-12 h-12 rounded-full border-3 flex flex-col items-center justify-center text-xs font-bold transition-all duration-300 relative overflow-hidden",
+                        priority.color === "red" && (isSelected 
+                          ? "bg-red-500 text-white border-red-600 shadow-lg shadow-red-200 animate-pulse scale-110" 
+                          : "bg-red-50 text-red-600 border-red-300 hover:bg-red-500 hover:text-white hover:border-red-600"),
+                        priority.color === "orange" && (isSelected 
+                          ? "bg-orange-500 text-white border-orange-600 shadow-lg shadow-orange-200 scale-110" 
+                          : "bg-orange-50 text-orange-600 border-orange-300 hover:bg-orange-500 hover:text-white hover:border-orange-600"),
+                        priority.color === "yellow" && (isSelected 
+                          ? "bg-yellow-500 text-white border-yellow-600 shadow-lg shadow-yellow-200 scale-110" 
+                          : "bg-yellow-50 text-yellow-600 border-yellow-400 hover:bg-yellow-500 hover:text-white hover:border-yellow-600"),
+                        priority.color === "blue" && (isSelected 
+                          ? "bg-blue-500 text-white border-blue-600 shadow-lg shadow-blue-200 scale-110" 
+                          : "bg-blue-50 text-blue-600 border-blue-300 hover:bg-blue-500 hover:text-white hover:border-blue-600"),
+                        priority.color === "gray" && (isSelected 
+                          ? "bg-gray-500 text-white border-gray-600 shadow-lg shadow-gray-200 scale-110" 
+                          : "bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-500 hover:text-white hover:border-gray-600")
+                      )}
+                      type="button"
+                    >
+                      <span className="text-lg leading-none">{priority.icon}</span>
+                      <span className="text-xs font-bold leading-none">{priority.num}</span>
+                      {isSelected && (
+                        <div className="absolute inset-0 bg-white/20 rounded-full animate-ping"></div>
+                      )}
+                    </button>
+                    <span className={cn(
+                      "text-xs mt-1 font-medium transition-colors",
+                      isSelected ? `text-${priority.color}-600` : "text-gray-500"
+                    )}>
+                      {priority.label}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
           
