@@ -161,40 +161,43 @@ const Index = () => {
   const handleAddOrder = async (newOrder: Partial<Order>) => {
     if (!user) return;
 
-    const order: Order = {
-      id: Date.now().toString(),
-      code: newOrder.code || '',
-      vendeur: newOrder.vendeur || '',
-      numero: newOrder.numero || '',
-      prix: newOrder.prix || 0,
-      statut: newOrder.statut || 'Nouveau',
-      commentaire: newOrder.commentaire || ''
-    };
-
     try {
-      // Save to database
-      const { error } = await supabase
+      // Save to database - لا نضع ID مخصص، نترك قاعدة البيانات تولد UUID
+      const { data, error } = await supabase
         .from('orders')
         .insert({
-          id: order.id,
           user_id: user.id,
-          code: order.code,
-          vendeur: order.vendeur,
-          numero: order.numero,
-          prix: order.prix,
-          statut: order.statut,
-          commentaire: order.commentaire,
+          code: newOrder.code || '',
+          vendeur: newOrder.vendeur || '',
+          numero: newOrder.numero || '',
+          prix: newOrder.prix || 0,
+          statut: newOrder.statut || 'Nouveau',
+          commentaire: newOrder.commentaire || '',
           is_scanned: false
-        });
+        })
+        .select();
 
       if (error) throw error;
 
-      // Update local state
-      setOrders([...orders, order]);
-      toast({
-        title: t('order_added'),
-        description: `${t('order_added_desc')} ${order.code}`,
-      });
+      // Update local state with returned data
+      if (data && data[0]) {
+        const order: Order = {
+          id: data[0].id,
+          code: data[0].code,
+          vendeur: data[0].vendeur,
+          numero: data[0].numero,
+          prix: Number(data[0].prix),
+          statut: data[0].statut,
+          commentaire: data[0].commentaire || '',
+          isScanned: data[0].is_scanned || false
+        };
+        
+        setOrders([...orders, order]);
+        toast({
+          title: t('order_added'),
+          description: `${t('order_added_desc')} ${order.code}`,
+        });
+      }
     } catch (error) {
       console.error('Error adding order:', error);
       toast({
@@ -417,9 +420,8 @@ const Index = () => {
     if (!user) return;
 
     try {
-      // حفظ الطلبات في قاعدة البيانات
+      // حفظ الطلبات في قاعدة البيانات - لا نضع ID مخصص، نترك قاعدة البيانات تولد UUID
       const ordersToInsert = newOrders.map(order => ({
-        id: order.id,
         user_id: user.id,
         code: order.code,
         vendeur: order.vendeur,
@@ -430,18 +432,32 @@ const Index = () => {
         is_scanned: false
       }));
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('orders')
-        .insert(ordersToInsert);
+        .insert(ordersToInsert)
+        .select(); // نحتاج select() لاسترجاع البيانات المدرجة مع الـ ID الجديد
 
       if (error) throw error;
 
-      // تحديث الحالة المحلية
-      setOrders(prevOrders => [...prevOrders, ...newOrders]);
-      toast({
-        title: t('file_uploaded_success'),
-        description: `${t('file_uploaded_desc')} ${newOrders.length}`,
-      });
+      // تحديث الحالة المحلية بالبيانات المسترجعة من قاعدة البيانات
+      if (data) {
+        const formattedOrders = data.map(order => ({
+          id: order.id,
+          code: order.code,
+          vendeur: order.vendeur,
+          numero: order.numero,
+          prix: Number(order.prix),
+          statut: order.statut,
+          commentaire: order.commentaire || '',
+          isScanned: order.is_scanned || false
+        }));
+        
+        setOrders(prevOrders => [...prevOrders, ...formattedOrders]);
+        toast({
+          title: t('file_uploaded_success'),
+          description: `${t('file_uploaded_desc')} ${formattedOrders.length}`,
+        });
+      }
     } catch (error) {
       console.error('Error uploading orders:', error);
       toast({
