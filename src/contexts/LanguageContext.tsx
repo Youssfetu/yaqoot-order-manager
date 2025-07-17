@@ -232,13 +232,13 @@ const translations: Translations = {
     'language_changed': 'Langue modifiée',
     'language_changed_desc': 'La langue a été modifiée avec succès',
     
-    // Toast Messages
-    'order_added': 'Commande ajoutée',
-    'order_added_desc': 'La commande a été ajoutée avec succès',
-    'order_archived': 'Commande archivée',
-    'order_archived_desc': 'La commande a été déplacée vers l\'archive',
-    'status_updated': 'Statut mis à jour',
-    'status_updated_desc': 'Le statut a été modifié avec succès',
+     // Toast Messages
+     'order_added': 'Commande ajoutée',
+     'order_added_desc': 'La commande a été ajoutée avec succès',
+     'order_archived': '✅ Livraison réussie',
+     'order_archived_desc': 'La commande a été livrée et archivée',
+     'status_updated': 'Statut mis à jour',
+     'status_updated_desc': 'Le statut a été modifié avec succès',
     'order_found': 'Commande trouvée',
     'order_found_desc': 'La commande a été mise à jour',
     'order_not_found': 'Commande non trouvée',
