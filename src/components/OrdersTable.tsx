@@ -309,10 +309,19 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       const deltaX = currentX - resizeStartPosRef.current.x;
       const deltaPercent = (deltaX / totalWidth) * 100;
       
-      // Apply the change relative to the initial width
-      const newWidth = Math.max(8, Math.min(40, resizeStartPosRef.current.initialWidth + deltaPercent));
+      // Apply the change relative to the initial width with more flexible limits
+      let minWidth = 5; // Default minimum width
       
-      console.log(`Resizing ${column}: deltaX=${deltaX}, deltaPercent=${deltaPercent.toFixed(2)}, newWidth=${newWidth.toFixed(2)}`);
+      // Allow smaller minimum for specific columns
+      if (column === 'vendeur' || column === 'code') {
+        minWidth = 3; // Very small minimum for vendor and code columns
+      } else if (column === 'numero' || column === 'prix') {
+        minWidth = 4; // Small minimum for phone and price
+      }
+      
+      const newWidth = Math.max(minWidth, Math.min(50, resizeStartPosRef.current.initialWidth + deltaPercent));
+      
+      console.log(`Resizing ${column}: deltaX=${deltaX}, deltaPercent=${deltaPercent.toFixed(2)}, newWidth=${newWidth.toFixed(2)}, minWidth=${minWidth}`);
       
       setColumnWidths(prev => ({
         ...prev,
