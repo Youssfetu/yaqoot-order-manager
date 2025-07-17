@@ -775,10 +775,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           showScrollbar ? "overflow-x-auto" : "overflow-x-hidden",
           "overflow-y-auto"
         )}
+        data-scrollbar="show"
         style={{ 
           cursor: zoomLevel > 1 ? (isPanning ? 'grabbing' : 'grab') : 'default',
-          scrollbarWidth: showScrollbar ? 'thin' : 'none',
-          scrollbarColor: showScrollbar ? '#cbd5e0 #f7fafc' : 'transparent transparent',
+          scrollbarWidth: 'auto',
+          scrollbarColor: 'hsl(262 83% 58%) rgba(0, 0, 0, 0.05)',
           userSelect: isResizing ? 'none' : 'auto',
           WebkitUserSelect: isResizing ? 'none' : 'auto',
           WebkitTouchCallout: 'none'
@@ -1420,24 +1421,51 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         </div>
       )}
 
-      {/* Custom scrollbar styles */}
+      {/* Custom scrollbar styles - Enhanced for mobile */}
       <style>{`
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"] {
           scrollbar-width: ${showScrollbar ? 'thin' : 'none'};
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar {
-          height: ${showScrollbar ? '6px' : '0px'};
+          height: ${showScrollbar ? '8px' : '0px'};
+          width: 8px;
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-track {
-          background: ${showScrollbar ? '#f1f5f9' : 'transparent'};
-          border-radius: 3px;
+          background: ${showScrollbar ? 'rgba(0, 0, 0, 0.05)' : 'transparent'};
+          border-radius: 10px;
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb {
-          background: ${showScrollbar ? '#cbd5e0' : 'transparent'};
-          border-radius: 3px;
+          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(262 83% 58%), hsl(262 83% 48%))' : 'transparent'};
+          border-radius: 10px;
+          border: 2px solid transparent;
+          background-clip: content-box;
         }
         div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb:hover {
-          background: ${showScrollbar ? '#a0aec0' : 'transparent'};
+          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(262 83% 48%), hsl(262 83% 38%))' : 'transparent'};
+          background-clip: content-box;
+        }
+        div[data-scrollbar="${showScrollbar ? 'show' : 'hide'}"]::-webkit-scrollbar-thumb:active {
+          background: ${showScrollbar ? 'linear-gradient(45deg, hsl(262 83% 38%), hsl(262 83% 28%))' : 'transparent'};
+          background-clip: content-box;
+        }
+        
+        /* Force scrollbar visibility on mobile */
+        @media (max-width: 768px) {
+          div[data-scrollbar="show"]::-webkit-scrollbar {
+            height: 10px !important;
+            width: 10px !important;
+          }
+          div[data-scrollbar="show"]::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, hsl(262 83% 58%), hsl(262 83% 48%)) !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            background-clip: padding-box !important;
+          }
+          div[data-scrollbar="show"]::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.08) !important;
+            border-radius: 12px !important;
+            margin: 2px !important;
+          }
         }
       `}</style>
 
