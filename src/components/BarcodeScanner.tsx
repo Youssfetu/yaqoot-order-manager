@@ -37,15 +37,15 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       gainNode.connect(audioContext.destination);
       
       if (type === 'success') {
-        // صوت نجاح - نغمة صاعدة جميلة
+        // صوت نجاح محسن - أوضح وأعلى مع نغمة أكثر وضوحاً
         oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
-        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime + 0.2);
-        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(1300, audioContext.currentTime + 0.15);
+        oscillator.frequency.setValueAtTime(1600, audioContext.currentTime + 0.3);
+        gainNode.gain.setValueAtTime(0.7, audioContext.currentTime); // رفع الصوت
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.4);
+        oscillator.stop(audioContext.currentTime + 0.5);
       } else if (type === 'error') {
         // صوت خطأ - نغمة هابطة
         oscillator.type = 'square';
