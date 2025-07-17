@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 interface BarcodeScannerProps {
   isOpen: boolean;
   onClose: () => void;
-  onScan: (code: string) => string;
+  onScan: (code: string) => Promise<string>;
 }
 
 const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan }) => {
@@ -70,7 +70,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     }
   };
 
-  const handleScanResult = (code: string) => {
+  const handleScanResult = async (code: string) => {
     // منع المسح المتكرر للكود نفسه
     if (scanCooldown || code === lastScannedCode) {
       return;
@@ -86,7 +86,7 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
       setLastScannedCode('');
     }, 1000);
 
-    const result = onScan(code);
+    const result = await onScan(code);
     
     if (result === 'success') {
       playSound('success');
@@ -100,11 +100,11 @@ const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ isOpen, onClose, onScan
     onClose();
   };
 
-  const handleManualScanResult = (code: string) => {
+  const handleManualScanResult = async (code: string) => {
     if (!code.trim()) return;
     
     console.log('Manual code entered:', code);
-    const result = onScan(code);
+    const result = await onScan(code);
     
     if (result === 'success') {
       playSound('success');

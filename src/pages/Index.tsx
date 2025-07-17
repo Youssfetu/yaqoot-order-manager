@@ -16,7 +16,8 @@ import TableSettingsDialog from '@/components/TableSettingsDialog';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { exportOrdersToExcel } from '@/utils/excelExport';
+import { supabase } from '@/integrations/supabase/client';
+import { exportToExcel } from '@/utils/excelExport';
 import { useNavigate } from 'react-router-dom';
 
 export interface Order {
@@ -68,6 +69,14 @@ const Index = () => {
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Load orders and archived orders from database on component mount
+  useEffect(() => {
+    if (user) {
+      loadOrdersFromDatabase();
+      loadArchivedOrdersFromDatabase();
+    }
+  }, [user]);
+
   // Focus search input when search opens
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
@@ -77,7 +86,81 @@ const Index = () => {
     }
   }, [isSearchOpen]);
 
-  const handleAddOrder = (newOrder: Partial<Order>) => {
+  // Load orders from database
+  const loadOrdersFromDatabase = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      if (data) {
+        const formattedOrders = data.map(order => ({
+          id: order.id,
+          code: order.code,
+          vendeur: order.vendeur,
+          numero: order.numero,
+          prix: Number(order.prix),
+          statut: order.statut,
+          commentaire: order.commentaire || '',
+          isScanned: order.is_scanned || false
+        }));
+        setOrders(formattedOrders);
+      }
+    } catch (error) {
+      console.error('Error loading orders:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل الطلبات",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Load archived orders from database
+  const loadArchivedOrdersFromDatabase = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('archived_orders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('archived_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      if (data) {
+        const formattedArchivedOrders = data.map(order => ({
+          id: order.id,
+          code: order.code,
+          vendeur: order.vendeur,
+          numero: order.numero,
+          prix: Number(order.prix),
+          statut: order.statut,
+          commentaire: order.commentaire || '',
+          isScanned: order.is_scanned || false
+        }));
+        setArchivedOrders(formattedArchivedOrders);
+      }
+    } catch (error) {
+      console.error('Error loading archived orders:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحميل الطلبات المؤرشفة",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddOrder = async (newOrder: Partial<Order>) => {
+    if (!user) return;
+
     const order: Order = {
       id: Date.now().toString(),
       code: newOrder.code || '',
@@ -87,74 +170,239 @@ const Index = () => {
       statut: newOrder.statut || 'Nouveau',
       commentaire: newOrder.commentaire || ''
     };
-    setOrders([...orders, order]);
-    toast({
-      title: t('order_added'),
-      description: `${t('order_added_desc')} ${order.code}`,
-    });
+
+    try {
+      // Save to database
+      const { error } = await supabase
+        .from('orders')
+        .insert({
+          id: order.id,
+          user_id: user.id,
+          code: order.code,
+          vendeur: order.vendeur,
+          numero: order.numero,
+          prix: order.prix,
+          statut: order.statut,
+          commentaire: order.commentaire,
+          is_scanned: false
+        });
+
+      if (error) throw error;
+
+      // Update local state
+      setOrders([...orders, order]);
+      toast({
+        title: t('order_added'),
+        description: `${t('order_added_desc')} ${order.code}`,
+      });
+    } catch (error) {
+      console.error('Error adding order:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في إضافة الطلبية",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdateComment = (id: string, comment: string) => {
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, commentaire: comment } : order
-    ));
+  const handleUpdateComment = async (id: string, comment: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ commentaire: comment })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setOrders(orders.map(order => 
+        order.id === id ? { ...order, commentaire: comment } : order
+      ));
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث التعليق",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdatePhone = (id: string, phone: string) => {
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, numero: phone } : order
-    ));
+  const handleUpdatePhone = async (id: string, phone: string) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ numero: phone })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setOrders(orders.map(order => 
+        order.id === id ? { ...order, numero: phone } : order
+      ));
+    } catch (error) {
+      console.error('Error updating phone:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث رقم الهاتف",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdatePrice = (id: string, price: number) => {
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, prix: price } : order
-    ));
+  const handleUpdatePrice = async (id: string, price: number) => {
+    if (!user) return;
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ prix: price })
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setOrders(orders.map(order => 
+        order.id === id ? { ...order, prix: price } : order
+      ));
+    } catch (error) {
+      console.error('Error updating price:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث السعر",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleReorderOrders = (newOrders: Order[]) => {
     setOrders(newOrders);
   };
 
-  const handleUpdateStatus = (id: string, status: string) => {
+  const handleUpdateStatus = async (id: string, status: string) => {
+    if (!user) return;
+
     // إذا تم تغيير الحالة إلى Livré، نقل الطلبية إلى الأرشيف
     if (status === 'Livré') {
       const orderToArchive = orders.find(order => order.id === id);
       if (orderToArchive) {
-        const archivedOrder = { ...orderToArchive, statut: status };
-        setArchivedOrders(prev => [...prev, archivedOrder]);
-        setOrders(orders.filter(order => order.id !== id));
-        toast({
-          title: t('order_archived'),
-          description: `${t('order_archived_desc')} ${orderToArchive.code}`,
-        });
-        return;
+        try {
+          // حذف من جدول orders
+          const { error: deleteError } = await supabase
+            .from('orders')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', user.id);
+
+          if (deleteError) throw deleteError;
+
+          // إضافة إلى جدول archived_orders
+          const { error: insertError } = await supabase
+            .from('archived_orders')
+            .insert({
+              id: orderToArchive.id,
+              user_id: user.id,
+              code: orderToArchive.code,
+              vendeur: orderToArchive.vendeur,
+              numero: orderToArchive.numero,
+              prix: orderToArchive.prix,
+              statut: status,
+              commentaire: orderToArchive.commentaire,
+              is_scanned: orderToArchive.isScanned || false
+            });
+
+          if (insertError) throw insertError;
+
+          // تحديث الحالة المحلية
+          const archivedOrder = { ...orderToArchive, statut: status };
+          setArchivedOrders(prev => [...prev, archivedOrder]);
+          setOrders(orders.filter(order => order.id !== id));
+          
+          toast({
+            title: t('order_archived'),
+            description: `${t('order_archived_desc')} ${orderToArchive.code}`,
+          });
+          return;
+        } catch (error) {
+          console.error('Error archiving order:', error);
+          toast({
+            title: "خطأ",
+            description: "فشل في أرشفة الطلبية",
+            variant: "destructive",
+          });
+          return;
+        }
       }
     }
     
-    setOrders(orders.map(order => 
-      order.id === id ? { ...order, statut: status } : order
-    ));
-    toast({
-      title: t('status_updated'),
-      description: `${t('status_updated_desc')} "${status}"`,
-    });
-  };
+    try {
+      // تحديث الحالة في قاعدة البيانات
+      const { error } = await supabase
+        .from('orders')
+        .update({ statut: status })
+        .eq('id', id)
+        .eq('user_id', user.id);
 
-  const handleBarcodeScanned = (code: string) => {
-    console.log('Scanning for code:', code);
-    const foundOrder = orders.find(order => order.code === code);
-    if (foundOrder) {
+      if (error) throw error;
+
+      // تحديث الحالة المحلية
       setOrders(orders.map(order => 
-        order.code === code ? { ...order, isScanned: true } : order
+        order.id === id ? { ...order, statut: status } : order
       ));
       
       toast({
-        title: t('order_found'),
-        description: `${t('order_found_desc')} ${code}`,
+        title: t('status_updated'),
+        description: `${t('status_updated_desc')} "${status}"`,
       });
-      
-      return 'success';
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في تحديث الحالة",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBarcodeScanned = async (code: string) => {
+    if (!user) return 'not-found';
+
+    console.log('Scanning for code:', code);
+    const foundOrder = orders.find(order => order.code === code);
+    if (foundOrder) {
+      try {
+        const { error } = await supabase
+          .from('orders')
+          .update({ is_scanned: true })
+          .eq('id', foundOrder.id)
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+
+        setOrders(orders.map(order => 
+          order.code === code ? { ...order, isScanned: true } : order
+        ));
+        
+        toast({
+          title: t('order_found'),
+          description: `${t('order_found_desc')} ${code}`,
+        });
+        
+        return 'success';
+      } catch (error) {
+        console.error('Error updating scanned status:', error);
+        toast({
+          title: "خطأ",
+          description: "فشل في تحديث حالة المسح",
+          variant: "destructive",
+        });
+        return 'not-found';
+      }
     } else {
       toast({
         title: t('order_not_found'),
@@ -165,12 +413,43 @@ const Index = () => {
     }
   };
 
-  const handleFileUpload = (newOrders: Order[]) => {
-    setOrders(prevOrders => [...prevOrders, ...newOrders]);
-    toast({
-      title: t('file_uploaded_success'),
-      description: `${t('file_uploaded_desc')} ${newOrders.length}`,
-    });
+  const handleFileUpload = async (newOrders: Order[]) => {
+    if (!user) return;
+
+    try {
+      // حفظ الطلبات في قاعدة البيانات
+      const ordersToInsert = newOrders.map(order => ({
+        id: order.id,
+        user_id: user.id,
+        code: order.code,
+        vendeur: order.vendeur,
+        numero: order.numero,
+        prix: order.prix,
+        statut: order.statut,
+        commentaire: order.commentaire,
+        is_scanned: false
+      }));
+
+      const { error } = await supabase
+        .from('orders')
+        .insert(ordersToInsert);
+
+      if (error) throw error;
+
+      // تحديث الحالة المحلية
+      setOrders(prevOrders => [...prevOrders, ...newOrders]);
+      toast({
+        title: t('file_uploaded_success'),
+        description: `${t('file_uploaded_desc')} ${newOrders.length}`,
+      });
+    } catch (error) {
+      console.error('Error uploading orders:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في رفع الطلبات",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSearchToggle = () => {
@@ -193,7 +472,7 @@ const Index = () => {
       
       // إذا كان هناك طلبيات، قم بتصدير ملف Excel
       if (orders.length > 0) {
-        const fileName = exportOrdersToExcel(orders, archivedOrders);
+        const fileName = exportToExcel(orders, archivedOrders);
         
         toast({
           title: t('export_success'),
@@ -221,13 +500,40 @@ const Index = () => {
     }
   };
 
-  const handleClearAllData = () => {
-    setOrders([]);
-    setArchivedOrders([]);
-    toast({
-      title: t('data_cleared'),
-      description: t('data_cleared_desc'),
-    });
+  const handleClearAllData = async () => {
+    if (!user) return;
+
+    try {
+      // حذف جميع البيانات من قاعدة البيانات
+      const { error: ordersError } = await supabase
+        .from('orders')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (ordersError) throw ordersError;
+
+      const { error: archivedError } = await supabase
+        .from('archived_orders')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (archivedError) throw archivedError;
+
+      // تحديث الحالة المحلية
+      setOrders([]);
+      setArchivedOrders([]);
+      toast({
+        title: t('data_cleared'),
+        description: t('data_cleared_desc'),
+      });
+    } catch (error) {
+      console.error('Error clearing data:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في مسح البيانات",
+        variant: "destructive",
+      });
+    }
   };
 
   // Helper function to sort orders - cancelled orders go to bottom

@@ -50,3 +50,6 @@ export const exportOrdersToExcel = (orders: Order[], archivedOrders: Order[]) =>
   
   return fileName;
 };
+
+// للتوافق مع الكود الحالي
+export const exportToExcel = exportOrdersToExcel;

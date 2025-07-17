@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      archived_orders: {
+        Row: {
+          archived_at: string
+          code: string
+          commentaire: string | null
+          created_at: string
+          id: string
+          is_scanned: boolean | null
+          numero: string
+          prix: number
+          statut: string
+          updated_at: string
+          user_id: string
+          vendeur: string
+        }
+        Insert: {
+          archived_at?: string
+          code: string
+          commentaire?: string | null
+          created_at?: string
+          id?: string
+          is_scanned?: boolean | null
+          numero: string
+          prix: number
+          statut: string
+          updated_at?: string
+          user_id: string
+          vendeur: string
+        }
+        Update: {
+          archived_at?: string
+          code?: string
+          commentaire?: string | null
+          created_at?: string
+          id?: string
+          is_scanned?: boolean | null
+          numero?: string
+          prix?: number
+          statut?: string
+          updated_at?: string
+          user_id?: string
+          vendeur?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          code: string
+          commentaire: string | null
+          created_at: string
+          id: string
+          is_scanned: boolean | null
+          numero: string
+          prix: number
+          statut: string
+          updated_at: string
+          user_id: string
+          vendeur: string
+        }
+        Insert: {
+          code: string
+          commentaire?: string | null
+          created_at?: string
+          id?: string
+          is_scanned?: boolean | null
+          numero: string
+          prix: number
+          statut?: string
+          updated_at?: string
+          user_id: string
+          vendeur: string
+        }
+        Update: {
+          code?: string
+          commentaire?: string | null
+          created_at?: string
+          id?: string
+          is_scanned?: boolean | null
+          numero?: string
+          prix?: number
+          statut?: string
+          updated_at?: string
+          user_id?: string
+          vendeur?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           approved_at: string | null
