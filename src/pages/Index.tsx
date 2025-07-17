@@ -145,9 +145,19 @@ const Index = () => {
     console.log('Scanning for code:', code);
     const foundOrder = orders.find(order => order.code === code);
     if (foundOrder) {
+      // Mark the order as scanned
       setOrders(orders.map(order => 
-        order.code === code ? { ...order, isScanned: true } : order
+        order.code === code ? { ...order, isScanned: true } : { ...order, isScanned: false }
       ));
+      
+      // Remove the scanned flag after 3 seconds
+      setTimeout(() => {
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order.code === code ? { ...order, isScanned: false } : order
+          )
+        );
+      }, 3000);
       
       toast({
         title: t('order_found'),
