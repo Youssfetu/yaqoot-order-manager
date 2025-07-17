@@ -327,8 +327,10 @@ const Index = () => {
           setOrders(orders.filter(order => order.id !== id));
           
           toast({
-            title: t('order_archived'),
-            description: `${t('order_archived_desc')} ${orderToArchive.code}`,
+            title: "✅ تم التسليم بنجاح",
+            description: `تم تسليم الطلبية ${orderToArchive.code} وأرشفتها`,
+            duration: 4000,
+            className: "border-l-4 border-l-green-500 bg-green-50 text-green-900 shadow-lg",
           });
           return;
         } catch (error) {
