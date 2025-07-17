@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { formatPrice } from '@/lib/utils';
 
 export interface Order {
   id: string;
@@ -46,7 +47,7 @@ export const generateInvoicePDF = (
       order.code,
       order.vendeur,
       order.numero,
-      `${order.prix.toFixed(2)} DH`,
+      `${formatPrice(order.prix)} DH`,
       order.statut
     ]);
     

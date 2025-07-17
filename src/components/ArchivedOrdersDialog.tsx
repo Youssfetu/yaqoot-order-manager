@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { formatPrice } from '@/lib/utils';
 import type { Order } from '@/pages/Index';
 
 interface ArchivedOrdersDialogProps {
@@ -57,7 +58,7 @@ const ArchivedOrdersDialog: React.FC<ArchivedOrdersDialogProps> = ({
                       {order.numero}
                     </TableCell>
                     <TableCell className="text-center text-green-600 font-medium">
-                      {order.prix.toFixed(2)}
+                      {formatPrice(order.prix)}
                     </TableCell>
                     <TableCell className="text-center">
                       <Badge className="bg-green-600 hover:bg-green-700 text-white">
@@ -80,7 +81,7 @@ const ArchivedOrdersDialog: React.FC<ArchivedOrdersDialogProps> = ({
               إجمالي الطلبيات المسلمة: {archivedOrders.length}
             </span>
             <span className="text-sm font-medium text-green-600">
-              إجمالي القيمة: {archivedOrders.reduce((sum, order) => sum + order.prix, 0).toFixed(2)}
+              إجمالي القيمة: {formatPrice(archivedOrders.reduce((sum, order) => sum + order.prix, 0))}
             </span>
           </div>
         </div>
