@@ -808,7 +808,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {tableSettings.columnVisibility.code && (
                 <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
                    <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                     <span className="text-xs font-bold text-gray-800">Name code</span>
+                     <span className="text-xs font-bold text-gray-800">code</span>
                    </div>
                 {/* Professional Resize Handle */}
                 <div 
