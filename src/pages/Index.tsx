@@ -283,24 +283,21 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Android Style Header */}
-      <div className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-accent/20">
+      {/* Modern Header with Glass Effect */}
+      <div className="bg-background/80 backdrop-blur-md border-b border-border/50 sticky top-0 z-10 shadow-lg">
         <div className="px-2 sm:px-4 py-3">
           <div className="flex items-center justify-between mb-3">
-            {/* Menu Icon and User Info */}
+            {/* Menu Icon Only */}
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => setIsMenuDrawerOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
-              <span className="text-sm text-gray-600">
-                مرحباً {user?.email}
-              </span>
             </div>
             
             {/* Header Icons */}
@@ -310,56 +307,55 @@ const Index = () => {
                 onClick={() => setIsTableSettingsOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                <SlidersHorizontal className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <SlidersHorizontal className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
 
               <Button
                 onClick={() => setIsScannerOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
 
               <Button
                 onClick={() => setIsArchivedDialogOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                <Archive className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <Archive className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
-
 
               {/* Search Button - Now Functional */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
                 onClick={handleSearchToggle}
               >
-                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
 
               <Button
                 onClick={() => setIsAddDialogOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
 
               <Button
                 onClick={() => setIsUploadDialogOpen(true)}
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-xl"
+                className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
+                <Upload className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
               </Button>
 
             </div>
@@ -378,19 +374,19 @@ const Index = () => {
                     console.log('Search input changed:', e.target.value);
                     setSearchTerm(e.target.value);
                   }}
-                  className="w-full pr-4 pl-10 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pr-4 pl-10 py-2 text-sm sm:text-base border border-primary/20 bg-background/50 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
                   dir="rtl"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
-              <Button
-                onClick={handleSearchClear}
-                variant="ghost"
-                size="sm"
-                className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg"
-              >
-                <X className="h-4 w-4 text-gray-600" />
-              </Button>
+                <Button
+                  onClick={handleSearchClear}
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5 sm:p-2 hover:bg-primary/10 rounded-lg transition-all duration-200"
+                >
+                  <X className="h-4 w-4 text-primary" />
+                </Button>
             </div>
           )}
         </div>
@@ -416,8 +412,8 @@ const Index = () => {
 
       {/* Search Results Info */}
       {isSearchOpen && searchTerm && (
-        <div className="px-2 sm:px-4 py-2 bg-blue-50 border-t border-blue-200">
-          <p className="text-xs sm:text-sm text-blue-700" dir="rtl">
+        <div className="px-2 sm:px-4 py-2 bg-primary/5 backdrop-blur-sm border-t border-primary/20">
+          <p className="text-xs sm:text-sm text-primary" dir="rtl">
             {t('search_results')} {filteredOrders.length} {t('search_results_desc')} {orders.length} {t('orders')}
           </p>
         </div>

@@ -68,6 +68,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [showScrollbar, setShowScrollbar] = useState(false);
   const [editingCell, setEditingCell] = useState<string | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [resizingColumn, setResizingColumn] = useState<string | null>(null);
   const [recentlyScannedOrders, setRecentlyScannedOrders] = useState<Set<string>>(new Set());
@@ -805,9 +806,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               {/* Code Column Header */}
               {tableSettings.columnVisibility.code && (
                 <div className="relative" style={{ width: `${columnWidths.code}%`, minWidth: '80px' }}>
-                  <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-800">{t('code')}</span>
-                  </div>
+                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                     <span className="text-xs font-bold text-gray-800">Name code</span>
+                   </div>
                 {/* Professional Resize Handle */}
                 <div 
                   className={cn(
@@ -1176,25 +1177,37 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                           rowBackgroundClass
                         )}
                       >
-                        <DropdownMenu>
-                          <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
-                            <div className="flex items-center gap-1">
-                              {getStatusBadge(order.statut)}
-                              <ChevronDown className="h-2 w-2 text-gray-500 flex-shrink-0" />
-                            </div>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[120px]">
-                            {getAvailableStatusOptions(order.statut).map((status) => (
-                              <DropdownMenuItem
-                                key={status}
-                                onClick={() => handleStatusChange(order.id, status)}
-                                className="cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
-                              >
-                                {getStatusBadge(status)} 
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                         <DropdownMenu 
+                           open={openDropdownId === order.id} 
+                           onOpenChange={(open) => {
+                             if (open) {
+                               setOpenDropdownId(order.id);
+                             } else {
+                               setOpenDropdownId(null);
+                             }
+                           }}
+                         >
+                           <DropdownMenuTrigger className="flex items-center justify-center w-full h-full focus:outline-none">
+                             <div className="flex items-center gap-1">
+                               {getStatusBadge(order.statut)}
+                               <ChevronDown className="h-2 w-2 text-gray-500 flex-shrink-0" />
+                             </div>
+                           </DropdownMenuTrigger>
+                           <DropdownMenuContent className="bg-white shadow-lg border border-gray-300 rounded-md z-50 min-w-[120px]">
+                             {getAvailableStatusOptions(order.statut).map((status) => (
+                               <DropdownMenuItem
+                                 key={status}
+                                 onClick={() => {
+                                   handleStatusChange(order.id, status);
+                                   setOpenDropdownId(null);
+                                 }}
+                                 className="cursor-pointer hover:bg-gray-100 px-2 py-1 focus:bg-gray-100"
+                               >
+                                 {getStatusBadge(status)} 
+                               </DropdownMenuItem>
+                             ))}
+                           </DropdownMenuContent>
+                         </DropdownMenu>
                       </div>
                     </div>
                     )}
