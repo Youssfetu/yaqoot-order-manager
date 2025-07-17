@@ -848,7 +848,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
               </div>
               )}
 
-              {/* Vendeur Column Header */}
+              {/* CL/Vendeur Column Header */}
               {tableSettings.columnVisibility.destination && (
                 <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">

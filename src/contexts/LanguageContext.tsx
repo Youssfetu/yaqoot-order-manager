@@ -167,7 +167,7 @@ const translations: Translations = {
     
     // Table Headers
     'code': 'Numéro',
-    'client': 'Client/Vendeur',
+    'client': 'CL/Vendeur',
     'phone': 'Numéro',
     'price': 'Prix',
     'comment': 'Commentaire',
