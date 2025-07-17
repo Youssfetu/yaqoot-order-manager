@@ -280,7 +280,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     momentumAnimationRef.current = requestAnimationFrame(animate);
   };
 
-  // Fixed column resizing with proper event listener options
+  // Enhanced column resizing with better mobile support
   const handleResizeStart = (e: React.MouseEvent | React.TouchEvent, column: string) => {
     e.preventDefault();
     e.stopPropagation();
@@ -335,16 +335,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       setResizingColumn(null);
       
       // Clean up event listeners
-      document.removeEventListener('mousemove', handleMove as EventListener);
+      document.removeEventListener('mousemove', handleMove as EventListener, { passive: false } as any);
       document.removeEventListener('mouseup', handleEnd as EventListener);
-      document.removeEventListener('touchmove', handleMove as EventListener);
+      document.removeEventListener('touchmove', handleMove as EventListener, { passive: false } as any);
       document.removeEventListener('touchend', handleEnd as EventListener);
     };
     
     // Add event listeners with proper options for touch devices
-    document.addEventListener('mousemove', handleMove as EventListener);
+    document.addEventListener('mousemove', handleMove as EventListener, { passive: false });
     document.addEventListener('mouseup', handleEnd as EventListener);
-    document.addEventListener('touchmove', handleMove as EventListener);
+    document.addEventListener('touchmove', handleMove as EventListener, { passive: false });
     document.addEventListener('touchend', handleEnd as EventListener);
   };
 
@@ -424,10 +424,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     });
   };
 
-  // Enhanced touch handling that doesn't interfere with column resizing
+  // Enhanced touch handling that allows column resizing
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Don't handle zoom/pan if we're resizing columns or editing
-    if (isResizing || editingCell) return;
+    // Allow column resizing to work - don't block if we're near a resize handle
+    if (isResizing) return;
+    
+    // Check if touch is near a resize handle by looking for resize handle elements
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('resize-handle') || target.closest('.resize-handle')) {
+      return; // Let the resize handle work
+    }
     
     // Cancel any ongoing momentum animation
     if (momentumAnimationRef.current) {
