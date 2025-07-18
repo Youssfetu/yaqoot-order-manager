@@ -341,13 +341,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       const deltaPercent = (deltaX / totalWidth) * 100;
       
       // Apply the change relative to the initial width with more flexible limits
-      let minWidth = 5; // Default minimum width
+      let minWidth = 2; // Smaller default minimum width
       
-      // Allow smaller minimum for specific columns
-      if (column === 'vendeur' || column === 'code') {
-        minWidth = 1; // Very small minimum for vendor and code columns
+      // Allow even smaller minimum for all columns to give more flexibility
+      if (column === 'vendeur' || column === 'code' || column === 'destination') {
+        minWidth = 0.5; // Very small minimum for vendor, code, and destination columns
       } else if (column === 'numero' || column === 'prix') {
-        minWidth = 1; // Very small minimum for phone and price
+        minWidth = 0.5; // Very small minimum for phone and price
+      } else if (column === 'comment') {
+        minWidth = 1; // Slightly bigger minimum for comment column
       }
       
       const newWidth = Math.max(minWidth, Math.min(50, resizeStartPosRef.current.initialWidth + deltaPercent));
