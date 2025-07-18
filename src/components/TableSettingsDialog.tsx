@@ -106,30 +106,6 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
         </DialogHeader>
         
         <div className="space-y-4 py-2">
-          {/* Column Visibility */}
-          <div className="bg-gray-50 rounded-lg p-3">
-            <h3 className="text-sm font-medium mb-2 text-center">{t('column_visibility')}</h3>
-            <div className="space-y-2">
-              {[
-                { key: 'code', label: t('code') },
-                { key: 'destination', label: t('client') },
-                { key: 'phone', label: t('phone') },
-                { key: 'price', label: t('price') },
-                { key: 'comment', label: t('comment') },
-                { key: 'status', label: t('status') },
-              ].map((column) => (
-                <div key={column.key} className="flex items-center justify-between py-1">
-                  <Label htmlFor={column.key} className="text-sm">{column.label}</Label>
-                  <Switch
-                    id={column.key}
-                    checked={settings.columnVisibility[column.key as keyof typeof settings.columnVisibility]}
-                    onCheckedChange={(checked) => updateColumnVisibility(column.key, checked)}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Font Size */}
           <div className="bg-gray-50 rounded-lg p-3">
             <h3 className="text-sm font-medium mb-2 text-center">{t('font_size')}</h3>
@@ -190,6 +166,30 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
                       </Button>
                     ))}
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Column Visibility */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">{t('column_visibility')}</h3>
+            <div className="space-y-2">
+              {[
+                { key: 'code', label: t('code') },
+                { key: 'destination', label: t('client') },
+                { key: 'phone', label: t('phone') },
+                { key: 'price', label: t('price') },
+                { key: 'comment', label: t('comment') },
+                { key: 'status', label: t('status') },
+              ].map((column) => (
+                <div key={column.key} className="flex items-center justify-between py-1">
+                  <Label htmlFor={column.key} className="text-sm">{column.label}</Label>
+                  <Switch
+                    id={column.key}
+                    checked={settings.columnVisibility[column.key as keyof typeof settings.columnVisibility]}
+                    onCheckedChange={(checked) => updateColumnVisibility(column.key, checked)}
+                  />
                 </div>
               ))}
             </div>
