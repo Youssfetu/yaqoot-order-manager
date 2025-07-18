@@ -91,8 +91,8 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                 { num: 1, color: "red", label: isRTL ? "عاجل" : "Urgent", icon: "⚡" },
                 { num: 2, color: "orange", label: isRTL ? "مهم" : "Important", icon: "🔥" },
                 { num: 3, color: "yellow", label: isRTL ? "عادي" : "Normal", icon: "⭐" },
-                { num: 4, color: "blue", label: isRTL ? "مؤجل" : "Différé", icon: "📅" },
-                { num: 5, color: "gray", label: isRTL ? "أخير" : "Dernier", icon: "📦" }
+                { num: 4, color: "blue", label: isRTL ? "مؤجل" : "Delayed", icon: "📅" },
+                { num: 5, color: "gray", label: isRTL ? "أخير" : "Last", icon: "📦" }
               ].map((priority) => {
                 const isSelected = comment.startsWith(`${priority.num}. `);
                 return (
