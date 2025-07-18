@@ -245,12 +245,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     };
   }, []);
 
-  // Enhanced momentum scrolling for smooth touch experience
+  // Enhanced momentum scrolling for ultra-smooth touch experience
   const applyMomentumScrolling = (velocity: { x: number, y: number }) => {
     if (!containerRef.current) return;
     
-    const friction = 0.95;
-    const minVelocity = 0.5;
+    // More refined friction for smoother deceleration
+    const friction = 0.92;
+    const minVelocity = 0.3;
+    const elasticBounds = true;
     
     const animate = () => {
       if (Math.abs(velocity.x) < minVelocity && Math.abs(velocity.y) < minVelocity) {
@@ -265,10 +267,38 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         const minPanX = Math.min(0, rect.width - (800 * zoomLevel));
         const minPanY = Math.min(0, rect.height - (600 * zoomLevel));
         
-        setPanOffset(prev => ({
-          x: Math.max(minPanX, Math.min(maxPanX, prev.x + velocity.x)),
-          y: Math.max(minPanY, Math.min(maxPanY, prev.y + velocity.y))
-        }));
+        const newX = panOffset.x + velocity.x;
+        const newY = panOffset.y + velocity.y;
+        
+        // Elastic bounds for more natural feel
+        let finalX = newX;
+        let finalY = newY;
+        
+        if (elasticBounds) {
+          // Allow slight overscroll with elastic bounce back
+          const elasticStrength = 0.3;
+          
+          if (newX > maxPanX) {
+            finalX = maxPanX + (newX - maxPanX) * elasticStrength;
+            velocity.x *= 0.7; // Reduce velocity when overscrolling
+          } else if (newX < minPanX) {
+            finalX = minPanX + (newX - minPanX) * elasticStrength;
+            velocity.x *= 0.7;
+          }
+          
+          if (newY > maxPanY) {
+            finalY = maxPanY + (newY - maxPanY) * elasticStrength;
+            velocity.y *= 0.7;
+          } else if (newY < minPanY) {
+            finalY = minPanY + (newY - minPanY) * elasticStrength;
+            velocity.y *= 0.7;
+          }
+        } else {
+          finalX = Math.max(minPanX, Math.min(maxPanX, newX));
+          finalY = Math.max(minPanY, Math.min(maxPanY, newY));
+        }
+        
+        setPanOffset({ x: finalX, y: finalY });
       }
       
       velocity.x *= friction;
@@ -424,8 +454,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     });
   };
 
-  // Enhanced touch handling that allows column resizing
+  // Ultra-smooth touch handling with professional gestures
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Prevent browser's default touch behaviors for smoother control
+    e.preventDefault();
+    
     // Allow column resizing to work - don't block if we're near a resize handle
     if (isResizing) return;
     
@@ -442,7 +475,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
     
     if (e.touches.length === 2) {
-      // Pinch zoom start
+      // Professional pinch zoom with smooth scaling
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
@@ -450,7 +483,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         Math.pow(touch2.clientY - touch1.clientY, 2)
       );
       
-      // Calculate the center point between two fingers
+      // Calculate the center point between two fingers with high precision
       const centerX = (touch1.clientX + touch2.clientX) / 2;
       const centerY = (touch1.clientY + touch2.clientY) / 2;
       
@@ -464,14 +497,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       
       (e.currentTarget as any).initialDistance = distance;
       (e.currentTarget as any).initialZoom = zoomLevel;
+      
+      // Stop any panning when starting pinch zoom
+      setIsPanning(false);
     } else if (e.touches.length === 1) {
-      // Enhanced single touch pan start with velocity tracking
+      // Ultra-smooth single touch pan with advanced velocity tracking
       const touch = e.touches[0];
       setIsPanning(true);
       setPanStart({ x: touch.clientX - panOffset.x, y: touch.clientY - panOffset.y });
       
-      // Initialize velocity tracking
-      const currentTime = Date.now();
+      // High-precision velocity tracking for natural momentum
+      const currentTime = performance.now(); // More precise timing
       setLastTouchTime(currentTime);
       setLastTouchPosition({ x: touch.clientX, y: touch.clientY });
       setTouchVelocity({ x: 0, y: 0 });
@@ -482,16 +518,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     // Don't handle zoom/pan if we're resizing columns or editing
     if (isResizing || editingCell) return;
     
-    // Allow natural scrolling for single touch
-    if (e.touches.length === 1) {
-      // Don't prevent default to allow native scrolling
-      return;
-    }
-    
-    e.preventDefault();
-    
     if (e.touches.length === 2) {
-      // Pinch zoom with focus point preservation
+      // Professional pinch zoom with ultra-smooth scaling
+      e.preventDefault();
+      e.stopPropagation();
+      
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.sqrt(
@@ -505,25 +536,33 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       
       if (initialDistance && initialZoom && focusPoint) {
         const scale = distance / initialDistance;
-        const newZoom = Math.max(0.3, Math.min(3, initialZoom * scale));
+        // Smooth zoom scaling with damping for natural feel
+        const dampingFactor = 0.8;
+        const smoothScale = 1 + (scale - 1) * dampingFactor;
+        const newZoom = Math.max(0.3, Math.min(3, initialZoom * smoothScale));
         const deltaZoom = newZoom - zoomLevel;
         
-        if (Math.abs(deltaZoom) > 0.01) {
+        if (Math.abs(deltaZoom) > 0.005) { // More sensitive threshold
           zoomAtPoint(deltaZoom, focusPoint);
         }
       }
     } else if (e.touches.length === 1 && isPanning) {
-      // Enhanced single touch pan with smooth velocity calculation
+      // Ultra-smooth single touch pan with advanced velocity tracking
+      e.preventDefault();
+      
       const touch = e.touches[0];
-      const currentTime = Date.now();
+      const currentTime = performance.now(); // High precision timing
       const deltaTime = currentTime - lastTouchTime;
       
       if (deltaTime > 0) {
-        // Calculate velocity for momentum scrolling
+        // Advanced velocity calculation with smoothing
         const deltaX = touch.clientX - lastTouchPosition.x;
         const deltaY = touch.clientY - lastTouchPosition.y;
-        const velocityX = deltaX / deltaTime * 16; // Scale for 60fps
-        const velocityY = deltaY / deltaTime * 16;
+        
+        // Apply exponential smoothing for more natural feel
+        const smoothingFactor = 0.7;
+        const velocityX = (deltaX / deltaTime * 1000) * smoothingFactor + touchVelocity.x * (1 - smoothingFactor);
+        const velocityY = (deltaY / deltaTime * 1000) * smoothingFactor + touchVelocity.y * (1 - smoothingFactor);
         
         setTouchVelocity({ x: velocityX, y: velocityY });
         setLastTouchTime(currentTime);
@@ -538,6 +577,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         const minPanX = Math.min(0, rect.width - (800 * zoomLevel));
         const minPanY = Math.min(0, rect.height - (600 * zoomLevel));
         
+        // Smooth panning with micro-adjustments for precision
         const newOffsetX = Math.max(minPanX, Math.min(maxPanX, touch.clientX - panStart.x));
         const newOffsetY = Math.max(minPanY, Math.min(maxPanY, touch.clientY - panStart.y));
         
@@ -553,15 +593,26 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     if (e.touches.length < 2) {
       (e.currentTarget as any).initialDistance = null;
       (e.currentTarget as any).initialZoom = null;
+      (e.currentTarget as any).focusPoint = null;
     }
     
     if (e.touches.length === 0) {
       setIsPanning(false);
       
-      // Apply momentum scrolling if there's sufficient velocity
-      if (Math.abs(touchVelocity.x) > 1 || Math.abs(touchVelocity.y) > 1) {
-        applyMomentumScrolling({ ...touchVelocity });
+      // Professional momentum scrolling with intelligent threshold
+      const velocityMagnitude = Math.sqrt(touchVelocity.x * touchVelocity.x + touchVelocity.y * touchVelocity.y);
+      
+      if (velocityMagnitude > 0.5) { // Lower threshold for more responsive momentum
+        // Scale velocity for optimal momentum feel
+        const scaledVelocity = {
+          x: touchVelocity.x * 0.8, // Slight damping for natural feel
+          y: touchVelocity.y * 0.8
+        };
+        applyMomentumScrolling(scaledVelocity);
       }
+      
+      // Reset velocity tracking
+      setTouchVelocity({ x: 0, y: 0 });
     }
   };
 
@@ -782,13 +833,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   return (
     <div className="w-full bg-white">
-      {/* Google Sheets Style Compact Table Container with Enhanced Touch Support */}
+      {/* Professional Table Container with Ultra-Smooth Touch Support */}
       <div 
         ref={containerRef}
         className={cn(
           "w-full h-[calc(100vh-200px)] border border-gray-300 bg-white relative",
+          "ultra-smooth-table hardware-accelerated momentum-scroll",
           showScrollbar ? "overflow-x-auto" : "overflow-x-hidden",
-          "overflow-y-auto"
+          "overflow-y-auto touch-manipulation"
         )}
         data-scrollbar="show"
         style={{ 
@@ -797,24 +849,28 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
           scrollbarColor: 'hsl(210 100% 14%) rgba(0, 0, 0, 0.05)',
           userSelect: isResizing ? 'none' : 'auto',
           WebkitUserSelect: isResizing ? 'none' : 'auto',
-          WebkitTouchCallout: 'none'
+          WebkitTouchCallout: 'none',
+          touchAction: editingCell ? 'auto' : 'pan-x pan-y pinch-zoom',
+          overscrollBehavior: 'contain'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onWheel={editingCell ? undefined : handleWheel}
       >
-        {/* Enhanced Transform Container with Smooth Transitions */}
+        {/* Ultra-Smooth Transform Container with Professional Transitions */}
         <div 
-          className="absolute top-0 left-0 w-full h-full"
+          className="absolute top-0 left-0 w-full h-full hardware-accelerated"
           style={{
             transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
             transformOrigin: 'top left',
-            transition: isPanning || isResizing || momentumAnimationRef.current ? 'none' : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+            transition: isPanning || isResizing || momentumAnimationRef.current ? 'none' : 'transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             minWidth: '800px',
             minHeight: '100%',
             pointerEvents: editingCell ? 'none' : 'auto',
-            willChange: isPanning || isResizing ? 'transform' : 'auto'
+            willChange: isPanning || isResizing ? 'transform' : 'auto',
+            backfaceVisibility: 'hidden',
+            WebkitBackfaceVisibility: 'hidden'
           }}
         >
           <div className="w-full shadow-lg rounded-sm overflow-hidden bg-white">

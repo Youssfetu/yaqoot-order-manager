@@ -167,9 +167,38 @@ button, .hover\:bg-blue-50:hover {
     overscroll-behavior: contain;
   }
   
-  /* Touch optimizations */
+  /* Professional touch optimizations */
   .touch-manipulation {
     touch-action: manipulation;
+  }
+  
+  /* Ultra-smooth table interactions */
+  .ultra-smooth-table {
+    transform-origin: top left;
+    transition: transform 0.1s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Professional momentum scrolling */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+    overscroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+  
+  /* Hardware acceleration for smooth performance */
+  .hardware-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+  }
+  
+  /* Smooth zoom transitions */
+  .smooth-zoom {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
   /* Custom scrollbar for better mobile experience */
