@@ -79,8 +79,8 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
           </div>
           
           <div className="space-y-2">
-            {/* Compact Priority Icons */}
-            <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-2">
+            {/* Ultra Compact Priority Icons */}
+            <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg p-1.5">
               <div className="grid grid-cols-5 gap-1">
               {[
                 { num: 1, color: "red", label: isRTL ? "عاجل" : "Urgent", icon: "⚡" },
@@ -102,30 +102,29 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                          onCommentChange?.(newComment);
                       }}
                       className={cn(
-                        "w-8 h-8 rounded-full border-2 flex flex-col items-center justify-center text-xs font-bold transition-all duration-300 relative overflow-hidden",
+                        "w-6 h-6 rounded-full border flex flex-col items-center justify-center text-xs font-bold transition-all duration-200",
                         priority.color === "red" && (isSelected 
-                          ? "bg-red-500 text-white border-red-600 shadow-sm scale-105" 
+                          ? "bg-red-500 text-white border-red-600" 
                           : "bg-red-50 text-red-600 border-red-300 hover:bg-red-500 hover:text-white"),
                         priority.color === "orange" && (isSelected 
-                          ? "bg-orange-500 text-white border-orange-600 shadow-sm scale-105" 
+                          ? "bg-orange-500 text-white border-orange-600" 
                           : "bg-orange-50 text-orange-600 border-orange-300 hover:bg-orange-500 hover:text-white"),
                         priority.color === "yellow" && (isSelected 
-                          ? "bg-yellow-500 text-white border-yellow-600 shadow-sm scale-105" 
+                          ? "bg-yellow-500 text-white border-yellow-600" 
                           : "bg-yellow-50 text-yellow-600 border-yellow-400 hover:bg-yellow-500 hover:text-white"),
                         priority.color === "blue" && (isSelected 
-                          ? "bg-blue-500 text-white border-blue-600 shadow-sm scale-105" 
+                          ? "bg-blue-500 text-white border-blue-600" 
                           : "bg-blue-50 text-blue-600 border-blue-300 hover:bg-blue-500 hover:text-white"),
                         priority.color === "gray" && (isSelected 
-                          ? "bg-gray-500 text-white border-gray-600 shadow-sm scale-105" 
+                          ? "bg-gray-500 text-white border-gray-600" 
                           : "bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-500 hover:text-white")
                       )}
                       type="button"
                     >
-                      <span className="text-sm leading-none">{priority.icon}</span>
-                      <span className="text-xs font-bold leading-none">{priority.num}</span>
+                      <span className="text-xs leading-none">{priority.num}</span>
                     </button>
                     <span className={cn(
-                      "text-xs mt-0.5 font-medium transition-colors",
+                      "text-xs mt-0.5 font-medium transition-colors hidden",
                       isSelected ? `text-${priority.color}-600` : "text-gray-500"
                     )}>
                       {priority.label}
