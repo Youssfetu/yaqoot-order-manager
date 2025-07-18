@@ -48,15 +48,9 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
   if (!selectedOrder) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end">
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm"
-        onClick={onCancel}
-      />
-      
-      {/* Modal Content - Compact Version */}
-      <div className="relative w-full bg-white rounded-t-xl shadow-xl animate-slide-up max-h-[50vh] overflow-hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-40 max-w-md mx-auto">
+      {/* Modal Content - Compact Bottom Editor */}
+      <div className="relative w-full bg-white/95 backdrop-blur-sm rounded-t-xl shadow-lg border border-gray-200 max-h-[40vh] overflow-hidden">
         <div className="px-3 py-3">
           {/* Compact Header */}
           <div className="flex items-center justify-between mb-2">
