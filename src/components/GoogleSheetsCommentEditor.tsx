@@ -177,26 +177,6 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                 transformOrigin: 'left top'
               }}
             />
-            
-            <div className="flex gap-2 justify-center pt-1">
-              <Button
-                onClick={onCancel}
-                variant="outline"
-                className="h-8 px-4 rounded-lg border-2 text-sm"
-                size="sm"
-              >
-                {t('cancel')}
-              </Button>
-              
-              <Button
-                onClick={handleSave}
-                className="h-8 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg text-sm"
-                size="sm"
-              >
-                <Check className="h-3 w-3 mr-1" />
-                {t('save')}
-              </Button>
-            </div>
           </div>
         </div>
       </div>
