@@ -917,7 +917,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
               {/* CL/Vendeur Column Header */}
               {tableSettings.columnVisibility.destination && (
-                <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
+                <div className="relative" style={{ width: `${columnWidths.vendeur}%`, minWidth: '60px' }}>
                   <div className="h-7 px-2 py-1 border-b-2 border-gray-400 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
                     <span className="text-xs font-bold text-gray-800">{t('client')}</span>
                   </div>
@@ -1112,7 +1112,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
                     {/* Vendeur Column Data */}
                     {tableSettings.columnVisibility.destination && (
-                      <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '120px' }}>
+                      <div style={{ width: `${columnWidths.vendeur}%`, minWidth: '60px' }}>
                         <div 
                           className={cn(
                             "h-7 px-2 py-1 border-b border-gray-300 flex items-center hover:bg-blue-50 transition-all duration-300",
