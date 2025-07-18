@@ -164,6 +164,19 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
             </Select>
           </div>
 
+          {/* Coordinates Visibility */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">Visibilité des coordonnées</h3>
+            <div className="flex items-center justify-between py-1">
+              <Label htmlFor="coordinates" className="text-sm">Afficher les coordonnées</Label>
+              <Switch
+                id="coordinates"
+                checked={settings.coordinatesVisibility}
+                onCheckedChange={updateCoordinatesVisibility}
+              />
+            </div>
+          </div>
+
           {/* Text Alignment for Editable Columns */}
           <div className="bg-gray-50 rounded-lg p-3">
             <h3 className="text-sm font-medium mb-2 text-center">{t('text_alignment')}</h3>
@@ -192,19 +205,6 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Coordinates Visibility */}
-          <div className="bg-gray-50 rounded-lg p-3">
-            <h3 className="text-sm font-medium mb-2 text-center">Visibilité des coordonnées</h3>
-            <div className="flex items-center justify-between py-1">
-              <Label htmlFor="coordinates" className="text-sm">Afficher les coordonnées</Label>
-              <Switch
-                id="coordinates"
-                checked={settings.coordinatesVisibility}
-                onCheckedChange={updateCoordinatesVisibility}
-              />
             </div>
           </div>
         </div>
