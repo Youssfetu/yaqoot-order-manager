@@ -166,7 +166,7 @@ const translations: Translations = {
     'close': 'Fermer',
     
     // Table Headers
-    'code': 'Numéro',
+    'code': 'Code',
     'client': 'CL/Vendeur',
     'phone': 'Numéro',
     'price': 'Prix',
