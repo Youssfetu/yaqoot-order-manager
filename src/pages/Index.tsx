@@ -65,6 +65,7 @@ const Index = () => {
       price: 'left' as 'left' | 'center' | 'right',
       comment: 'left' as 'left' | 'center' | 'right',
     },
+    coordinatesVisibility: false,
   });
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement>(null);

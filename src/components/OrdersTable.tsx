@@ -48,6 +48,7 @@ interface TableSettings {
     price: 'left' | 'center' | 'right';
     comment: 'left' | 'center' | 'right';
   };
+  coordinatesVisibility: boolean;
 }
 
 interface OrdersTableProps {

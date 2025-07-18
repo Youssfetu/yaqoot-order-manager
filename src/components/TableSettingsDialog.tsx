@@ -24,6 +24,7 @@ interface TableSettings {
     price: 'left' | 'center' | 'right';
     comment: 'left' | 'center' | 'right';
   };
+  coordinatesVisibility: boolean;
 }
 
 interface TableSettingsDialogProps {
@@ -71,6 +72,13 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
         ...settings.textAlignment,
         [column]: alignment,
       },
+    });
+  };
+
+  const updateCoordinatesVisibility = (visible: boolean) => {
+    onSettingsChange({
+      ...settings,
+      coordinatesVisibility: visible,
     });
   };
 
@@ -184,6 +192,19 @@ const TableSettingsDialog: React.FC<TableSettingsDialogProps> = ({
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Coordinates Visibility */}
+          <div className="bg-gray-50 rounded-lg p-3">
+            <h3 className="text-sm font-medium mb-2 text-center">Visibilité des coordonnées</h3>
+            <div className="flex items-center justify-between py-1">
+              <Label htmlFor="coordinates" className="text-sm">Afficher les coordonnées</Label>
+              <Switch
+                id="coordinates"
+                checked={settings.coordinatesVisibility}
+                onCheckedChange={updateCoordinatesVisibility}
+              />
             </div>
           </div>
         </div>
