@@ -10,12 +10,14 @@ interface GoogleSheetsCommentEditorProps {
   selectedOrder: Order | null;
   onSave: (comment: string) => void;
   onCancel: () => void;
+  onCommentChange?: (comment: string) => void; // إضافة خاصية جديدة للتحديث المباشر
 }
 
 const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
   selectedOrder,
   onSave,
-  onCancel
+  onCancel,
+  onCommentChange
 }) => {
   const { t, isRTL } = useLanguage();
   const [comment, setComment] = useState('');
@@ -90,7 +92,8 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                         const newComment = comment.startsWith(priorityText) 
                           ? comment.substring(priorityText.length)
                           : priorityText + comment.replace(/^\d+\.\s*/, '');
-                        setComment(newComment);
+                         setComment(newComment);
+                         onCommentChange?.(newComment); // إرسال التحديث للمكون الأب
                       }}
                       className={cn(
                         "w-12 h-12 rounded-full border-3 flex flex-col items-center justify-center text-xs font-bold transition-all duration-300 relative overflow-hidden",
@@ -133,7 +136,10 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
           <Textarea
             ref={textareaRef}
             value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            onChange={(e) => {
+              setComment(e.target.value);
+              onCommentChange?.(e.target.value); // إرسال التحديث المباشر أثناء الكتابة
+            }}
             onKeyDown={handleKeyDown}
             placeholder={t('add_comment')}
             className={cn(

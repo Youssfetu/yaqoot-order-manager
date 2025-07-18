@@ -89,6 +89,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   // Google Sheets style comment editing
   const [selectedOrderForComment, setSelectedOrderForComment] = useState<Order | null>(null);
+  const [liveCommentText, setLiveCommentText] = useState<string>('');
 
   // إضافة حالة للحوار التأكيدي
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -622,17 +623,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   // Google Sheets style comment editing
   const handleCommentCellClick = (order: Order) => {
     setSelectedOrderForComment(order);
+    setLiveCommentText(order.commentaire || '');
   };
 
   const handleCommentSave = (comment: string) => {
     if (selectedOrderForComment) {
       onUpdateComment(selectedOrderForComment.id, comment);
       setSelectedOrderForComment(null);
+      setLiveCommentText('');
     }
   };
 
   const handleCommentCancel = () => {
     setSelectedOrderForComment(null);
+    setLiveCommentText('');
+  };
+
+  const handleCommentChange = (comment: string) => {
+    setLiveCommentText(comment);
   };
 
   // Reverted getStatusBadge function to original static version
@@ -1305,33 +1313,35 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                          )}
                          onClick={() => handleCommentCellClick(order)}
                         >
-                         {(() => {
-                           const comment = order.commentaire || '';
-                           const priorityMatch = comment.match(/^(\d+)\.\s*/);
-                           const priority = priorityMatch ? parseInt(priorityMatch[1]) : null;
-                           const textWithoutPriority = comment.replace(/^\d+\.\s*/, '');
-                           
-                           return (
-                             <div className="flex items-center gap-2 w-full">
-                               {priority && priority >= 1 && priority <= 5 && (
-                                 <div className={cn(
-                                   "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-md border-2",
-                                   priority === 1 && "bg-red-500 text-white border-red-600 animate-pulse",
-                                   priority === 2 && "bg-orange-500 text-white border-orange-600",
-                                   priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
-                                   priority === 4 && "bg-blue-500 text-white border-blue-600",
-                                   priority === 5 && "bg-gray-500 text-white border-gray-600"
-                                 )}>
-                                   {priority}
-                                 </div>
-                               )}
-                               <span className={cn(
-                                 "truncate flex-1",
-                                 priority ? "text-gray-900 font-medium" : "text-gray-600",
-                                 priority === 1 && "text-red-700 font-semibold"
-                               )}>
-                                 {textWithoutPriority || (priority ? `أولوية ${priority}` : t('add_comment'))}
-                               </span>
+                          {(() => {
+                            // استخدام النص المباشر أثناء التحرير، أو النص المحفوظ
+                            const displayComment = selectedOrderForComment?.id === order.id ? liveCommentText : (order.commentaire || '');
+                            const priorityMatch = displayComment.match(/^(\d+)\.\s*/);
+                            const priority = priorityMatch ? parseInt(priorityMatch[1]) : null;
+                            const textWithoutPriority = displayComment.replace(/^\d+\.\s*/, '');
+                            
+                            return (
+                              <div className="flex items-center gap-2 w-full">
+                                {priority && priority >= 1 && priority <= 5 && (
+                                  <div className={cn(
+                                    "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-md border-2",
+                                    priority === 1 && "bg-red-500 text-white border-red-600 animate-pulse",
+                                    priority === 2 && "bg-orange-500 text-white border-orange-600",
+                                    priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
+                                    priority === 4 && "bg-blue-500 text-white border-blue-600",
+                                    priority === 5 && "bg-gray-500 text-white border-gray-600"
+                                  )}>
+                                    {priority}
+                                  </div>
+                                )}
+                                <span className={cn(
+                                  "truncate flex-1",
+                                  priority ? "text-gray-900 font-medium" : "text-gray-600",
+                                  priority === 1 && "text-red-700 font-semibold",
+                                  selectedOrderForComment?.id === order.id && "text-blue-600 font-medium" // تمييز النص أثناء التحرير
+                                )}>
+                                  {textWithoutPriority || (priority ? `أولوية ${priority}` : t('add_comment'))}
+                                </span>
                                {priority === 1 && (
                                  <div className="flex-shrink-0 text-red-500 animate-bounce">
                                    <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1574,6 +1584,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
         selectedOrder={selectedOrderForComment}
         onSave={handleCommentSave}
         onCancel={handleCommentCancel}
+        onCommentChange={handleCommentChange}
       />
     </div>
   );
