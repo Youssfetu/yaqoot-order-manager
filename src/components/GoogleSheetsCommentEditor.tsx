@@ -100,6 +100,8 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                           : priorityText + comment.replace(/^\d+\.\s*/, '');
                          setComment(newComment);
                          onCommentChange?.(newComment);
+                         // حفظ تلقائي عند تغيير الأولوية
+                         onSave(newComment);
                       }}
                       className={cn(
                         "relative w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm transition-all duration-300 transform-gpu",
@@ -155,8 +157,11 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
               ref={textareaRef}
               value={comment}
               onChange={(e) => {
-                setComment(e.target.value);
-                onCommentChange?.(e.target.value);
+                const newComment = e.target.value;
+                setComment(newComment);
+                onCommentChange?.(newComment);
+                // حفظ تلقائي فوري
+                onSave(newComment);
               }}
               onKeyDown={handleKeyDown}
               placeholder={t('add_comment')}
