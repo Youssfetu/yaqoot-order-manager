@@ -651,7 +651,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       // تأخير بسيط للتأكد من رندر العنصر
       setTimeout(() => {
         textareaRef.current?.focus();
-        textareaRef.current?.select();
+        // وضع المؤشر في نهاية النص بدلاً من تحديد النص كاملاً
+        const textLength = textareaRef.current?.value.length || 0;
+        textareaRef.current?.setSelectionRange(textLength, textLength);
       }, 100);
     }
     
@@ -1367,8 +1369,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                  "absolute top-0 left-0 right-0",
                                  isRTL && "text-right"
                                )}
-                               placeholder={t('add_comment')}
-                               autoFocus
+                                placeholder={t('add_comment')}
                                style={{ 
                                  fontSize: '14px',
                                  minHeight: '60px',
