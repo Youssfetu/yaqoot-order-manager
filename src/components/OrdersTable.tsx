@@ -1417,7 +1417,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              />
                              
                               {/* أزرار الأولوية السريعة - تحسين للهاتف */}
-                                <div className="absolute -top-24 left-0 right-0 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm border border-primary/20 rounded-2xl shadow-2xl p-5 z-[1001]"
+                                <div className="absolute -top-16 left-0 right-0 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm border border-primary/20 rounded-xl shadow-lg p-3 z-[1001]"
                                   data-priority-buttons="true"
                                   style={{ 
                                     pointerEvents: 'auto',
@@ -1426,31 +1426,31 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                     WebkitTouchCallout: 'none'
                                   }}
                                 >
-                                  <div className="text-sm text-primary/80 text-center mb-4 font-semibold tracking-wide">
-                                    {isRTL ? "اختر الأولوية" : "Select Priority"}
+                                  <div className="text-xs text-primary/70 text-center mb-2 font-medium">
+                                    {isRTL ? "أولوية" : "Priority"}
                                   </div>
-                                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-7 sm:gap-2.5">
+                                  <div className="flex justify-center gap-1.5">
                                     {[1, 2, 3, 4, 5, 6, 7].map((priorityNum) => {
                                       const colors = {
-                                        1: "bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30",
-                                        2: "bg-gradient-to-br from-orange-500 to-orange-600 shadow-orange-500/30", 
-                                        3: "bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-yellow-500/30",
-                                        4: "bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/30",
-                                        5: "bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/30",
-                                        6: "bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/30",
-                                        7: "bg-gradient-to-br from-gray-500 to-gray-600 shadow-gray-500/30"
+                                        1: "bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/20",
+                                        2: "bg-gradient-to-br from-orange-500 to-orange-600 shadow-orange-500/20", 
+                                        3: "bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-yellow-500/20",
+                                        4: "bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/20",
+                                        5: "bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/20",
+                                        6: "bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/20",
+                                        7: "bg-gradient-to-br from-gray-500 to-gray-600 shadow-gray-500/20"
                                       };
                                       const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
                                       return (
                                         <div
                                           key={priorityNum}
                                           className={cn(
-                                            "w-16 h-16 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-white font-bold text-xl sm:text-lg",
+                                            "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm",
                                             "cursor-pointer select-none transition-all duration-300 ease-out",
-                                            "shadow-lg active:shadow-xl active:scale-110 transform-gpu border border-white/20",
-                                            "hover:scale-105 hover:shadow-xl hover:-translate-y-1",
+                                            "shadow-md active:shadow-lg active:scale-110 transform-gpu border border-white/20",
+                                            "hover:scale-105 hover:shadow-lg",
                                             colors[priorityNum as keyof typeof colors],
-                                            isSelected && "ring-4 ring-primary/60 scale-110 shadow-2xl"
+                                            isSelected && "ring-2 ring-primary/60 scale-110 shadow-lg"
                                           )}
                                           style={{
                                             touchAction: 'manipulation',
