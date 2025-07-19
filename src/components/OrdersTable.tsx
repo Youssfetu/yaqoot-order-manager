@@ -116,7 +116,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   });
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const saveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   
   // DND Kit sensors - optimized for mobile
   const sensors = useSensors(
