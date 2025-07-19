@@ -1427,7 +1427,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              />
                              
                                {/* أزرار الأولوية السريعة - تحسين احترافي للهاتف */}
-                                 <div className="absolute -top-14 left-0 right-0 bg-white/95 backdrop-blur-md border border-primary/20 rounded-xl shadow-lg p-3 z-[1001] animate-fade-in"
+                                 <div className="absolute -top-14 left-0 right-0 backdrop-blur-md border border-primary/20 rounded-xl shadow-lg p-3 z-[1001] animate-fade-in"
                                    data-priority-buttons="true"
                                    style={{ 
                                      pointerEvents: 'auto',
