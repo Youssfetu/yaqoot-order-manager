@@ -22,6 +22,7 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
   const { t, isRTL } = useLanguage();
   const [comment, setComment] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (selectedOrder) {
@@ -31,6 +32,13 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
         textareaRef.current?.focus();
       }, 100);
     }
+    
+    // Cleanup timeout when component unmounts or order changes
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [selectedOrder]);
 
   const handleSave = () => {
@@ -86,17 +94,23 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                 const isSelected = comment.startsWith(`${priority.num}. `);
                 return (
                   <div key={priority.num} className="flex flex-col items-center group">
-                    <button
-                      onClick={() => {
-                        const priorityText = `${priority.num}. `;
-                        const newComment = comment.startsWith(priorityText) 
-                          ? comment.substring(priorityText.length)
-                          : priorityText + comment.replace(/^\d+\.\s*/, '');
-                         setComment(newComment);
-                         onCommentChange?.(newComment);
-                         // حفظ تلقائي عند تغيير الأولوية
-                         onSave(newComment);
-                      }}
+                     <button
+                       onClick={() => {
+                         const priorityText = `${priority.num}. `;
+                         const newComment = comment.startsWith(priorityText) 
+                           ? comment.substring(priorityText.length)
+                           : priorityText + comment.replace(/^\d+\.\s*/, '');
+                          setComment(newComment);
+                          onCommentChange?.(newComment);
+                          
+                          // حفظ تلقائي مع تأخير للأولوية أيضاً
+                          if (saveTimeoutRef.current) {
+                            clearTimeout(saveTimeoutRef.current);
+                          }
+                          saveTimeoutRef.current = setTimeout(() => {
+                            onSave(newComment);
+                          }, 500); // حفظ أسرع للأولوية
+                       }}
                       className={cn(
                         "relative w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm transition-all duration-300 transform-gpu",
                         "hover:scale-110 hover:rotate-3 active:scale-95",
@@ -154,8 +168,14 @@ const GoogleSheetsCommentEditor: React.FC<GoogleSheetsCommentEditorProps> = ({
                 const newComment = e.target.value;
                 setComment(newComment);
                 onCommentChange?.(newComment);
-                // حفظ تلقائي فوري
-                onSave(newComment);
+                
+                // حفظ تلقائي مع تأخير (debounce)
+                if (saveTimeoutRef.current) {
+                  clearTimeout(saveTimeoutRef.current);
+                }
+                saveTimeoutRef.current = setTimeout(() => {
+                  onSave(newComment);
+                }, 1000); // حفظ بعد ثانية واحدة من التوقف عن الكتابة
               }}
               onKeyDown={handleKeyDown}
               placeholder={t('add_comment')}
