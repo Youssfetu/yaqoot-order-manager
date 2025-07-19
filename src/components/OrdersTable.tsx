@@ -1463,41 +1463,33 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                               WebkitTapHighlightColor: 'transparent',
                                               userSelect: 'none'
                                             }}
-                                            onMouseDown={(e) => {
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                            }}
-                                            onTouchStart={(e) => {
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                            }}
-                                            onClick={(e) => {
-                                              console.log(`🔥📱 Priority ${priorityNum} CLICKED!`);
-                                              e.preventDefault();
-                                              e.stopPropagation();
-                                              
-                                              const priorityText = `${priorityNum}. `;
-                                              const currentComment = liveCommentText || '';
-                                              const newComment = currentComment.startsWith(priorityText) 
-                                                ? currentComment.substring(priorityText.length)
-                                                : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                              
-                                              console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
-                                              setLiveCommentText(newComment);
-                                              
-                                              // حفظ فوري
-                                              if (saveTimeoutRef.current) {
-                                                clearTimeout(saveTimeoutRef.current);
-                                              }
-                                              onUpdateComment(order.id, newComment);
-                                              
-                                              // منع إغلاق منطقة التعليق
-                                              setTimeout(() => {
-                                                const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
-                                                if (textarea) {
-                                                  textarea.focus();
-                                                  textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-                                                }
+                                             onTouchEnd={(e) => {
+                                               console.log(`🔥📱 Priority ${priorityNum} TOUCH END!`);
+                                               e.preventDefault();
+                                               e.stopPropagation();
+                                               
+                                               const priorityText = `${priorityNum}. `;
+                                               const currentComment = liveCommentText || '';
+                                               const newComment = currentComment.startsWith(priorityText) 
+                                                 ? currentComment.substring(priorityText.length)
+                                                 : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                               
+                                               console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
+                                               setLiveCommentText(newComment);
+                                               
+                                               // حفظ فوري
+                                               if (saveTimeoutRef.current) {
+                                                 clearTimeout(saveTimeoutRef.current);
+                                               }
+                                               onUpdateComment(order.id, newComment);
+                                               
+                                               // منع إغلاق منطقة التعليق
+                                               setTimeout(() => {
+                                                 const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
+                                                 if (textarea) {
+                                                   textarea.focus();
+                                                   textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                                                 }
                                               }, 50);
                                             }}
                                           >
