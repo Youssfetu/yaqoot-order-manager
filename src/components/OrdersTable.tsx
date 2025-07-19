@@ -1378,7 +1378,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              />
                              
                               {/* أزرار الأولوية السريعة */}
-                              <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[999]">
+                               <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[1000] pointer-events-auto"
+                                  onMouseDown={(e) => {
+                                    console.log("🔥 Priority container clicked!");
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }}
+                               >
                                 <div className="flex gap-1 justify-center">
                                   {[
                                     { num: 1, color: "red", label: isRTL ? "عاجل جداً" : "Urgent" },
@@ -1393,8 +1399,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    return (
                                        <button
                                          key={priority.num}
+                                         onMouseDown={(e) => {
+                                           console.log(`🔥🔥🔥 Priority ${priority.num} MOUSEDOWN!`);
+                                           e.preventDefault();
+                                           e.stopPropagation();
+                                         }}
                                          onClick={(e) => {
-                                           console.log(`🔥 Priority ${priority.num} button clicked!`);
+                                           console.log(`🔥🔥🔥 Priority ${priority.num} CLICKED!`);
                                            e.preventDefault();
                                            e.stopPropagation();
                                            const priorityText = `${priority.num}. `;
@@ -1415,22 +1426,23 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                              onUpdateComment(order.id, newComment);
                                            }, 100);
                                          }}
-                                        className={cn(
-                                          "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
-                                          "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
-                                          priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
-                                          priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
-                                          priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
-                                          priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105" : "bg-blue-500 shadow-md opacity-80 hover:opacity-100"),
-                                          priority.color === "green" && (isSelected ? "bg-green-600 shadow-lg scale-105" : "bg-green-500 shadow-md opacity-80 hover:opacity-100"),
-                                          priority.color === "purple" && (isSelected ? "bg-purple-600 shadow-lg scale-105" : "bg-purple-500 shadow-md opacity-80 hover:opacity-100"),
-                                          priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105" : "bg-gray-500 shadow-md opacity-80 hover:opacity-100")
-                                        )}
-                                        type="button"
-                                        title={priority.label}
-                                      >
-                                       {priority.num}
-                                     </button>
+                                         className={cn(
+                                           "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
+                                           "hover:scale-110 active:scale-95 border-2 border-white/20 focus:outline-none cursor-pointer select-none",
+                                           "shadow-md hover:shadow-lg active:shadow-sm",
+                                           priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105 border-red-300" : "bg-red-500 opacity-90 hover:opacity-100 hover:bg-red-600"),
+                                           priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105 border-orange-300" : "bg-orange-500 opacity-90 hover:opacity-100 hover:bg-orange-600"),
+                                           priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105 border-yellow-300" : "bg-yellow-500 opacity-90 hover:opacity-100 hover:bg-yellow-600"),
+                                           priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105 border-blue-300" : "bg-blue-500 opacity-90 hover:opacity-100 hover:bg-blue-600"),
+                                           priority.color === "green" && (isSelected ? "bg-green-600 shadow-lg scale-105 border-green-300" : "bg-green-500 opacity-90 hover:opacity-100 hover:bg-green-600"),
+                                           priority.color === "purple" && (isSelected ? "bg-purple-600 shadow-lg scale-105 border-purple-300" : "bg-purple-500 opacity-90 hover:opacity-100 hover:bg-purple-600"),
+                                           priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105 border-gray-300" : "bg-gray-500 opacity-90 hover:opacity-100 hover:bg-gray-600")
+                                         )}
+                                         type="button"
+                                         title={priority.label}
+                                       >
+                                        {priority.num}
+                                      </button>
                                    );
                                  })}
                                </div>
