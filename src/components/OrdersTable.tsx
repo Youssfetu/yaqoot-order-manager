@@ -870,6 +870,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     }
   };
 
+
   return (
     <div className="w-full bg-white">
       {/* Professional Table Container with Ultra-Smooth Touch Support */}
