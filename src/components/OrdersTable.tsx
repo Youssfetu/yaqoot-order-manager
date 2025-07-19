@@ -1378,14 +1378,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              />
                              
                               {/* أزرار الأولوية السريعة */}
-                               <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[1000] pointer-events-auto"
+                               <div className="absolute -top-16 left-0 right-0 bg-white border-2 border-gray-300 rounded-lg shadow-xl p-3 z-[1000] pointer-events-auto"
                                   onMouseDown={(e) => {
                                     console.log("🔥 Priority container clicked!");
                                     e.preventDefault();
                                     e.stopPropagation();
                                   }}
+                                  onTouchStart={(e) => {
+                                    console.log("🔥 Priority container touched!");
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                  }}
                                >
-                                <div className="flex gap-1 justify-center">
+                                 <div className="text-xs text-gray-600 text-center mb-3 font-medium">
+                                   {isRTL ? "اختر الأولوية" : "Select Priority"}
+                                 </div>
+                                 <div className="flex gap-2 justify-center">
                                   {[
                                     { num: 1, color: "red", label: isRTL ? "عاجل جداً" : "Urgent" },
                                     { num: 2, color: "orange", label: isRTL ? "عاجل" : "High" },
@@ -1399,6 +1407,29 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    return (
                                        <button
                                          key={priority.num}
+                                         onTouchStart={(e) => {
+                                           console.log(`🔥🔥🔥 Priority ${priority.num} TOUCHED!`);
+                                           e.preventDefault();
+                                           e.stopPropagation();
+                                           
+                                           const priorityText = `${priority.num}. `;
+                                           const currentComment = liveCommentText || '';
+                                           console.log(`🔥 Current comment: "${currentComment}"`);
+                                           const newComment = currentComment.startsWith(priorityText) 
+                                             ? currentComment.substring(priorityText.length)
+                                             : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                           console.log(`🔥 New comment will be: "${newComment}"`);
+                                           setLiveCommentText(newComment);
+                                           
+                                           // حفظ فوري للأولوية
+                                           if (saveTimeoutRef.current) {
+                                             clearTimeout(saveTimeoutRef.current);
+                                           }
+                                           setTimeout(() => {
+                                             console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
+                                             onUpdateComment(order.id, newComment);
+                                           }, 100);
+                                         }}
                                          onMouseDown={(e) => {
                                            console.log(`🔥🔥🔥 Priority ${priority.num} MOUSEDOWN!`);
                                            e.preventDefault();
@@ -1427,16 +1458,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                            }, 100);
                                          }}
                                          className={cn(
-                                           "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
-                                           "hover:scale-110 active:scale-95 border-2 border-white/20 focus:outline-none cursor-pointer select-none",
-                                           "shadow-md hover:shadow-lg active:shadow-sm",
-                                           priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105 border-red-300" : "bg-red-500 opacity-90 hover:opacity-100 hover:bg-red-600"),
-                                           priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105 border-orange-300" : "bg-orange-500 opacity-90 hover:opacity-100 hover:bg-orange-600"),
-                                           priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105 border-yellow-300" : "bg-yellow-500 opacity-90 hover:opacity-100 hover:bg-yellow-600"),
-                                           priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105 border-blue-300" : "bg-blue-500 opacity-90 hover:opacity-100 hover:bg-blue-600"),
-                                           priority.color === "green" && (isSelected ? "bg-green-600 shadow-lg scale-105 border-green-300" : "bg-green-500 opacity-90 hover:opacity-100 hover:bg-green-600"),
-                                           priority.color === "purple" && (isSelected ? "bg-purple-600 shadow-lg scale-105 border-purple-300" : "bg-purple-500 opacity-90 hover:opacity-100 hover:bg-purple-600"),
-                                           priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105 border-gray-300" : "bg-gray-500 opacity-90 hover:opacity-100 hover:bg-gray-600")
+                                           "w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg transition-all duration-200",
+                                           "active:scale-95 focus:outline-none cursor-pointer select-none touch-manipulation",
+                                           "shadow-lg hover:shadow-xl active:shadow-md border-2",
+                                           priority.color === "red" && (isSelected ? "bg-red-600 scale-105 border-red-300" : "bg-red-500 hover:bg-red-600 border-red-400"),
+                                           priority.color === "orange" && (isSelected ? "bg-orange-600 scale-105 border-orange-300" : "bg-orange-500 hover:bg-orange-600 border-orange-400"),
+                                           priority.color === "yellow" && (isSelected ? "bg-yellow-600 scale-105 border-yellow-300" : "bg-yellow-500 hover:bg-yellow-600 border-yellow-400"),
+                                           priority.color === "blue" && (isSelected ? "bg-blue-600 scale-105 border-blue-300" : "bg-blue-500 hover:bg-blue-600 border-blue-400"),
+                                           priority.color === "green" && (isSelected ? "bg-green-600 scale-105 border-green-300" : "bg-green-500 hover:bg-green-600 border-green-400"),
+                                           priority.color === "purple" && (isSelected ? "bg-purple-600 scale-105 border-purple-300" : "bg-purple-500 hover:bg-purple-600 border-purple-400"),
+                                           priority.color === "gray" && (isSelected ? "bg-gray-600 scale-105 border-gray-300" : "bg-gray-500 hover:bg-gray-600 border-gray-400")
                                          )}
                                          type="button"
                                          title={priority.label}
