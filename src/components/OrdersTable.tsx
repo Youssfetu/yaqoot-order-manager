@@ -29,6 +29,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import SortableOrderRow from './SortableOrderRow';
+import CommentEditor from './CommentEditor';
 import type { Order } from '@/pages/Index';
 
 interface TableSettings {
@@ -85,13 +86,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     prix: 10,      // 10%
     status: 12,    // 12%
     comment: 30    // 30%
-  });
+   });
 
-  // Google Sheets style comment editing
-  const [selectedOrderForComment, setSelectedOrderForComment] = React.useState<Order | null>(null);
-  const [liveCommentText, setLiveCommentText] = React.useState<string>('');
+   // Google Sheets style comment editing
+   const [selectedOrderForComment, setSelectedOrderForComment] = React.useState<Order | null>(null);
 
-  // إضافة حالة للحوار التأكيدي
+   // إضافة حالة للحوار التأكيدي
   const [confirmDialog, setConfirmDialog] = React.useState<{
     isOpen: boolean;
     orderId: string;
@@ -116,7 +116,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   });
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const saveTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   
   // DND Kit sensors - optimized for mobile
@@ -249,23 +248,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     };
   }, []);
 
-  // Focus textarea عند تحديد طلب للتعليق
-  React.useEffect(() => {
-    if (selectedOrderForComment && textareaRef.current) {
-      // تأخير بسيط للتأكد من رندر العنصر
-      setTimeout(() => {
-        textareaRef.current?.focus();
-        textareaRef.current?.select();
-      }, 100);
-    }
-    
-    // تنظيف timeout عند التغيير
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [selectedOrderForComment]);
 
   // Enhanced momentum scrolling for ultra-smooth touch experience
   const applyMomentumScrolling = (velocity: { x: number, y: number }) => {
@@ -643,33 +625,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   // Google Sheets style comment editing
   const handleCommentCellClick = (order: Order) => {
     setSelectedOrderForComment(order);
-    setLiveCommentText(order.commentaire || '');
-    
-    // تنظيف أي timeout موجود
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
   };
 
-  const handleCommentSave = (comment: string) => {
-    if (selectedOrderForComment) {
-      onUpdateComment(selectedOrderForComment.id, comment);
-      setSelectedOrderForComment(null);
-      setLiveCommentText('');
-    }
-  };
-
-  const handleCommentCancel = () => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    setSelectedOrderForComment(null);
-    setLiveCommentText('');
-  };
-
-  const handleCommentChange = (comment: string) => {
-    setLiveCommentText(comment);
-  };
 
   // Reverted getStatusBadge function to original static version
   const getStatusBadge = (status: string) => {
@@ -1329,109 +1286,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                     </div>
                     )}
 
-                    {/* Comment Column Data */}
-                    {tableSettings.columnVisibility.comment && (
-                       <div className="flex-1" style={{ minWidth: '150px' }}>
-                        {selectedOrderForComment?.id === order.id ? (
-                          // Google Sheets Style Direct Editing
-                          <div className="relative">
-                            <textarea
-                              ref={textareaRef}
-                              value={liveCommentText}
-                              onChange={(e) => {
-                                const newComment = e.target.value;
-                                setLiveCommentText(newComment);
-                                
-                                // حفظ تلقائي مع debounce
-                                if (saveTimeoutRef.current) {
-                                  clearTimeout(saveTimeoutRef.current);
-                                }
-                                saveTimeoutRef.current = setTimeout(() => {
-                                  onUpdateComment(order.id, newComment);
-                                }, 1000);
-                              }}
-                              onKeyDown={(e) => {
-                                e.stopPropagation();
-                                if (e.key === 'Escape') {
-                                  handleCommentCancel();
-                                } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                                  onUpdateComment(order.id, liveCommentText);
-                                  setSelectedOrderForComment(null);
-                                }
-                              }}
-                              onBlur={() => {
-                                // حفظ عند فقدان التركيز
-                                if (saveTimeoutRef.current) {
-                                  clearTimeout(saveTimeoutRef.current);
-                                }
-                                onUpdateComment(order.id, liveCommentText);
-                                setTimeout(() => setSelectedOrderForComment(null), 100);
-                              }}
-                              className={cn(
-                                "w-full h-20 px-2 py-1 border-2 border-blue-500 rounded-md resize-none",
-                                "focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-600",
-                                "bg-white shadow-lg z-50 text-sm",
-                                "absolute top-0 left-0 right-0",
-                                isRTL && "text-right"
-                              )}
-                              placeholder={t('add_comment')}
-                              autoFocus
-                              style={{ 
-                                fontSize: '14px',
-                                minHeight: '60px',
-                                maxHeight: '120px'
-                              }}
-                            />
-                            
-                            {/* أزرار الأولوية السريعة */}
-                            <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-60">
-                              <div className="flex gap-1 justify-center">
-                                {[
-                                  { num: 1, color: "red", label: isRTL ? "عاجل" : "Urgent", gradient: "from-red-400 to-red-600" },
-                                  { num: 2, color: "orange", label: isRTL ? "مهم" : "Important", gradient: "from-orange-400 to-orange-600" },
-                                  { num: 3, color: "yellow", label: isRTL ? "عادي" : "Normal", gradient: "from-yellow-400 to-amber-500" },
-                                  { num: 4, color: "blue", label: isRTL ? "مؤجل" : "Delayed", gradient: "from-blue-400 to-blue-600" },
-                                  { num: 5, color: "gray", label: isRTL ? "أخير" : "Last", gradient: "from-gray-400 to-gray-600" }
-                                ].map((priority) => {
-                                  const isSelected = liveCommentText.startsWith(`${priority.num}. `);
-                                  return (
-                                    <button
-                                      key={priority.num}
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        const priorityText = `${priority.num}. `;
-                                        const newComment = liveCommentText.startsWith(priorityText) 
-                                          ? liveCommentText.substring(priorityText.length)
-                                          : priorityText + liveCommentText.replace(/^\d+\.\s*/, '');
-                                        setLiveCommentText(newComment);
-                                        
-                                        // حفظ فوري للأولوية
-                                        if (saveTimeoutRef.current) {
-                                          clearTimeout(saveTimeoutRef.current);
-                                        }
-                                        setTimeout(() => {
-                                          onUpdateComment(order.id, newComment);
-                                        }, 200);
-                                      }}
-                                      className={cn(
-                                        "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
-                                        "hover:scale-110 active:scale-95 border border-white/20",
-                                        isSelected 
-                                          ? `bg-gradient-to-br ${priority.gradient} shadow-lg scale-105` 
-                                          : `bg-gradient-to-br ${priority.gradient} shadow-md opacity-75 hover:opacity-100`
-                                      )}
-                                      type="button"
-                                      title={priority.label}
-                                    >
-                                      {priority.num}
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          // عرض التعليق العادي
+                     {/* Comment Column Data */}
+                     {tableSettings.columnVisibility.comment && (
+                        <div className="flex-1" style={{ minWidth: '150px' }}>
                           <div 
                             className={cn(
                               "h-7 px-2 py-1 border-b border-gray-300 flex items-center cursor-pointer transition-all duration-200 relative",
@@ -1484,18 +1341,31 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                               );
                             })()}
                           </div>
-                        )}
-                      </div>
-                     )}
-                    </div>
-                  </SortableOrderRow>
-                );
-              })}
-                </div>
-              </SortableContext>
-            </DndContext>
-          </div>
-        </div>
+                        </div>
+                      )}
+                     </div>
+                   </SortableOrderRow>
+                 );
+               })}
+                 </div>
+               </SortableContext>
+             </DndContext>
+           </div>
+         </div>
+
+         {/* Comment Editor Modal */}
+         {selectedOrderForComment && (
+           <CommentEditor
+             orderId={selectedOrderForComment.id}
+             initialComment={selectedOrderForComment.commentaire || ''}
+             onSave={(comment) => {
+               onUpdateComment(selectedOrderForComment.id, comment);
+               setSelectedOrderForComment(null);
+             }}
+             onCancel={() => setSelectedOrderForComment(null)}
+             isRTL={isRTL}
+           />
+         )}
 
         {/* Editing Overlay - Prevents zoom/pan when editing */}
         {(editingCell || selectedOrderForComment) && (
