@@ -1391,30 +1391,30 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                  ].map((priority) => {
                                    const isSelected = liveCommentText.startsWith(`${priority.num}. `);
                                    return (
-                                      <button
-                                        key={priority.num}
-                                        onMouseDown={(e) => {
-                                          console.log(`🔥 Priority ${priority.num} button clicked!`);
-                                          e.preventDefault();
-                                          e.stopPropagation();
-                                          const priorityText = `${priority.num}. `;
-                                          const currentComment = liveCommentText || '';
-                                          console.log(`🔥 Current comment: "${currentComment}"`);
-                                          const newComment = currentComment.startsWith(priorityText) 
-                                            ? currentComment.substring(priorityText.length)
-                                            : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                          console.log(`🔥 New comment will be: "${newComment}"`);
-                                          setLiveCommentText(newComment);
-                                          
-                                          // حفظ فوري للأولوية
-                                          if (saveTimeoutRef.current) {
-                                            clearTimeout(saveTimeoutRef.current);
-                                          }
-                                          setTimeout(() => {
-                                            console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
-                                            onUpdateComment(order.id, newComment);
-                                          }, 200);
-                                        }}
+                                       <button
+                                         key={priority.num}
+                                         onClick={(e) => {
+                                           console.log(`🔥 Priority ${priority.num} button clicked!`);
+                                           e.preventDefault();
+                                           e.stopPropagation();
+                                           const priorityText = `${priority.num}. `;
+                                           const currentComment = liveCommentText || '';
+                                           console.log(`🔥 Current comment: "${currentComment}"`);
+                                           const newComment = currentComment.startsWith(priorityText) 
+                                             ? currentComment.substring(priorityText.length)
+                                             : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                           console.log(`🔥 New comment will be: "${newComment}"`);
+                                           setLiveCommentText(newComment);
+                                           
+                                           // حفظ فوري للأولوية
+                                           if (saveTimeoutRef.current) {
+                                             clearTimeout(saveTimeoutRef.current);
+                                           }
+                                           setTimeout(() => {
+                                             console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
+                                             onUpdateComment(order.id, newComment);
+                                           }, 100);
+                                         }}
                                         className={cn(
                                           "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
                                           "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
