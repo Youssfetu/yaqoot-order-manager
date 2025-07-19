@@ -12,6 +12,37 @@ interface InlineCommentEditorProps {
   onCellClick: () => void;
 }
 
+const PRIORITY_COLORS = {
+  1: "bg-red-500 border-red-600 hover:bg-red-600",
+  2: "bg-orange-500 border-orange-600 hover:bg-orange-600", 
+  3: "bg-yellow-500 border-yellow-600 hover:bg-yellow-600",
+  4: "bg-blue-500 border-blue-600 hover:bg-blue-600",
+  5: "bg-green-500 border-green-600 hover:bg-green-600",
+  6: "bg-purple-500 border-purple-600 hover:bg-purple-600",
+  7: "bg-gray-500 border-gray-600 hover:bg-gray-600"
+};
+
+const PRIORITY_LABELS = {
+  ar: {
+    1: "عاجل جداً",
+    2: "عاجل", 
+    3: "مهم",
+    4: "عادي",
+    5: "منخفض",
+    6: "متأخر",
+    7: "مؤجل"
+  },
+  en: {
+    1: "Urgent",
+    2: "High",
+    3: "Important", 
+    4: "Normal",
+    5: "Low",
+    6: "Late",
+    7: "Delayed"
+  }
+};
+
 const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
   order,
   isEditing,
@@ -41,25 +72,19 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
   }, [isEditing]);
 
   const handlePriorityClick = (priority: number) => {
-    console.log('Priority clicked:', priority);
-    const priorityText = `${priority}. `;
-    let newComment = '';
+    console.log(`Priority ${priority} clicked`);
     
-    // إزالة أي أولوية موجودة أولاً
-    const commentWithoutPriority = liveCommentText.replace(/^\d+\.\s*/, '');
+    // إزالة أي أولوية موجودة
+    const cleanText = liveCommentText.replace(/^\d+\.\s*/, '');
     
     // إضافة الأولوية الجديدة
-    newComment = priorityText + commentWithoutPriority;
+    const newComment = `${priority}. ${cleanText}`;
     
-    console.log('New comment with priority:', newComment);
+    console.log(`Setting comment: ${newComment}`);
     onCommentTextChange(newComment);
     
-    // حفظ فوري للأولوية
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
+    // حفظ فوري
     setTimeout(() => {
-      console.log('Saving priority comment:', newComment);
       onSave(order.id, newComment);
     }, 100);
   };
@@ -85,7 +110,19 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
     setTimeout(() => onCancel(), 100);
   };
 
+  // استخراج الأولوية من النص
+  const getPriorityFromText = (text: string): number | null => {
+    const match = text.match(/^(\d+)\.\s*/);
+    if (match) {
+      const num = parseInt(match[1]);
+      return num >= 1 && num <= 7 ? num : null;
+    }
+    return null;
+  };
+
   if (isEditing) {
+    const currentPriority = getPriorityFromText(liveCommentText);
+    
     return (
       <div className="relative">
         <textarea
@@ -117,52 +154,35 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
           }}
         />
         
-        {/* أزرار الأولوية السريعة */}
-        <div className="absolute -top-16 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-3 z-[999]">
-          <div className="flex gap-2 justify-center flex-wrap">
-            {[
-              { num: 1, color: "orange", label: isRTL ? "عاجل جداً" : "Very Urgent" },
-              { num: 2, color: "red", label: isRTL ? "عاجل" : "Urgent" },
-              { num: 3, color: "yellow", label: isRTL ? "مهم" : "Important" },
-              { num: 4, color: "blue", label: isRTL ? "عادي" : "Normal" },
-              { num: 5, color: "gray", label: isRTL ? "مؤجل" : "Delayed" },
-              { num: 6, color: "purple", label: isRTL ? "متأخر" : "Late" },
-              { num: 7, color: "pink", label: isRTL ? "ملغى" : "Cancelled" }
-            ].map((priority) => {
-              const isSelected = liveCommentText.startsWith(`${priority.num}. `);
+        {/* أزرار الأولوية */}
+        <div className="absolute -top-20 left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-xl p-3 z-[1000]">
+          <div className="text-xs text-gray-600 text-center mb-2 font-medium">
+            {isRTL ? "اختر الأولوية" : "Select Priority"}
+          </div>
+          <div className="grid grid-cols-7 gap-2">
+            {[1, 2, 3, 4, 5, 6, 7].map((priority) => {
+              const isSelected = currentPriority === priority;
+              const label = isRTL ? PRIORITY_LABELS.ar[priority] : PRIORITY_LABELS.en[priority];
+              
               return (
                 <button
-                  key={priority.num}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handlePriorityClick(priority.num);
-                  }}
-                  onTouchStart={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handlePriorityClick(priority.num);
-                  }}
+                  key={priority}
+                  type="button"
+                  className={cn(
+                    "w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg transition-all duration-200 border-2",
+                    "active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-300",
+                    "touch-manipulation select-none",
+                    PRIORITY_COLORS[priority],
+                    isSelected && "ring-4 ring-blue-400 scale-110 shadow-lg"
+                  )}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    handlePriorityClick(priority.num);
+                    handlePriorityClick(priority);
                   }}
-                  className={cn(
-                    "w-10 h-10 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm md:text-xs transition-all duration-200",
-                    "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none touch-manipulation",
-                    priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
-                    priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
-                    priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
-                    priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105" : "bg-blue-500 shadow-md opacity-80 hover:opacity-100"),
-                    priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105" : "bg-gray-500 shadow-md opacity-80 hover:opacity-100"),
-                    priority.color === "purple" && (isSelected ? "bg-purple-600 shadow-lg scale-105" : "bg-purple-500 shadow-md opacity-80 hover:opacity-100"),
-                    priority.color === "pink" && (isSelected ? "bg-pink-600 shadow-lg scale-105" : "bg-pink-500 shadow-md opacity-80 hover:opacity-100")
-                  )}
-                  type="button"
-                  title={priority.label}
+                  title={label}
                 >
-                  {priority.num}
+                  {priority}
                 </button>
               );
             })}
@@ -174,12 +194,9 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
 
   // عرض التعليق العادي
   const displayComment = order.commentaire || '';
-  const priorityMatch = displayComment.match(/^(\d+)\.\s*/);
-  const priority = priorityMatch ? parseInt(priorityMatch[1]) : null;
+  const priority = getPriorityFromText(displayComment);
   const textWithoutPriority = displayComment.replace(/^\d+\.\s*/, '');
   
-  console.log('Priority Debug:', { displayComment, priorityMatch, priority, textWithoutPriority });
-
   return (
     <div 
       className="h-7 px-2 py-1 border-b border-gray-300 flex items-center cursor-pointer transition-all duration-200 relative hover:bg-blue-50 hover:border-blue-300 group"
@@ -190,16 +207,10 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
       }}
     >
       <div className="flex items-center gap-2 w-full">
-        {priority && priority >= 1 && priority <= 7 && (
+        {priority && (
           <div className={cn(
-            "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border",
-            priority === 1 && "bg-orange-500 text-white border-orange-600",
-            priority === 2 && "bg-red-500 text-white border-red-600",
-            priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
-            priority === 4 && "bg-blue-500 text-white border-blue-600",
-            priority === 5 && "bg-gray-500 text-white border-gray-600",
-            priority === 6 && "bg-purple-500 text-white border-purple-600",
-            priority === 7 && "bg-pink-500 text-white border-pink-600"
+            "flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm border-2",
+            PRIORITY_COLORS[priority]
           )}>
             {priority}
           </div>
