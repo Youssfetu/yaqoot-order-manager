@@ -1302,17 +1302,21 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
                     {/* Comment Column Data */}
                     {tableSettings.columnVisibility.comment && (
-                      <div className="flex-1" style={{ minWidth: '150px' }}>
-                       <div 
-                         className={cn(
-                           "h-7 px-2 py-1 border-b border-gray-300 flex items-center cursor-pointer transition-all duration-300 relative",
-                           `text-${tableSettings.textAlignment.comment}`,
-                           rowBackgroundClass,
-                           selectedOrderForComment?.id === order.id && "bg-blue-50 border-blue-300 ring-2 ring-blue-200",
-                           "hover:bg-blue-50"
-                         )}
-                         onClick={() => handleCommentCellClick(order)}
-                        >
+                       <div className="flex-1" style={{ minWidth: '150px' }}>
+                        <div 
+                          className={cn(
+                            "h-7 px-2 py-1 border-b border-gray-300 flex items-center cursor-pointer transition-all duration-300 relative",
+                            `text-${tableSettings.textAlignment.comment}`,
+                            rowBackgroundClass,
+                            selectedOrderForComment?.id === order.id && "bg-blue-50 border-blue-300 ring-2 ring-blue-200",
+                            "hover:bg-blue-50"
+                          )}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleCommentCellClick(order);
+                          }}
+                         >
                           {(() => {
                             // استخدام النص المباشر أثناء التحرير، أو النص المحفوظ
                             const displayComment = selectedOrderForComment?.id === order.id ? liveCommentText : (order.commentaire || '');
