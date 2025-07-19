@@ -1447,14 +1447,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                 
                                 return (
                                   <div className="flex items-center gap-2 w-full">
-                                    {priority && priority >= 1 && priority <= 5 && (
+                                    {priority && priority >= 1 && priority <= 7 && (
                                       <div className={cn(
                                         "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border",
-                                        priority === 1 && "bg-red-500 text-white border-red-600",
-                                        priority === 2 && "bg-orange-500 text-white border-orange-600",
+                                        priority === 1 && "bg-orange-500 text-white border-orange-600",
+                                        priority === 2 && "bg-red-500 text-white border-red-600",
                                         priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
                                         priority === 4 && "bg-blue-500 text-white border-blue-600",
-                                        priority === 5 && "bg-gray-500 text-white border-gray-600"
+                                        priority === 5 && "bg-gray-500 text-white border-gray-600",
+                                        priority === 6 && "bg-purple-500 text-white border-purple-600",
+                                        priority === 7 && "bg-pink-500 text-white border-pink-600"
                                       )}>
                                         {priority}
                                       </div>
