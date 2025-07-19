@@ -1426,83 +1426,98 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                }}
                              />
                              
-                              {/* أزرار الأولوية السريعة - تحسين للهاتف */}
-                                <div className="absolute -top-12 left-0 right-0 bg-gradient-to-r from-primary/3 to-secondary/3 backdrop-blur-sm border border-primary/15 rounded-lg shadow-md p-2 z-[1001]"
-                                  data-priority-buttons="true"
-                                  style={{ 
-                                    pointerEvents: 'auto',
-                                    touchAction: 'auto',
-                                    userSelect: 'none',
-                                    WebkitTouchCallout: 'none'
-                                  }}
-                                >
-                                  <div className="flex justify-center gap-1">
-                                    {[1, 2, 3, 4, 5, 6, 7].map((priorityNum) => {
-                                      const colors = {
-                                        1: "bg-gradient-to-br from-red-500 to-red-600",
-                                        2: "bg-gradient-to-br from-orange-500 to-orange-600", 
-                                        3: "bg-gradient-to-br from-yellow-500 to-yellow-600",
-                                        4: "bg-gradient-to-br from-blue-500 to-blue-600",
-                                        5: "bg-gradient-to-br from-green-500 to-green-600",
-                                        6: "bg-gradient-to-br from-purple-500 to-purple-600",
-                                        7: "bg-gradient-to-br from-gray-500 to-gray-600"
-                                      };
-                                      const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
-                                      return (
-                                         <div
-                                           key={priorityNum}
-                                           data-priority-button="true"
-                                          className={cn(
-                                            "w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-xs",
-                                            "cursor-pointer select-none transition-all duration-200",
-                                            "shadow-sm active:scale-105 border border-white/20",
-                                            "hover:scale-110",
-                                            colors[priorityNum as keyof typeof colors],
-                                            isSelected && "ring-1 ring-primary/50 scale-110"
-                                          )}
-                                          style={{
-                                            touchAction: 'manipulation',
-                                            WebkitTouchCallout: 'none',
-                                            WebkitUserSelect: 'none'
-                                          }}
-                                          onClick={(e) => {
-                                            console.log(`🔥📱 Priority ${priorityNum} CLICKED!`);
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            
-                                            const priorityText = `${priorityNum}. `;
-                                            const currentComment = liveCommentText || '';
-                                            const newComment = currentComment.startsWith(priorityText) 
-                                              ? currentComment.substring(priorityText.length)
-                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                            
-                                            console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
-                                            setLiveCommentText(newComment);
-                                            
-                                            // حفظ فوري
-                                            if (saveTimeoutRef.current) {
-                                              clearTimeout(saveTimeoutRef.current);
-                                            }
-                                            setTimeout(() => {
-                                              console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
-                                              onUpdateComment(order.id, newComment);
-                                            }, 100);
-                                            
-                                            // إعادة التركيز على التعليق
-                                            setTimeout(() => {
-                                              const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
-                                              if (textarea) {
-                                                textarea.focus();
+                               {/* أزرار الأولوية السريعة - تحسين احترافي للهاتف */}
+                                 <div className="absolute -top-14 left-0 right-0 bg-white/95 backdrop-blur-md border border-primary/20 rounded-xl shadow-lg p-3 z-[1001] animate-fade-in"
+                                   data-priority-buttons="true"
+                                   style={{ 
+                                     pointerEvents: 'auto',
+                                     touchAction: 'auto',
+                                     userSelect: 'none',
+                                     WebkitTouchCallout: 'none'
+                                   }}
+                                 >
+                                   <div className="flex justify-center gap-2">
+                                     {[1, 2, 3, 4, 5, 6, 7].map((priorityNum) => {
+                                       const colors = {
+                                         1: "bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30",
+                                         2: "bg-gradient-to-br from-orange-500 to-orange-600 shadow-orange-500/30", 
+                                         3: "bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-yellow-500/30",
+                                         4: "bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/30",
+                                         5: "bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/30",
+                                         6: "bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/30",
+                                         7: "bg-gradient-to-br from-gray-500 to-gray-600 shadow-gray-500/30"
+                                       };
+                                       const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
+                                       return (
+                                          <button
+                                            key={priorityNum}
+                                            data-priority-button="true"
+                                            className={cn(
+                                              "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm",
+                                              "cursor-pointer select-none transition-all duration-300 ease-out",
+                                              "shadow-lg active:scale-95 border border-white/30",
+                                              "hover:scale-105 hover:shadow-xl",
+                                              "focus:outline-none focus:ring-2 focus:ring-primary/50",
+                                              "transform-gpu will-change-transform",
+                                              colors[priorityNum as keyof typeof colors],
+                                              isSelected && "ring-2 ring-white scale-105 shadow-xl"
+                                            )}
+                                            style={{
+                                              touchAction: 'manipulation',
+                                              WebkitTouchCallout: 'none',
+                                              WebkitUserSelect: 'none',
+                                              WebkitTapHighlightColor: 'transparent'
+                                            }}
+                                            onTouchStart={(e) => {
+                                              e.currentTarget.style.transform = 'scale(0.95)';
+                                            }}
+                                            onTouchEnd={(e) => {
+                                              e.currentTarget.style.transform = isSelected ? 'scale(1.05)' : 'scale(1)';
+                                            }}
+                                            onClick={(e) => {
+                                              console.log(`🔥📱 Priority ${priorityNum} CLICKED!`);
+                                              e.preventDefault();
+                                              e.stopPropagation();
+                                              
+                                              // إضافة feedback تفاعلي
+                                              e.currentTarget.style.transform = 'scale(0.9)';
+                                              setTimeout(() => {
+                                                e.currentTarget.style.transform = isSelected ? 'scale(1)' : 'scale(1.05)';
+                                              }, 100);
+                                              
+                                              const priorityText = `${priorityNum}. `;
+                                              const currentComment = liveCommentText || '';
+                                              const newComment = currentComment.startsWith(priorityText) 
+                                                ? currentComment.substring(priorityText.length)
+                                                : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                              
+                                              console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
+                                              setLiveCommentText(newComment);
+                                              
+                                              // حفظ فوري
+                                              if (saveTimeoutRef.current) {
+                                                clearTimeout(saveTimeoutRef.current);
                                               }
-                                            }, 150);
-                                          }}
-                                        >
-                                         {priorityNum}
-                                       </div>
-                                     );
-                                   })}
-                                 </div>
-                               </div>
+                                              setTimeout(() => {
+                                                console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
+                                                onUpdateComment(order.id, newComment);
+                                              }, 100);
+                                              
+                                              // إعادة التركيز على التعليق
+                                              setTimeout(() => {
+                                                const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
+                                                if (textarea) {
+                                                  textarea.focus();
+                                                }
+                                              }, 150);
+                                            }}
+                                          >
+                                           {priorityNum}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
                            </div>
                          ) : (
                            // عرض التعليق العادي
