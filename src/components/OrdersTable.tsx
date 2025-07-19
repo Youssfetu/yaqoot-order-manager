@@ -1385,22 +1385,32 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    setSelectedOrderForComment(null);
                                  }
                                }}
-                                onBlur={(e) => {
-                                  // منع إغلاق التعليق إذا كان المستخدم يضغط على أزرار الأولوية
-                                  const relatedTarget = e.relatedTarget as HTMLElement;
-                                  if (relatedTarget && relatedTarget.closest('[data-priority-buttons]')) {
-                                    console.log('🛑 منع إغلاق التعليق - المستخدم يستخدم أزرار الأولوية');
-                                    return;
-                                  }
-                                  
-                                  // حفظ عند فقدان التركيز
-                                  console.log('💾 حفظ التعليق عند فقدان التركيز');
-                                  if (saveTimeoutRef.current) {
-                                    clearTimeout(saveTimeoutRef.current);
-                                  }
-                                  onUpdateComment(order.id, liveCommentText);
-                                  setTimeout(() => setSelectedOrderForComment(null), 300);
-                                }}
+                                 onBlur={(e) => {
+                                   // منع إغلاق التعليق إذا كان المستخدم يضغط على أزرار الأولوية
+                                   const relatedTarget = e.relatedTarget as HTMLElement;
+                                   if (relatedTarget && (
+                                     relatedTarget.closest('[data-priority-buttons]') ||
+                                     relatedTarget.hasAttribute('data-priority-button')
+                                   )) {
+                                     console.log('🛑 منع إغلاق التعليق - المستخدم يستخدم أزرار الأولوية');
+                                     // إعادة التركيز على الـ textarea بعد فترة قصيرة
+                                     setTimeout(() => {
+                                       const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
+                                       if (textarea) {
+                                         textarea.focus();
+                                       }
+                                     }, 50);
+                                     return;
+                                   }
+                                   
+                                   // حفظ عند فقدان التركيز
+                                   console.log('💾 حفظ التعليق عند فقدان التركيز');
+                                   if (saveTimeoutRef.current) {
+                                     clearTimeout(saveTimeoutRef.current);
+                                   }
+                                   onUpdateComment(order.id, liveCommentText);
+                                   setTimeout(() => setSelectedOrderForComment(null), 500);
+                                 }}
                                className={cn(
                                  "w-full h-20 px-2 py-1 border-2 border-blue-500 rounded-md resize-none",
                                  "focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-600",
@@ -1439,8 +1449,9 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                       };
                                       const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
                                       return (
-                                        <div
-                                          key={priorityNum}
+                                         <div
+                                           key={priorityNum}
+                                           data-priority-button="true"
                                           className={cn(
                                             "w-6 h-6 rounded-md flex items-center justify-center text-white font-bold text-xs",
                                             "cursor-pointer select-none transition-all duration-200",
