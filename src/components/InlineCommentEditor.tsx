@@ -60,7 +60,9 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
     if (isEditing && textareaRef.current) {
       setTimeout(() => {
         textareaRef.current?.focus();
-        textareaRef.current?.select();
+        // وضع المؤشر في نهاية النص بدلاً من تحديد النص كاملاً
+        const textLength = textareaRef.current?.value.length || 0;
+        textareaRef.current?.setSelectionRange(textLength, textLength);
       }, 100);
     }
     
