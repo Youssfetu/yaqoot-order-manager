@@ -1377,107 +1377,89 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                }}
                              />
                              
-                              {/* أزرار الأولوية السريعة */}
-                               <div className="absolute -top-16 left-0 right-0 bg-white border-2 border-gray-300 rounded-lg shadow-xl p-3 z-[1000] pointer-events-auto"
-                                  onMouseDown={(e) => {
-                                    console.log("🔥 Priority container clicked!");
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                  }}
-                                  onTouchStart={(e) => {
-                                    console.log("🔥 Priority container touched!");
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                  }}
+                               {/* أزرار الأولوية السريعة */}
+                               <div className="absolute -top-20 left-0 right-0 bg-white border-2 border-blue-300 rounded-xl shadow-2xl p-4 z-[1001]"
+                                 style={{ pointerEvents: 'auto' }}
                                >
-                                 <div className="text-xs text-gray-600 text-center mb-3 font-medium">
+                                 <div className="text-sm text-gray-700 text-center mb-3 font-semibold">
                                    {isRTL ? "اختر الأولوية" : "Select Priority"}
                                  </div>
-                                 <div className="flex gap-2 justify-center">
-                                  {[
-                                    { num: 1, color: "red", label: isRTL ? "عاجل جداً" : "Urgent" },
-                                    { num: 2, color: "orange", label: isRTL ? "عاجل" : "High" },
-                                    { num: 3, color: "yellow", label: isRTL ? "مهم" : "Important" },
-                                    { num: 4, color: "blue", label: isRTL ? "عادي" : "Normal" },
-                                    { num: 5, color: "green", label: isRTL ? "منخفض" : "Low" },
-                                    { num: 6, color: "purple", label: isRTL ? "متأخر" : "Late" },
-                                    { num: 7, color: "gray", label: isRTL ? "مؤجل" : "Delayed" }
-                                 ].map((priority) => {
-                                   const isSelected = liveCommentText.startsWith(`${priority.num}. `);
-                                   return (
-                                       <button
+                                 <div className="grid grid-cols-4 gap-3 sm:grid-cols-7 sm:gap-2">
+                                   {[
+                                     { num: 1, color: "bg-red-500 hover:bg-red-600 active:bg-red-700", label: isRTL ? "عاجل جداً" : "Urgent" },
+                                     { num: 2, color: "bg-orange-500 hover:bg-orange-600 active:bg-orange-700", label: isRTL ? "عاجل" : "High" },
+                                     { num: 3, color: "bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700", label: isRTL ? "مهم" : "Important" },
+                                     { num: 4, color: "bg-blue-500 hover:bg-blue-600 active:bg-blue-700", label: isRTL ? "عادي" : "Normal" },
+                                     { num: 5, color: "bg-green-500 hover:bg-green-600 active:bg-green-700", label: isRTL ? "منخفض" : "Low" },
+                                     { num: 6, color: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700", label: isRTL ? "متأخر" : "Late" },
+                                     { num: 7, color: "bg-gray-500 hover:bg-gray-600 active:bg-gray-700", label: isRTL ? "مؤجل" : "Delayed" }
+                                  ].map((priority) => {
+                                    const isSelected = liveCommentText.startsWith(`${priority.num}. `);
+                                    return (
+                                       <div
                                          key={priority.num}
+                                         className={cn(
+                                           "w-14 h-14 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl sm:text-lg transition-all duration-200",
+                                           "cursor-pointer select-none touch-manipulation user-select-none",
+                                           "shadow-lg hover:shadow-xl active:shadow-md active:scale-95 border-2 border-white/30",
+                                           priority.color,
+                                           isSelected && "ring-4 ring-blue-400 scale-110"
+                                         )}
                                          onTouchStart={(e) => {
-                                           console.log(`🔥🔥🔥 Priority ${priority.num} TOUCHED!`);
+                                           console.log(`🔥📱 Priority ${priority.num} TOUCHED!`);
+                                           e.preventDefault();
+                                           e.stopPropagation();
+                                         }}
+                                         onTouchEnd={(e) => {
+                                           console.log(`🔥📱 Priority ${priority.num} TOUCH END!`);
                                            e.preventDefault();
                                            e.stopPropagation();
                                            
                                            const priorityText = `${priority.num}. `;
                                            const currentComment = liveCommentText || '';
-                                           console.log(`🔥 Current comment: "${currentComment}"`);
                                            const newComment = currentComment.startsWith(priorityText) 
                                              ? currentComment.substring(priorityText.length)
                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                           console.log(`🔥 New comment will be: "${newComment}"`);
+                                           
                                            setLiveCommentText(newComment);
                                            
-                                           // حفظ فوري للأولوية
+                                           // حفظ فوري
                                            if (saveTimeoutRef.current) {
                                              clearTimeout(saveTimeoutRef.current);
                                            }
                                            setTimeout(() => {
-                                             console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
                                              onUpdateComment(order.id, newComment);
-                                           }, 100);
-                                         }}
-                                         onMouseDown={(e) => {
-                                           console.log(`🔥🔥🔥 Priority ${priority.num} MOUSEDOWN!`);
-                                           e.preventDefault();
-                                           e.stopPropagation();
+                                           }, 50);
                                          }}
                                          onClick={(e) => {
-                                           console.log(`🔥🔥🔥 Priority ${priority.num} CLICKED!`);
+                                           console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
                                            e.preventDefault();
                                            e.stopPropagation();
+                                           
                                            const priorityText = `${priority.num}. `;
                                            const currentComment = liveCommentText || '';
-                                           console.log(`🔥 Current comment: "${currentComment}"`);
                                            const newComment = currentComment.startsWith(priorityText) 
                                              ? currentComment.substring(priorityText.length)
                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                           console.log(`🔥 New comment will be: "${newComment}"`);
+                                           
                                            setLiveCommentText(newComment);
                                            
-                                           // حفظ فوري للأولوية
+                                           // حفظ فوري
                                            if (saveTimeoutRef.current) {
                                              clearTimeout(saveTimeoutRef.current);
                                            }
                                            setTimeout(() => {
-                                             console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
                                              onUpdateComment(order.id, newComment);
-                                           }, 100);
+                                           }, 50);
                                          }}
-                                         className={cn(
-                                           "w-12 h-12 rounded-lg flex items-center justify-center text-white font-bold text-lg transition-all duration-200",
-                                           "active:scale-95 focus:outline-none cursor-pointer select-none touch-manipulation",
-                                           "shadow-lg hover:shadow-xl active:shadow-md border-2",
-                                           priority.color === "red" && (isSelected ? "bg-red-600 scale-105 border-red-300" : "bg-red-500 hover:bg-red-600 border-red-400"),
-                                           priority.color === "orange" && (isSelected ? "bg-orange-600 scale-105 border-orange-300" : "bg-orange-500 hover:bg-orange-600 border-orange-400"),
-                                           priority.color === "yellow" && (isSelected ? "bg-yellow-600 scale-105 border-yellow-300" : "bg-yellow-500 hover:bg-yellow-600 border-yellow-400"),
-                                           priority.color === "blue" && (isSelected ? "bg-blue-600 scale-105 border-blue-300" : "bg-blue-500 hover:bg-blue-600 border-blue-400"),
-                                           priority.color === "green" && (isSelected ? "bg-green-600 scale-105 border-green-300" : "bg-green-500 hover:bg-green-600 border-green-400"),
-                                           priority.color === "purple" && (isSelected ? "bg-purple-600 scale-105 border-purple-300" : "bg-purple-500 hover:bg-purple-600 border-purple-400"),
-                                           priority.color === "gray" && (isSelected ? "bg-gray-600 scale-105 border-gray-300" : "bg-gray-500 hover:bg-gray-600 border-gray-400")
-                                         )}
-                                         type="button"
                                          title={priority.label}
                                        >
                                         {priority.num}
-                                      </button>
-                                   );
-                                 })}
-                               </div>
-                             </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
                            </div>
                          ) : (
                            // عرض التعليق العادي
