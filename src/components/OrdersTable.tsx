@@ -1454,12 +1454,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                             WebkitTouchCallout: 'none',
                                             WebkitUserSelect: 'none'
                                           }}
-                                          onTouchStart={(e) => {
-                                            console.log(`🔥📱 Priority ${priorityNum} TOUCH START!`);
-                                            e.stopPropagation();
-                                          }}
-                                          onTouchEnd={(e) => {
-                                            console.log(`🔥📱 Priority ${priorityNum} TOUCH END - EXECUTING!`);
+                                          onClick={(e) => {
+                                            console.log(`🔥📱 Priority ${priorityNum} CLICKED!`);
                                             e.preventDefault();
                                             e.stopPropagation();
                                             
@@ -1480,27 +1476,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                               console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
                                               onUpdateComment(order.id, newComment);
                                             }, 100);
-                                          }}
-                                          onClick={(e) => {
-                                            console.log(`🔥🖱️ Priority ${priorityNum} CLICKED!`);
-                                            e.preventDefault();
-                                            e.stopPropagation();
                                             
-                                            const priorityText = `${priorityNum}. `;
-                                            const currentComment = liveCommentText || '';
-                                            const newComment = currentComment.startsWith(priorityText) 
-                                              ? currentComment.substring(priorityText.length)
-                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                            
-                                            setLiveCommentText(newComment);
-                                            
-                                            // حفظ فوري
-                                            if (saveTimeoutRef.current) {
-                                              clearTimeout(saveTimeoutRef.current);
-                                            }
+                                            // إعادة التركيز على التعليق
                                             setTimeout(() => {
-                                              onUpdateComment(order.id, newComment);
-                                            }, 100);
+                                              const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
+                                              if (textarea) {
+                                                textarea.focus();
+                                              }
+                                            }, 150);
                                           }}
                                         >
                                          {priorityNum}
