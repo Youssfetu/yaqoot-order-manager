@@ -1377,12 +1377,14 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              {/* أزرار الأولوية السريعة */}
                              <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[999]">
                                <div className="flex gap-1 justify-center">
-                                 {[
-                                   { num: 1, color: "red", label: isRTL ? "عاجل" : "Urgent" },
-                                   { num: 2, color: "orange", label: isRTL ? "مهم" : "Important" },
-                                   { num: 3, color: "yellow", label: isRTL ? "عادي" : "Normal" },
-                                   { num: 4, color: "blue", label: isRTL ? "مؤجل" : "Delayed" },
-                                   { num: 5, color: "gray", label: isRTL ? "أخير" : "Last" }
+                                  {[
+                                    { num: 1, color: "red", label: isRTL ? "عاجل جداً" : "Urgent" },
+                                    { num: 2, color: "orange", label: isRTL ? "عاجل" : "High" },
+                                    { num: 3, color: "yellow", label: isRTL ? "مهم" : "Important" },
+                                    { num: 4, color: "blue", label: isRTL ? "عادي" : "Normal" },
+                                    { num: 5, color: "green", label: isRTL ? "منخفض" : "Low" },
+                                    { num: 6, color: "purple", label: isRTL ? "متأخر" : "Late" },
+                                    { num: 7, color: "gray", label: isRTL ? "مؤجل" : "Delayed" }
                                  ].map((priority) => {
                                    const isSelected = liveCommentText.startsWith(`${priority.num}. `);
                                    return (
@@ -1408,11 +1410,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                        className={cn(
                                          "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
                                          "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
-                                         priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
-                                         priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
-                                         priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
-                                         priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105" : "bg-blue-500 shadow-md opacity-80 hover:opacity-100"),
-                                         priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105" : "bg-gray-500 shadow-md opacity-80 hover:opacity-100")
+                                          priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
+                                          priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
+                                          priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
+                                          priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105" : "bg-blue-500 shadow-md opacity-80 hover:opacity-100"),
+                                          priority.color === "green" && (isSelected ? "bg-green-600 shadow-lg scale-105" : "bg-green-500 shadow-md opacity-80 hover:opacity-100"),
+                                          priority.color === "purple" && (isSelected ? "bg-purple-600 shadow-lg scale-105" : "bg-purple-500 shadow-md opacity-80 hover:opacity-100"),
+                                          priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105" : "bg-gray-500 shadow-md opacity-80 hover:opacity-100")
                                        )}
                                        type="button"
                                        title={priority.label}
@@ -1450,13 +1454,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                     {priority && priority >= 1 && priority <= 7 && (
                                       <div className={cn(
                                         "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border",
-                                        priority === 1 && "bg-orange-500 text-white border-orange-600",
-                                        priority === 2 && "bg-red-500 text-white border-red-600",
-                                        priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
-                                        priority === 4 && "bg-blue-500 text-white border-blue-600",
-                                        priority === 5 && "bg-gray-500 text-white border-gray-600",
-                                        priority === 6 && "bg-purple-500 text-white border-purple-600",
-                                        priority === 7 && "bg-pink-500 text-white border-pink-600"
+                                         priority === 1 && "bg-red-500 text-white border-red-600",
+                                         priority === 2 && "bg-orange-500 text-white border-orange-600",
+                                         priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
+                                         priority === 4 && "bg-blue-500 text-white border-blue-600",
+                                         priority === 5 && "bg-green-500 text-white border-green-600",
+                                         priority === 6 && "bg-purple-500 text-white border-purple-600",
+                                         priority === 7 && "bg-gray-500 text-white border-gray-600"
                                       )}>
                                         {priority}
                                       </div>
