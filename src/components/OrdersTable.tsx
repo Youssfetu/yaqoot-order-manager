@@ -1377,89 +1377,187 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                }}
                              />
                              
-                               {/* أزرار الأولوية السريعة */}
-                               <div className="absolute -top-20 left-0 right-0 bg-white border-2 border-blue-300 rounded-xl shadow-2xl p-4 z-[1001]"
-                                 style={{ pointerEvents: 'auto' }}
-                               >
-                                 <div className="text-sm text-gray-700 text-center mb-3 font-semibold">
-                                   {isRTL ? "اختر الأولوية" : "Select Priority"}
+                              {/* أزرار الأولوية السريعة - محسنة للهاتف */}
+                                <div className="fixed inset-x-4 top-8 bg-white border-2 border-blue-300 rounded-2xl shadow-2xl p-4 z-[2000] max-w-md mx-auto"
+                                  style={{ 
+                                    pointerEvents: 'auto',
+                                    touchAction: 'manipulation',
+                                    userSelect: 'none'
+                                  }}
+                                >
+                                  <div className="text-base text-gray-700 text-center mb-4 font-semibold">
+                                    {isRTL ? "اختر الأولوية" : "Select Priority"}
+                                  </div>
+                                  
+                                  {/* صف الأزرار الأول */}
+                                  <div className="grid grid-cols-4 gap-4 mb-3">
+                                    {[
+                                      { num: 1, color: "bg-red-500 hover:bg-red-600 active:bg-red-700", label: isRTL ? "عاجل جداً" : "Urgent" },
+                                      { num: 2, color: "bg-orange-500 hover:bg-orange-600 active:bg-orange-700", label: isRTL ? "عاجل" : "High" },
+                                      { num: 3, color: "bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700", label: isRTL ? "مهم" : "Important" },
+                                      { num: 4, color: "bg-blue-500 hover:bg-blue-600 active:bg-blue-700", label: isRTL ? "عادي" : "Normal" }
+                                   ].map((priority) => {
+                                     const isSelected = liveCommentText.startsWith(`${priority.num}. `);
+                                     return (
+                                        <button
+                                          key={priority.num}
+                                          className={cn(
+                                            "w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-white font-bold text-xl transition-all duration-150",
+                                            "cursor-pointer select-none touch-manipulation user-select-none",
+                                            "shadow-lg hover:shadow-xl active:shadow-md active:scale-95 border-2 border-white/30",
+                                            "focus:outline-none focus:ring-4 focus:ring-blue-400/50",
+                                            priority.color,
+                                            isSelected && "ring-4 ring-blue-400 scale-105"
+                                          )}
+                                          onTouchStart={(e) => {
+                                            console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
+                                            e.currentTarget.style.transform = 'scale(0.9)';
+                                          }}
+                                          onTouchEnd={(e) => {
+                                            console.log(`🔥📱 Priority ${priority.num} TOUCH END - EXECUTING!`);
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            e.currentTarget.style.transform = '';
+                                            
+                                            const priorityText = `${priority.num}. `;
+                                            const currentComment = liveCommentText || '';
+                                            const newComment = currentComment.startsWith(priorityText) 
+                                              ? currentComment.substring(priorityText.length)
+                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                            
+                                            setLiveCommentText(newComment);
+                                            
+                                            // حفظ فوري
+                                            if (saveTimeoutRef.current) {
+                                              clearTimeout(saveTimeoutRef.current);
+                                            }
+                                            setTimeout(() => {
+                                              onUpdateComment(order.id, newComment);
+                                            }, 100);
+                                          }}
+                                          onTouchCancel={(e) => {
+                                            e.currentTarget.style.transform = '';
+                                          }}
+                                          onClick={(e) => {
+                                            console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            
+                                            const priorityText = `${priority.num}. `;
+                                            const currentComment = liveCommentText || '';
+                                            const newComment = currentComment.startsWith(priorityText) 
+                                              ? currentComment.substring(priorityText.length)
+                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                            
+                                            setLiveCommentText(newComment);
+                                            
+                                            // حفظ فوري
+                                            if (saveTimeoutRef.current) {
+                                              clearTimeout(saveTimeoutRef.current);
+                                            }
+                                            setTimeout(() => {
+                                              onUpdateComment(order.id, newComment);
+                                            }, 100);
+                                          }}
+                                          type="button"
+                                          title={priority.label}
+                                        >
+                                          <span className="text-lg">{priority.num}</span>
+                                          <span className="text-xs mt-1 opacity-90">{priority.label.slice(0, 3)}</span>
+                                       </button>
+                                     );
+                                   })}
                                  </div>
-                                 <div className="grid grid-cols-4 gap-3 sm:grid-cols-7 sm:gap-2">
-                                   {[
-                                     { num: 1, color: "bg-red-500 hover:bg-red-600 active:bg-red-700", label: isRTL ? "عاجل جداً" : "Urgent" },
-                                     { num: 2, color: "bg-orange-500 hover:bg-orange-600 active:bg-orange-700", label: isRTL ? "عاجل" : "High" },
-                                     { num: 3, color: "bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700", label: isRTL ? "مهم" : "Important" },
-                                     { num: 4, color: "bg-blue-500 hover:bg-blue-600 active:bg-blue-700", label: isRTL ? "عادي" : "Normal" },
-                                     { num: 5, color: "bg-green-500 hover:bg-green-600 active:bg-green-700", label: isRTL ? "منخفض" : "Low" },
-                                     { num: 6, color: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700", label: isRTL ? "متأخر" : "Late" },
-                                     { num: 7, color: "bg-gray-500 hover:bg-gray-600 active:bg-gray-700", label: isRTL ? "مؤجل" : "Delayed" }
-                                  ].map((priority) => {
-                                    const isSelected = liveCommentText.startsWith(`${priority.num}. `);
-                                    return (
-                                       <div
-                                         key={priority.num}
-                                         className={cn(
-                                           "w-14 h-14 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl sm:text-lg transition-all duration-200",
-                                           "cursor-pointer select-none touch-manipulation user-select-none",
-                                           "shadow-lg hover:shadow-xl active:shadow-md active:scale-95 border-2 border-white/30",
-                                           priority.color,
-                                           isSelected && "ring-4 ring-blue-400 scale-110"
-                                         )}
-                                         onTouchStart={(e) => {
-                                           console.log(`🔥📱 Priority ${priority.num} TOUCHED!`);
-                                           e.preventDefault();
-                                           e.stopPropagation();
-                                         }}
-                                         onTouchEnd={(e) => {
-                                           console.log(`🔥📱 Priority ${priority.num} TOUCH END!`);
-                                           e.preventDefault();
-                                           e.stopPropagation();
-                                           
-                                           const priorityText = `${priority.num}. `;
-                                           const currentComment = liveCommentText || '';
-                                           const newComment = currentComment.startsWith(priorityText) 
-                                             ? currentComment.substring(priorityText.length)
-                                             : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                           
-                                           setLiveCommentText(newComment);
-                                           
-                                           // حفظ فوري
-                                           if (saveTimeoutRef.current) {
-                                             clearTimeout(saveTimeoutRef.current);
-                                           }
-                                           setTimeout(() => {
-                                             onUpdateComment(order.id, newComment);
-                                           }, 50);
-                                         }}
-                                         onClick={(e) => {
-                                           console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
-                                           e.preventDefault();
-                                           e.stopPropagation();
-                                           
-                                           const priorityText = `${priority.num}. `;
-                                           const currentComment = liveCommentText || '';
-                                           const newComment = currentComment.startsWith(priorityText) 
-                                             ? currentComment.substring(priorityText.length)
-                                             : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                           
-                                           setLiveCommentText(newComment);
-                                           
-                                           // حفظ فوري
-                                           if (saveTimeoutRef.current) {
-                                             clearTimeout(saveTimeoutRef.current);
-                                           }
-                                           setTimeout(() => {
-                                             onUpdateComment(order.id, newComment);
-                                           }, 50);
-                                         }}
-                                         title={priority.label}
-                                       >
-                                        {priority.num}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
+                                 
+                                 {/* صف الأزرار الثاني */}
+                                 <div className="grid grid-cols-3 gap-4 justify-center">
+                                    {[
+                                      { num: 5, color: "bg-green-500 hover:bg-green-600 active:bg-green-700", label: isRTL ? "منخفض" : "Low" },
+                                      { num: 6, color: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700", label: isRTL ? "متأخر" : "Late" },
+                                      { num: 7, color: "bg-gray-500 hover:bg-gray-600 active:bg-gray-700", label: isRTL ? "مؤجل" : "Delayed" }
+                                   ].map((priority) => {
+                                     const isSelected = liveCommentText.startsWith(`${priority.num}. `);
+                                     return (
+                                        <button
+                                          key={priority.num}
+                                          className={cn(
+                                            "w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-white font-bold text-xl transition-all duration-150",
+                                            "cursor-pointer select-none touch-manipulation user-select-none",
+                                            "shadow-lg hover:shadow-xl active:shadow-md active:scale-95 border-2 border-white/30",
+                                            "focus:outline-none focus:ring-4 focus:ring-blue-400/50",
+                                            priority.color,
+                                            isSelected && "ring-4 ring-blue-400 scale-105"
+                                          )}
+                                          onTouchStart={(e) => {
+                                            console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
+                                            e.currentTarget.style.transform = 'scale(0.9)';
+                                          }}
+                                          onTouchEnd={(e) => {
+                                            console.log(`🔥📱 Priority ${priority.num} TOUCH END - EXECUTING!`);
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            e.currentTarget.style.transform = '';
+                                            
+                                            const priorityText = `${priority.num}. `;
+                                            const currentComment = liveCommentText || '';
+                                            const newComment = currentComment.startsWith(priorityText) 
+                                              ? currentComment.substring(priorityText.length)
+                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                            
+                                            setLiveCommentText(newComment);
+                                            
+                                            // حفظ فوري
+                                            if (saveTimeoutRef.current) {
+                                              clearTimeout(saveTimeoutRef.current);
+                                            }
+                                            setTimeout(() => {
+                                              onUpdateComment(order.id, newComment);
+                                            }, 100);
+                                          }}
+                                          onTouchCancel={(e) => {
+                                            e.currentTarget.style.transform = '';
+                                          }}
+                                          onClick={(e) => {
+                                            console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            
+                                            const priorityText = `${priority.num}. `;
+                                            const currentComment = liveCommentText || '';
+                                            const newComment = currentComment.startsWith(priorityText) 
+                                              ? currentComment.substring(priorityText.length)
+                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                            
+                                            setLiveCommentText(newComment);
+                                            
+                                            // حفظ فوري
+                                            if (saveTimeoutRef.current) {
+                                              clearTimeout(saveTimeoutRef.current);
+                                            }
+                                            setTimeout(() => {
+                                              onUpdateComment(order.id, newComment);
+                                            }, 100);
+                                          }}
+                                          type="button"
+                                          title={priority.label}
+                                        >
+                                          <span className="text-lg">{priority.num}</span>
+                                          <span className="text-xs mt-1 opacity-90">{priority.label.slice(0, 3)}</span>
+                                       </button>
+                                     );
+                                   })}
+                                 </div>
+                                 
+                                 {/* زر الإغلاق */}
+                                 <div className="flex justify-center mt-4">
+                                   <button
+                                     onClick={() => setSelectedOrderForComment(null)}
+                                     className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium text-sm transition-colors"
+                                   >
+                                     {isRTL ? "إغلاق" : "Close"}
+                                   </button>
+                                 </div>
+                               </div>
                            </div>
                          ) : (
                            // عرض التعليق العادي
