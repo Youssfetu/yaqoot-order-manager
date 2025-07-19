@@ -1417,7 +1417,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              />
                              
                               {/* أزرار الأولوية السريعة - تحسين للهاتف */}
-                                <div className="absolute -top-20 left-0 right-0 bg-white border-2 border-blue-300 rounded-xl shadow-2xl p-4 z-[1001]"
+                                <div className="absolute -top-24 left-0 right-0 bg-gradient-to-r from-primary/5 to-secondary/5 backdrop-blur-sm border border-primary/20 rounded-2xl shadow-2xl p-5 z-[1001]"
                                   data-priority-buttons="true"
                                   style={{ 
                                     pointerEvents: 'auto',
@@ -1426,30 +1426,31 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                     WebkitTouchCallout: 'none'
                                   }}
                                 >
-                                  <div className="text-sm text-gray-700 text-center mb-3 font-semibold">
+                                  <div className="text-sm text-primary/80 text-center mb-4 font-semibold tracking-wide">
                                     {isRTL ? "اختر الأولوية" : "Select Priority"}
                                   </div>
-                                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-7 sm:gap-2">
+                                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-7 sm:gap-2.5">
                                     {[1, 2, 3, 4, 5, 6, 7].map((priorityNum) => {
                                       const colors = {
-                                        1: "bg-red-500",
-                                        2: "bg-orange-500", 
-                                        3: "bg-yellow-500",
-                                        4: "bg-blue-500",
-                                        5: "bg-green-500",
-                                        6: "bg-purple-500",
-                                        7: "bg-gray-500"
+                                        1: "bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30",
+                                        2: "bg-gradient-to-br from-orange-500 to-orange-600 shadow-orange-500/30", 
+                                        3: "bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-yellow-500/30",
+                                        4: "bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/30",
+                                        5: "bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/30",
+                                        6: "bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/30",
+                                        7: "bg-gradient-to-br from-gray-500 to-gray-600 shadow-gray-500/30"
                                       };
                                       const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
                                       return (
                                         <div
                                           key={priorityNum}
                                           className={cn(
-                                            "w-14 h-14 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl sm:text-lg",
-                                            "cursor-pointer select-none transition-all duration-200",
-                                            "shadow-lg active:shadow-md active:scale-95 border-2 border-white/30",
+                                            "w-16 h-16 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center text-white font-bold text-xl sm:text-lg",
+                                            "cursor-pointer select-none transition-all duration-300 ease-out",
+                                            "shadow-lg active:shadow-xl active:scale-110 transform-gpu border border-white/20",
+                                            "hover:scale-105 hover:shadow-xl hover:-translate-y-1",
                                             colors[priorityNum as keyof typeof colors],
-                                            isSelected && "ring-4 ring-blue-400 scale-110"
+                                            isSelected && "ring-4 ring-primary/60 scale-110 shadow-2xl"
                                           )}
                                           style={{
                                             touchAction: 'manipulation',
