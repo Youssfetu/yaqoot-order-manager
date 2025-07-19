@@ -1385,32 +1385,27 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    setSelectedOrderForComment(null);
                                  }
                                }}
-                                 onBlur={(e) => {
-                                   // منع إغلاق التعليق إذا كان المستخدم يضغط على أزرار الأولوية
-                                   const relatedTarget = e.relatedTarget as HTMLElement;
-                                   if (relatedTarget && (
-                                     relatedTarget.closest('[data-priority-buttons]') ||
-                                     relatedTarget.hasAttribute('data-priority-button')
-                                   )) {
-                                     console.log('🛑 منع إغلاق التعليق - المستخدم يستخدم أزرار الأولوية');
-                                     // إعادة التركيز على الـ textarea بعد فترة قصيرة
-                                     setTimeout(() => {
-                                       const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
-                                       if (textarea) {
-                                         textarea.focus();
-                                       }
-                                     }, 50);
-                                     return;
-                                   }
-                                   
-                                   // حفظ عند فقدان التركيز
-                                   console.log('💾 حفظ التعليق عند فقدان التركيز');
-                                   if (saveTimeoutRef.current) {
-                                     clearTimeout(saveTimeoutRef.current);
-                                   }
-                                   onUpdateComment(order.id, liveCommentText);
-                                   setTimeout(() => setSelectedOrderForComment(null), 500);
-                                 }}
+                                  onBlur={(e) => {
+                                    // منع إغلاق التعليق نهائياً إذا كان المستخدم يستخدم أزرار الأولوية
+                                    const relatedTarget = e.relatedTarget as HTMLElement;
+                                    if (relatedTarget && (
+                                      relatedTarget.closest('[data-priority-buttons]') ||
+                                      relatedTarget.hasAttribute('data-priority-button') ||
+                                      relatedTarget.getAttribute('data-priority-button') === 'true'
+                                    )) {
+                                      console.log('🛑 منع إغلاق التعليق - المستخدم يستخدم أزرار الأولوية');
+                                      // عدم إغلاق التعليق مطلقاً
+                                      return;
+                                    }
+                                    
+                                    // حفظ وإغلاق فقط إذا لم يكن هناك تفاعل مع أزرار الأولوية
+                                    console.log('💾 حفظ التعليق عند فقدان التركيز');
+                                    if (saveTimeoutRef.current) {
+                                      clearTimeout(saveTimeoutRef.current);
+                                    }
+                                    onUpdateComment(order.id, liveCommentText);
+                                    setTimeout(() => setSelectedOrderForComment(null), 200);
+                                  }}
                                className={cn(
                                  "w-full h-20 px-2 py-1 border-2 border-blue-500 rounded-md resize-none",
                                  "focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-600",
@@ -1426,12 +1421,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                }}
                              />
                              
-                               {/* أزرار الأولوية السريعة - تحسين احترافي للهاتف */}
-                                 <div className="absolute -top-14 left-0 right-0 backdrop-blur-md border border-primary/20 rounded-xl shadow-lg p-3 z-[1001] animate-fade-in"
+                               {/* أزرار الأولوية السريعة - حل احترافي للهاتف */}
+                                 <div className="absolute -top-12 left-0 right-0 p-2 z-[1001]"
                                    data-priority-buttons="true"
                                    style={{ 
                                      pointerEvents: 'auto',
-                                     touchAction: 'auto',
+                                     touchAction: 'manipulation',
                                      userSelect: 'none',
                                      WebkitTouchCallout: 'none'
                                    }}
@@ -1439,51 +1434,47 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    <div className="flex justify-center gap-2">
                                      {[1, 2, 3, 4, 5, 6, 7].map((priorityNum) => {
                                        const colors = {
-                                         1: "bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30",
-                                         2: "bg-gradient-to-br from-orange-500 to-orange-600 shadow-orange-500/30", 
-                                         3: "bg-gradient-to-br from-yellow-500 to-yellow-600 shadow-yellow-500/30",
-                                         4: "bg-gradient-to-br from-blue-500 to-blue-600 shadow-blue-500/30",
-                                         5: "bg-gradient-to-br from-green-500 to-green-600 shadow-green-500/30",
-                                         6: "bg-gradient-to-br from-purple-500 to-purple-600 shadow-purple-500/30",
-                                         7: "bg-gradient-to-br from-gray-500 to-gray-600 shadow-gray-500/30"
+                                         1: "bg-gradient-to-br from-red-500 to-red-600",
+                                         2: "bg-gradient-to-br from-orange-500 to-orange-600", 
+                                         3: "bg-gradient-to-br from-yellow-500 to-yellow-600",
+                                         4: "bg-gradient-to-br from-blue-500 to-blue-600",
+                                         5: "bg-gradient-to-br from-green-500 to-green-600",
+                                         6: "bg-gradient-to-br from-purple-500 to-purple-600",
+                                         7: "bg-gradient-to-br from-gray-500 to-gray-600"
                                        };
                                        const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
                                        return (
                                           <button
                                             key={priorityNum}
+                                            type="button"
                                             data-priority-button="true"
                                             className={cn(
-                                              "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm",
-                                              "cursor-pointer select-none transition-all duration-300 ease-out",
-                                              "shadow-lg active:scale-95 border border-white/30",
-                                              "hover:scale-105 hover:shadow-xl",
-                                              "focus:outline-none focus:ring-2 focus:ring-primary/50",
-                                              "transform-gpu will-change-transform",
+                                              "w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm",
+                                              "cursor-pointer select-none transition-transform duration-200",
+                                              "shadow-lg border-2 border-white/50",
+                                              "active:scale-90",
                                               colors[priorityNum as keyof typeof colors],
-                                              isSelected && "ring-2 ring-white scale-105 shadow-xl"
+                                              isSelected && "scale-110 ring-2 ring-white"
                                             )}
                                             style={{
                                               touchAction: 'manipulation',
                                               WebkitTouchCallout: 'none',
                                               WebkitUserSelect: 'none',
-                                              WebkitTapHighlightColor: 'transparent'
+                                              WebkitTapHighlightColor: 'transparent',
+                                              userSelect: 'none'
+                                            }}
+                                            onMouseDown={(e) => {
+                                              e.preventDefault();
+                                              e.stopPropagation();
                                             }}
                                             onTouchStart={(e) => {
-                                              e.currentTarget.style.transform = 'scale(0.95)';
-                                            }}
-                                            onTouchEnd={(e) => {
-                                              e.currentTarget.style.transform = isSelected ? 'scale(1.05)' : 'scale(1)';
+                                              e.preventDefault();
+                                              e.stopPropagation();
                                             }}
                                             onClick={(e) => {
                                               console.log(`🔥📱 Priority ${priorityNum} CLICKED!`);
                                               e.preventDefault();
                                               e.stopPropagation();
-                                              
-                                              // إضافة feedback تفاعلي
-                                              e.currentTarget.style.transform = 'scale(0.9)';
-                                              setTimeout(() => {
-                                                e.currentTarget.style.transform = isSelected ? 'scale(1)' : 'scale(1.05)';
-                                              }, 100);
                                               
                                               const priorityText = `${priorityNum}. `;
                                               const currentComment = liveCommentText || '';
@@ -1498,18 +1489,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                               if (saveTimeoutRef.current) {
                                                 clearTimeout(saveTimeoutRef.current);
                                               }
-                                              setTimeout(() => {
-                                                console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
-                                                onUpdateComment(order.id, newComment);
-                                              }, 100);
+                                              onUpdateComment(order.id, newComment);
                                               
-                                              // إعادة التركيز على التعليق
+                                              // منع إغلاق منطقة التعليق
                                               setTimeout(() => {
                                                 const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
                                                 if (textarea) {
                                                   textarea.focus();
+                                                  textarea.setSelectionRange(textarea.value.length, textarea.value.length);
                                                 }
-                                              }, 150);
+                                              }, 50);
                                             }}
                                           >
                                            {priorityNum}
