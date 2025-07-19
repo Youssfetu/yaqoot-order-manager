@@ -111,8 +111,8 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
         />
         
         {/* أزرار الأولوية السريعة */}
-        <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[999]">
-          <div className="flex gap-1 justify-center">
+        <div className="absolute -top-16 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-3 z-[999]">
+          <div className="flex gap-2 justify-center flex-wrap">
             {[
               { num: 1, color: "orange", label: isRTL ? "عاجل جداً" : "Very Urgent" },
               { num: 2, color: "red", label: isRTL ? "عاجل" : "Urgent" },
@@ -132,8 +132,8 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
                     handlePriorityClick(priority.num);
                   }}
                   className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
-                    "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
+                    "w-10 h-10 md:w-8 md:h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm md:text-xs transition-all duration-200",
+                    "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none touch-manipulation",
                     priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
                     priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
                     priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
