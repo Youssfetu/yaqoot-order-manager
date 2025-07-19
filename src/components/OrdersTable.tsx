@@ -1463,6 +1463,35 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                               WebkitTapHighlightColor: 'transparent',
                                               userSelect: 'none'
                                             }}
+                                             onClick={(e) => {
+                                               console.log(`🔥💻 Priority ${priorityNum} CLICKED!`);
+                                               e.preventDefault();
+                                               e.stopPropagation();
+                                               
+                                               const priorityText = `${priorityNum}. `;
+                                               const currentComment = liveCommentText || '';
+                                               const newComment = currentComment.startsWith(priorityText) 
+                                                 ? currentComment.substring(priorityText.length)
+                                                 : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                               
+                                               console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
+                                               setLiveCommentText(newComment);
+                                               
+                                               // حفظ فوري
+                                               if (saveTimeoutRef.current) {
+                                                 clearTimeout(saveTimeoutRef.current);
+                                               }
+                                               onUpdateComment(order.id, newComment);
+                                               
+                                               // منع إغلاق منطقة التعليق
+                                               setTimeout(() => {
+                                                 const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
+                                                 if (textarea) {
+                                                   textarea.focus();
+                                                   textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                                                 }
+                                               }, 50);
+                                             }}
                                              onTouchEnd={(e) => {
                                                console.log(`🔥📱 Priority ${priorityNum} TOUCH END!`);
                                                e.preventDefault();
@@ -1490,8 +1519,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                                    textarea.focus();
                                                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
                                                  }
-                                              }, 50);
-                                            }}
+                                               }, 50);
+                                             }}
                                           >
                                            {priorityNum}
                                         </button>
