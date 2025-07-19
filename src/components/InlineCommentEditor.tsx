@@ -160,6 +160,8 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
   const priorityMatch = displayComment.match(/^(\d+)\.\s*/);
   const priority = priorityMatch ? parseInt(priorityMatch[1]) : null;
   const textWithoutPriority = displayComment.replace(/^\d+\.\s*/, '');
+  
+  console.log('Priority Debug:', { displayComment, priorityMatch, priority, textWithoutPriority });
 
   return (
     <div 
