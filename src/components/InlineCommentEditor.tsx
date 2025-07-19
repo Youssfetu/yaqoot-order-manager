@@ -72,7 +72,9 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
   }, [isEditing]);
 
   const handlePriorityClick = (priority: number) => {
-    console.log(`Priority ${priority} clicked`);
+    console.log(`🔥 Priority ${priority} clicked for order:`, order.id);
+    console.log(`🔥 Current liveCommentText:`, liveCommentText);
+    console.log(`🔥 All priorities available: 1,2,3,4,5,6,7`);
     
     // إزالة أي أولوية موجودة
     const cleanText = liveCommentText.replace(/^\d+\.\s*/, '');
@@ -80,11 +82,12 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
     // إضافة الأولوية الجديدة
     const newComment = `${priority}. ${cleanText}`;
     
-    console.log(`Setting comment: ${newComment}`);
+    console.log(`🔥 Setting comment: ${newComment}`);
     onCommentTextChange(newComment);
     
     // حفظ فوري
     setTimeout(() => {
+      console.log(`🔥 Saving comment: ${newComment} for order: ${order.id}`);
       onSave(order.id, newComment);
     }, 100);
   };
