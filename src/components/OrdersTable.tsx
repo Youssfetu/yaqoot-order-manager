@@ -2,7 +2,7 @@ import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Phone, MessageCircle, Edit2, Send, GripVertical } from 'lucide-react';
+import { ChevronDown, Phone, MessageCircle, Edit2, Send, GripVertical, AlertTriangle, Star, Clock, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn, formatPrice } from '@/lib/utils';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
