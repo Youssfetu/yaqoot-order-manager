@@ -1437,31 +1437,53 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                e.stopPropagation();
                                e.preventDefault();
                                handleCommentCellClick(order);
-                             }}
-                           >
-                     </div>
-                   </SortableOrderRow>
-                 );
-               })}
-                 </div>
-               </SortableContext>
-             </DndContext>
-           </div>
-         </div>
+                              }}
+                            >
+                              {(() => {
+                                const displayComment = order.commentaire || '';
+                                const priorityMatch = displayComment.match(/^(\d+)\.\s*/);
+                                const priority = priorityMatch ? parseInt(priorityMatch[1]) : null;
+                                const textWithoutPriority = displayComment.replace(/^\d+\.\s*/, '');
+                                
+                                return (
+                                  <div className="flex items-center gap-2 w-full">
+                                    {priority && priority >= 1 && priority <= 5 && (
+                                      <div className={cn(
+                                        "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border",
+                                        priority === 1 && "bg-red-500 text-white border-red-600",
+                                        priority === 2 && "bg-orange-500 text-white border-orange-600",
+                                        priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
+                                        priority === 4 && "bg-blue-500 text-white border-blue-600",
+                                        priority === 5 && "bg-gray-500 text-white border-gray-600"
+                                      )}>
+                                        {priority}
+                                      </div>
+                                    )}
+                                    <span className={cn(
+                                      "truncate flex-1 text-sm",
+                                      priority ? "text-gray-900 font-medium" : "text-gray-500",
+                                      priority === 1 && "text-red-700 font-semibold",
+                                      "group-hover:text-blue-600"
+                                    )}>
+                                      {textWithoutPriority || t('add_comment')}
+                                    </span>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </SortableOrderRow>
+                );
+              })}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
+        </div>
 
-         {/* Comment Editor Modal */}
-         {selectedOrderForComment && (
-           <CommentEditor
-             orderId={selectedOrderForComment.id}
-             initialComment={selectedOrderForComment.commentaire || ''}
-             onSave={(comment) => {
-               onUpdateComment(selectedOrderForComment.id, comment);
-               setSelectedOrderForComment(null);
-             }}
-             onCancel={() => setSelectedOrderForComment(null)}
-             isRTL={isRTL}
-           />
-         )}
 
         {/* Editing Overlay - Prevents zoom/pan when editing */}
         {(editingCell || selectedOrderForComment) && (
