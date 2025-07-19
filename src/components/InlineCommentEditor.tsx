@@ -41,11 +41,17 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
   }, [isEditing]);
 
   const handlePriorityClick = (priority: number) => {
+    console.log('Priority clicked:', priority);
     const priorityText = `${priority}. `;
-    const newComment = liveCommentText.startsWith(priorityText) 
-      ? liveCommentText.substring(priorityText.length)
-      : priorityText + liveCommentText.replace(/^\d+\.\s*/, '');
+    let newComment = '';
     
+    // إزالة أي أولوية موجودة أولاً
+    const commentWithoutPriority = liveCommentText.replace(/^\d+\.\s*/, '');
+    
+    // إضافة الأولوية الجديدة
+    newComment = priorityText + commentWithoutPriority;
+    
+    console.log('New comment with priority:', newComment);
     onCommentTextChange(newComment);
     
     // حفظ فوري للأولوية
@@ -53,8 +59,9 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
       clearTimeout(saveTimeoutRef.current);
     }
     setTimeout(() => {
+      console.log('Saving priority comment:', newComment);
       onSave(order.id, newComment);
-    }, 200);
+    }, 100);
   };
 
   const handleTextChange = (newComment: string) => {
@@ -127,6 +134,16 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
                 <button
                   key={priority.num}
                   onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePriorityClick(priority.num);
+                  }}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePriorityClick(priority.num);
+                  }}
+                  onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handlePriorityClick(priority.num);
