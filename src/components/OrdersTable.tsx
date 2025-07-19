@@ -1354,14 +1354,22 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    setSelectedOrderForComment(null);
                                  }
                                }}
-                               onBlur={() => {
-                                 // حفظ عند فقدان التركيز
-                                 if (saveTimeoutRef.current) {
-                                   clearTimeout(saveTimeoutRef.current);
-                                 }
-                                 onUpdateComment(order.id, liveCommentText);
-                                 setTimeout(() => setSelectedOrderForComment(null), 100);
-                               }}
+                                onBlur={(e) => {
+                                  // منع إغلاق التعليق إذا كان المستخدم يضغط على أزرار الأولوية
+                                  const relatedTarget = e.relatedTarget as HTMLElement;
+                                  if (relatedTarget && relatedTarget.closest('[data-priority-buttons]')) {
+                                    console.log('🛑 منع إغلاق التعليق - المستخدم يستخدم أزرار الأولوية');
+                                    return;
+                                  }
+                                  
+                                  // حفظ عند فقدان التركيز
+                                  console.log('💾 حفظ التعليق عند فقدان التركيز');
+                                  if (saveTimeoutRef.current) {
+                                    clearTimeout(saveTimeoutRef.current);
+                                  }
+                                  onUpdateComment(order.id, liveCommentText);
+                                  setTimeout(() => setSelectedOrderForComment(null), 300);
+                                }}
                                className={cn(
                                  "w-full h-20 px-2 py-1 border-2 border-blue-500 rounded-md resize-none",
                                  "focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-600",
@@ -1378,11 +1386,17 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                              />
                              
                               {/* أزرار الأولوية السريعة - محسنة للهاتف */}
-                                <div className="fixed inset-x-4 top-8 bg-white border-2 border-blue-300 rounded-2xl shadow-2xl p-4 z-[2000] max-w-md mx-auto"
+                                <div 
+                                  className="fixed inset-x-4 top-8 bg-white border-2 border-blue-300 rounded-2xl shadow-2xl p-4 z-[2000] max-w-md mx-auto"
+                                  data-priority-buttons="true"
                                   style={{ 
                                     pointerEvents: 'auto',
                                     touchAction: 'manipulation',
                                     userSelect: 'none'
+                                  }}
+                                  onMouseDown={(e) => {
+                                    // منع فقدان التركيز من textarea عند الضغط على الأزرار
+                                    e.preventDefault();
                                   }}
                                 >
                                   <div className="text-base text-gray-700 text-center mb-4 font-semibold">
@@ -1409,8 +1423,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                             priority.color,
                                             isSelected && "ring-4 ring-blue-400 scale-105"
                                           )}
+                                          onMouseDown={(e) => {
+                                            // منع فقدان التركيز من textarea
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                          }}
                                           onTouchStart={(e) => {
                                             console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
+                                            e.preventDefault();
+                                            e.stopPropagation();
                                             e.currentTarget.style.transform = 'scale(0.9)';
                                           }}
                                           onTouchEnd={(e) => {
@@ -1425,15 +1446,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                               ? currentComment.substring(priorityText.length)
                                               : priorityText + currentComment.replace(/^\d+\.\s*/, '');
                                             
+                                            console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
                                             setLiveCommentText(newComment);
                                             
-                                            // حفظ فوري
+                                            // حفظ فوري مع تأخير أطول للهاتف
                                             if (saveTimeoutRef.current) {
                                               clearTimeout(saveTimeoutRef.current);
                                             }
                                             setTimeout(() => {
+                                              console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
                                               onUpdateComment(order.id, newComment);
-                                            }, 100);
+                                            }, 200);
+                                            
+                                            // التركيز مرة أخرى على textarea
+                                            setTimeout(() => {
+                                              if (textareaRef.current) {
+                                                textareaRef.current.focus();
+                                              }
+                                            }, 250);
                                           }}
                                           onTouchCancel={(e) => {
                                             e.currentTarget.style.transform = '';
@@ -1488,35 +1518,51 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                             priority.color,
                                             isSelected && "ring-4 ring-blue-400 scale-105"
                                           )}
-                                          onTouchStart={(e) => {
-                                            console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
-                                            e.currentTarget.style.transform = 'scale(0.9)';
-                                          }}
-                                          onTouchEnd={(e) => {
-                                            console.log(`🔥📱 Priority ${priority.num} TOUCH END - EXECUTING!`);
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            e.currentTarget.style.transform = '';
-                                            
-                                            const priorityText = `${priority.num}. `;
-                                            const currentComment = liveCommentText || '';
-                                            const newComment = currentComment.startsWith(priorityText) 
-                                              ? currentComment.substring(priorityText.length)
-                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                            
-                                            setLiveCommentText(newComment);
-                                            
-                                            // حفظ فوري
-                                            if (saveTimeoutRef.current) {
-                                              clearTimeout(saveTimeoutRef.current);
-                                            }
-                                            setTimeout(() => {
-                                              onUpdateComment(order.id, newComment);
-                                            }, 100);
-                                          }}
-                                          onTouchCancel={(e) => {
-                                            e.currentTarget.style.transform = '';
-                                          }}
+                                           onMouseDown={(e) => {
+                                             // منع فقدان التركيز من textarea
+                                             e.preventDefault();
+                                             e.stopPropagation();
+                                           }}
+                                           onTouchStart={(e) => {
+                                             console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
+                                             e.preventDefault();
+                                             e.stopPropagation();
+                                             e.currentTarget.style.transform = 'scale(0.9)';
+                                           }}
+                                           onTouchEnd={(e) => {
+                                             console.log(`🔥📱 Priority ${priority.num} TOUCH END - EXECUTING!`);
+                                             e.preventDefault();
+                                             e.stopPropagation();
+                                             e.currentTarget.style.transform = '';
+                                             
+                                             const priorityText = `${priority.num}. `;
+                                             const currentComment = liveCommentText || '';
+                                             const newComment = currentComment.startsWith(priorityText) 
+                                               ? currentComment.substring(priorityText.length)
+                                               : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                             
+                                             console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
+                                             setLiveCommentText(newComment);
+                                             
+                                             // حفظ فوري مع تأخير أطول للهاتف
+                                             if (saveTimeoutRef.current) {
+                                               clearTimeout(saveTimeoutRef.current);
+                                             }
+                                             setTimeout(() => {
+                                               console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
+                                               onUpdateComment(order.id, newComment);
+                                             }, 200);
+                                             
+                                             // التركيز مرة أخرى على textarea
+                                             setTimeout(() => {
+                                               if (textareaRef.current) {
+                                                 textareaRef.current.focus();
+                                               }
+                                             }, 250);
+                                           }}
+                                           onTouchCancel={(e) => {
+                                             e.currentTarget.style.transform = '';
+                                           }}
                                           onClick={(e) => {
                                             console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
                                             e.preventDefault();
