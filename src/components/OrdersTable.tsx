@@ -1376,9 +1376,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                }}
                              />
                              
-                             {/* أزرار الأولوية السريعة */}
-                             <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[999]">
-                               <div className="flex gap-1 justify-center">
+                              {/* أزرار الأولوية السريعة */}
+                              <div className="absolute top-24 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-3 z-[999]">
+                                <div className="grid grid-cols-7 gap-2 mb-2">
+                                  <div className="col-span-7 text-center text-xs text-gray-600 mb-1 font-medium">
+                                    {isRTL ? "اختر الأولوية" : "Select Priority"}
+                                  </div>
                                   {[
                                     { num: 1, color: "red", label: isRTL ? "عاجل جداً" : "Urgent" },
                                     { num: 2, color: "orange", label: isRTL ? "عاجل" : "High" },
@@ -1390,10 +1393,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                  ].map((priority) => {
                                    const isSelected = liveCommentText.startsWith(`${priority.num}. `);
                                    return (
-                                     <button
-                                       key={priority.num}
-                                        onMouseDown={(e) => {
-                                          console.log(`🔥 Priority ${priority.num} button clicked!`);
+                                      <button
+                                        key={priority.num}
+                                        onTouchStart={(e) => {
+                                          console.log(`🔥 Priority ${priority.num} TOUCH clicked!`);
                                           e.preventDefault();
                                           e.stopPropagation();
                                           const priorityText = `${priority.num}. `;
@@ -1414,9 +1417,31 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                             onUpdateComment(order.id, newComment);
                                           }, 200);
                                         }}
-                                       className={cn(
-                                         "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
-                                         "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
+                                        onMouseDown={(e) => {
+                                          console.log(`🔥 Priority ${priority.num} MOUSE clicked!`);
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          const priorityText = `${priority.num}. `;
+                                          const currentComment = liveCommentText || '';
+                                          console.log(`🔥 Current comment: "${currentComment}"`);
+                                          const newComment = currentComment.startsWith(priorityText) 
+                                            ? currentComment.substring(priorityText.length)
+                                            : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                          console.log(`🔥 New comment will be: "${newComment}"`);
+                                          setLiveCommentText(newComment);
+                                          
+                                          // حفظ فوري للأولوية
+                                          if (saveTimeoutRef.current) {
+                                            clearTimeout(saveTimeoutRef.current);
+                                          }
+                                          setTimeout(() => {
+                                            console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
+                                            onUpdateComment(order.id, newComment);
+                                          }, 200);
+                                        }}
+                                        className={cn(
+                                          "w-14 h-14 rounded-lg flex items-center justify-center text-white font-bold text-lg transition-all duration-200",
+                                          "hover:scale-110 active:scale-95 border-2 focus:outline-none touch-manipulation select-none",
                                           priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
                                           priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
                                           priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
@@ -1424,10 +1449,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                           priority.color === "green" && (isSelected ? "bg-green-600 shadow-lg scale-105" : "bg-green-500 shadow-md opacity-80 hover:opacity-100"),
                                           priority.color === "purple" && (isSelected ? "bg-purple-600 shadow-lg scale-105" : "bg-purple-500 shadow-md opacity-80 hover:opacity-100"),
                                           priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105" : "bg-gray-500 shadow-md opacity-80 hover:opacity-100")
-                                       )}
-                                       type="button"
-                                       title={priority.label}
-                                     >
+                                        )}
+                                        type="button"
+                                        title={priority.label}
+                                      >
                                        {priority.num}
                                      </button>
                                    );
