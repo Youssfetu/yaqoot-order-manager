@@ -1437,32 +1437,43 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                     
                                     const isActive = liveCommentText.startsWith(`${priority}. `);
                                     
-                                    const handlePriorityClick = () => {
-                                      const priorityText = `${priority}. `;
-                                      const currentComment = liveCommentText || '';
-                                      
-                                      let newComment;
-                                      if (currentComment.startsWith(priorityText)) {
-                                        // إزالة الأولوية
-                                        newComment = currentComment.substring(priorityText.length);
-                                      } else {
-                                        // إضافة أو تبديل الأولوية
-                                        newComment = priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                      }
-                                      
-                                      setLiveCommentText(newComment);
-                                      onUpdateComment(order.id, newComment);
-                                      
-                                      // إعادة التركيز على النص
-                                      setTimeout(() => {
-                                        const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
-                                        if (textarea) {
-                                          textarea.focus();
-                                          const length = textarea.value.length;
-                                          textarea.setSelectionRange(length, length);
-                                        }
-                                      }, 10);
-                                    };
+                                     const handlePriorityClick = () => {
+                                       console.log(`🔥🔥 PRIORITY CLICK STARTED for priority ${priority}`);
+                                       console.log(`📱 Current device type: ${/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop'}`);
+                                       
+                                       const priorityText = `${priority}. `;
+                                       const currentComment = liveCommentText || '';
+                                       console.log(`📝 Current comment: "${currentComment}"`);
+                                       
+                                       let newComment;
+                                       if (currentComment.startsWith(priorityText)) {
+                                         // إزالة الأولوية
+                                         newComment = currentComment.substring(priorityText.length);
+                                         console.log(`❌ Removing priority. New comment: "${newComment}"`);
+                                       } else {
+                                         // إضافة أو تبديل الأولوية
+                                         newComment = priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                         console.log(`✅ Adding priority. New comment: "${newComment}"`);
+                                       }
+                                       
+                                       console.log(`🔄 About to update comment...`);
+                                       setLiveCommentText(newComment);
+                                       onUpdateComment(order.id, newComment);
+                                       console.log(`✅ Comment updated successfully!`);
+                                       
+                                       // إعادة التركيز على النص
+                                       setTimeout(() => {
+                                         const textarea = document.querySelector(`textarea[data-order-id="${order.id}"]`) as HTMLTextAreaElement;
+                                         if (textarea) {
+                                           console.log(`📍 Refocusing textarea...`);
+                                           textarea.focus();
+                                           const length = textarea.value.length;
+                                           textarea.setSelectionRange(length, length);
+                                         } else {
+                                           console.log(`❌ Textarea not found!`);
+                                         }
+                                       }, 10);
+                                     };
                                     
                                     return (
                                       <div
@@ -1474,12 +1485,24 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                           priorityColors[priority as keyof typeof priorityColors],
                                           isActive && "ring-2 ring-blue-400 scale-105"
                                         )}
-                                        onClick={handlePriorityClick}
-                                        onTouchStart={(e) => {
-                                          e.preventDefault();
-                                          handlePriorityClick();
-                                        }}
-                                        style={{
+                                         onClick={(e) => {
+                                           console.log(`🖱️ CLICK EVENT triggered for priority ${priority}`);
+                                           e.preventDefault();
+                                           e.stopPropagation();
+                                           handlePriorityClick();
+                                         }}
+                                         onTouchStart={(e) => {
+                                           console.log(`👆 TOUCH START EVENT triggered for priority ${priority}`);
+                                           e.preventDefault();
+                                           e.stopPropagation();
+                                           handlePriorityClick();
+                                         }}
+                                          onTouchEnd={(e) => {
+                                            console.log(`👆 TOUCH END EVENT triggered for priority ${priority}`);
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                          }}
+                                         style={{
                                           touchAction: 'manipulation',
                                           WebkitTapHighlightColor: 'transparent',
                                           userSelect: 'none'
