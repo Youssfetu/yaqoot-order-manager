@@ -626,8 +626,10 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   // Google Sheets style comment editing
   const handleCommentCellClick = (order: Order) => {
+    console.log(`🔥 Comment cell clicked for order: ${order.id}, current comment: "${order.commentaire}"`);
     setSelectedOrderForComment(order);
     setLiveCommentText(order.commentaire || '');
+    console.log(`🔥 Comment editing opened, liveCommentText set to: "${order.commentaire || ''}"`);
     
     // تنظيف أي timeout موجود
     if (saveTimeoutRef.current) {
@@ -1390,23 +1392,28 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                    return (
                                      <button
                                        key={priority.num}
-                                       onMouseDown={(e) => {
-                                         e.preventDefault();
-                                         e.stopPropagation();
-                                         const priorityText = `${priority.num}. `;
-                                         const newComment = liveCommentText.startsWith(priorityText) 
-                                           ? liveCommentText.substring(priorityText.length)
-                                           : priorityText + liveCommentText.replace(/^\d+\.\s*/, '');
-                                         setLiveCommentText(newComment);
-                                         
-                                         // حفظ فوري للأولوية
-                                         if (saveTimeoutRef.current) {
-                                           clearTimeout(saveTimeoutRef.current);
-                                         }
-                                         setTimeout(() => {
-                                           onUpdateComment(order.id, newComment);
-                                         }, 200);
-                                       }}
+                                        onMouseDown={(e) => {
+                                          console.log(`🔥 Priority ${priority.num} button clicked!`);
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          const priorityText = `${priority.num}. `;
+                                          const currentComment = liveCommentText || '';
+                                          console.log(`🔥 Current comment: "${currentComment}"`);
+                                          const newComment = currentComment.startsWith(priorityText) 
+                                            ? currentComment.substring(priorityText.length)
+                                            : priorityText + currentComment.replace(/^\d+\.\s*/, '');
+                                          console.log(`🔥 New comment will be: "${newComment}"`);
+                                          setLiveCommentText(newComment);
+                                          
+                                          // حفظ فوري للأولوية
+                                          if (saveTimeoutRef.current) {
+                                            clearTimeout(saveTimeoutRef.current);
+                                          }
+                                          setTimeout(() => {
+                                            console.log(`🔥 Saving priority comment: "${newComment}" for order: ${order.id}`);
+                                            onUpdateComment(order.id, newComment);
+                                          }, 200);
+                                        }}
                                        className={cn(
                                          "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
                                          "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
