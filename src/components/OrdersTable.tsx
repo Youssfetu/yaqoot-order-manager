@@ -150,12 +150,12 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     'Confirmé',
     'Livré', 
     'Reporté',
+    'Pas de réponse',
     'Annulé',
     'Refusé',
     'Numéro erroné',
     'Hors zone',
-    'Programmé',
-    'Pas de réponse'
+    'Programmé'
   ];
 
   // Helper function to check if status is rejected/cancelled
