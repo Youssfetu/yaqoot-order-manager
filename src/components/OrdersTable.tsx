@@ -464,6 +464,18 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
 
   // Ultra-smooth touch handling with professional gestures
   const handleTouchStart = (e: React.TouchEvent) => {
+    // تحقق من أن اللمس ليس على أزرار الأولوية أو التعليق
+    const target = e.target as HTMLElement;
+    
+    // تجنب التدخل مع أزرار الأولوية أو منطقة التعليق
+    if (target.closest('[data-priority-buttons]') || 
+        target.closest('textarea') || 
+        target.closest('button') ||
+        target.tagName === 'BUTTON') {
+      console.log('🚫 تم تجاهل touch start - المستخدم يتفاعل مع عنصر تفاعلي');
+      return; // لا تمنع touch events على العناصر التفاعلية
+    }
+    
     // Prevent browser's default touch behaviors for smoother control
     e.preventDefault();
     
@@ -471,7 +483,6 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     if (isResizing) return;
     
     // Check if touch is near a resize handle by looking for resize handle elements
-    const target = e.target as HTMLElement;
     if (target.classList.contains('resize-handle') || target.closest('.resize-handle')) {
       return; // Let the resize handle work
     }
@@ -523,6 +534,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    // تحقق من أن اللمس ليس على أزرار الأولوية أو التعليق
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-priority-buttons]') || 
+        target.closest('textarea') || 
+        target.closest('button') ||
+        target.tagName === 'BUTTON') {
+      console.log('🚫 تم تجاهل touch move - المستخدم يتفاعل مع عنصر تفاعلي');
+      return;
+    }
+    
     // Don't handle zoom/pan if we're resizing columns or editing
     if (isResizing || editingCell) return;
     
@@ -595,6 +616,16 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    // تحقق من أن اللمس ليس على أزرار الأولوية أو التعليق
+    const target = e.target as HTMLElement;
+    if (target.closest('[data-priority-buttons]') || 
+        target.closest('textarea') || 
+        target.closest('button') ||
+        target.tagName === 'BUTTON') {
+      console.log('🚫 تم تجاهل touch end - المستخدم يتفاعل مع عنصر تفاعلي');
+      return;
+    }
+    
     // Don't interfere with column resizing
     if (isResizing) return;
     
@@ -1385,62 +1416,56 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                }}
                              />
                              
-                              {/* أزرار الأولوية السريعة - محسنة للهاتف */}
-                                <div 
-                                  className="fixed inset-x-4 top-8 bg-white border-2 border-blue-300 rounded-2xl shadow-2xl p-4 z-[2000] max-w-md mx-auto"
+                              {/* أزرار الأولوية السريعة - تحسين للهاتف */}
+                                <div className="absolute -top-20 left-0 right-0 bg-white border-2 border-blue-300 rounded-xl shadow-2xl p-4 z-[1001]"
                                   data-priority-buttons="true"
                                   style={{ 
                                     pointerEvents: 'auto',
-                                    touchAction: 'manipulation',
-                                    userSelect: 'none'
-                                  }}
-                                  onMouseDown={(e) => {
-                                    // منع فقدان التركيز من textarea عند الضغط على الأزرار
-                                    e.preventDefault();
+                                    touchAction: 'auto',
+                                    userSelect: 'none',
+                                    WebkitTouchCallout: 'none'
                                   }}
                                 >
-                                  <div className="text-base text-gray-700 text-center mb-4 font-semibold">
+                                  <div className="text-sm text-gray-700 text-center mb-3 font-semibold">
                                     {isRTL ? "اختر الأولوية" : "Select Priority"}
                                   </div>
-                                  
-                                  {/* صف الأزرار الأول */}
-                                  <div className="grid grid-cols-4 gap-4 mb-3">
-                                    {[
-                                      { num: 1, color: "bg-red-500 hover:bg-red-600 active:bg-red-700", label: isRTL ? "عاجل جداً" : "Urgent" },
-                                      { num: 2, color: "bg-orange-500 hover:bg-orange-600 active:bg-orange-700", label: isRTL ? "عاجل" : "High" },
-                                      { num: 3, color: "bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700", label: isRTL ? "مهم" : "Important" },
-                                      { num: 4, color: "bg-blue-500 hover:bg-blue-600 active:bg-blue-700", label: isRTL ? "عادي" : "Normal" }
-                                   ].map((priority) => {
-                                     const isSelected = liveCommentText.startsWith(`${priority.num}. `);
-                                     return (
-                                        <button
-                                          key={priority.num}
+                                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-7 sm:gap-2">
+                                    {[1, 2, 3, 4, 5, 6, 7].map((priorityNum) => {
+                                      const colors = {
+                                        1: "bg-red-500",
+                                        2: "bg-orange-500", 
+                                        3: "bg-yellow-500",
+                                        4: "bg-blue-500",
+                                        5: "bg-green-500",
+                                        6: "bg-purple-500",
+                                        7: "bg-gray-500"
+                                      };
+                                      const isSelected = liveCommentText.startsWith(`${priorityNum}. `);
+                                      return (
+                                        <div
+                                          key={priorityNum}
                                           className={cn(
-                                            "w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-white font-bold text-xl transition-all duration-150",
-                                            "cursor-pointer select-none touch-manipulation user-select-none",
-                                            "shadow-lg hover:shadow-xl active:shadow-md active:scale-95 border-2 border-white/30",
-                                            "focus:outline-none focus:ring-4 focus:ring-blue-400/50",
-                                            priority.color,
-                                            isSelected && "ring-4 ring-blue-400 scale-105"
+                                            "w-14 h-14 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl sm:text-lg",
+                                            "cursor-pointer select-none transition-all duration-200",
+                                            "shadow-lg active:shadow-md active:scale-95 border-2 border-white/30",
+                                            colors[priorityNum as keyof typeof colors],
+                                            isSelected && "ring-4 ring-blue-400 scale-110"
                                           )}
-                                          onMouseDown={(e) => {
-                                            // منع فقدان التركيز من textarea
-                                            e.preventDefault();
-                                            e.stopPropagation();
+                                          style={{
+                                            touchAction: 'manipulation',
+                                            WebkitTouchCallout: 'none',
+                                            WebkitUserSelect: 'none'
                                           }}
                                           onTouchStart={(e) => {
-                                            console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
-                                            e.preventDefault();
+                                            console.log(`🔥📱 Priority ${priorityNum} TOUCH START!`);
                                             e.stopPropagation();
-                                            e.currentTarget.style.transform = 'scale(0.9)';
                                           }}
                                           onTouchEnd={(e) => {
-                                            console.log(`🔥📱 Priority ${priority.num} TOUCH END - EXECUTING!`);
+                                            console.log(`🔥📱 Priority ${priorityNum} TOUCH END - EXECUTING!`);
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            e.currentTarget.style.transform = '';
                                             
-                                            const priorityText = `${priority.num}. `;
+                                            const priorityText = `${priorityNum}. `;
                                             const currentComment = liveCommentText || '';
                                             const newComment = currentComment.startsWith(priorityText) 
                                               ? currentComment.substring(priorityText.length)
@@ -1449,31 +1474,21 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                             console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
                                             setLiveCommentText(newComment);
                                             
-                                            // حفظ فوري مع تأخير أطول للهاتف
+                                            // حفظ فوري
                                             if (saveTimeoutRef.current) {
                                               clearTimeout(saveTimeoutRef.current);
                                             }
                                             setTimeout(() => {
                                               console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
                                               onUpdateComment(order.id, newComment);
-                                            }, 200);
-                                            
-                                            // التركيز مرة أخرى على textarea
-                                            setTimeout(() => {
-                                              if (textareaRef.current) {
-                                                textareaRef.current.focus();
-                                              }
-                                            }, 250);
-                                          }}
-                                          onTouchCancel={(e) => {
-                                            e.currentTarget.style.transform = '';
+                                            }, 100);
                                           }}
                                           onClick={(e) => {
-                                            console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
+                                            console.log(`🔥🖱️ Priority ${priorityNum} CLICKED!`);
                                             e.preventDefault();
                                             e.stopPropagation();
                                             
-                                            const priorityText = `${priority.num}. `;
+                                            const priorityText = `${priorityNum}. `;
                                             const currentComment = liveCommentText || '';
                                             const newComment = currentComment.startsWith(priorityText) 
                                               ? currentComment.substring(priorityText.length)
@@ -1489,119 +1504,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
                                               onUpdateComment(order.id, newComment);
                                             }, 100);
                                           }}
-                                          type="button"
-                                          title={priority.label}
                                         >
-                                          <span className="text-lg">{priority.num}</span>
-                                          <span className="text-xs mt-1 opacity-90">{priority.label.slice(0, 3)}</span>
-                                       </button>
+                                         {priorityNum}
+                                       </div>
                                      );
                                    })}
-                                 </div>
-                                 
-                                 {/* صف الأزرار الثاني */}
-                                 <div className="grid grid-cols-3 gap-4 justify-center">
-                                    {[
-                                      { num: 5, color: "bg-green-500 hover:bg-green-600 active:bg-green-700", label: isRTL ? "منخفض" : "Low" },
-                                      { num: 6, color: "bg-purple-500 hover:bg-purple-600 active:bg-purple-700", label: isRTL ? "متأخر" : "Late" },
-                                      { num: 7, color: "bg-gray-500 hover:bg-gray-600 active:bg-gray-700", label: isRTL ? "مؤجل" : "Delayed" }
-                                   ].map((priority) => {
-                                     const isSelected = liveCommentText.startsWith(`${priority.num}. `);
-                                     return (
-                                        <button
-                                          key={priority.num}
-                                          className={cn(
-                                            "w-16 h-16 rounded-2xl flex flex-col items-center justify-center text-white font-bold text-xl transition-all duration-150",
-                                            "cursor-pointer select-none touch-manipulation user-select-none",
-                                            "shadow-lg hover:shadow-xl active:shadow-md active:scale-95 border-2 border-white/30",
-                                            "focus:outline-none focus:ring-4 focus:ring-blue-400/50",
-                                            priority.color,
-                                            isSelected && "ring-4 ring-blue-400 scale-105"
-                                          )}
-                                           onMouseDown={(e) => {
-                                             // منع فقدان التركيز من textarea
-                                             e.preventDefault();
-                                             e.stopPropagation();
-                                           }}
-                                           onTouchStart={(e) => {
-                                             console.log(`🔥📱 Priority ${priority.num} TOUCH START!`);
-                                             e.preventDefault();
-                                             e.stopPropagation();
-                                             e.currentTarget.style.transform = 'scale(0.9)';
-                                           }}
-                                           onTouchEnd={(e) => {
-                                             console.log(`🔥📱 Priority ${priority.num} TOUCH END - EXECUTING!`);
-                                             e.preventDefault();
-                                             e.stopPropagation();
-                                             e.currentTarget.style.transform = '';
-                                             
-                                             const priorityText = `${priority.num}. `;
-                                             const currentComment = liveCommentText || '';
-                                             const newComment = currentComment.startsWith(priorityText) 
-                                               ? currentComment.substring(priorityText.length)
-                                               : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                             
-                                             console.log(`🔄 تعديل التعليق: من "${currentComment}" إلى "${newComment}"`);
-                                             setLiveCommentText(newComment);
-                                             
-                                             // حفظ فوري مع تأخير أطول للهاتف
-                                             if (saveTimeoutRef.current) {
-                                               clearTimeout(saveTimeoutRef.current);
-                                             }
-                                             setTimeout(() => {
-                                               console.log(`💾 حفظ التعليق النهائي: "${newComment}"`);
-                                               onUpdateComment(order.id, newComment);
-                                             }, 200);
-                                             
-                                             // التركيز مرة أخرى على textarea
-                                             setTimeout(() => {
-                                               if (textareaRef.current) {
-                                                 textareaRef.current.focus();
-                                               }
-                                             }, 250);
-                                           }}
-                                           onTouchCancel={(e) => {
-                                             e.currentTarget.style.transform = '';
-                                           }}
-                                          onClick={(e) => {
-                                            console.log(`🔥🖱️ Priority ${priority.num} CLICKED!`);
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            
-                                            const priorityText = `${priority.num}. `;
-                                            const currentComment = liveCommentText || '';
-                                            const newComment = currentComment.startsWith(priorityText) 
-                                              ? currentComment.substring(priorityText.length)
-                                              : priorityText + currentComment.replace(/^\d+\.\s*/, '');
-                                            
-                                            setLiveCommentText(newComment);
-                                            
-                                            // حفظ فوري
-                                            if (saveTimeoutRef.current) {
-                                              clearTimeout(saveTimeoutRef.current);
-                                            }
-                                            setTimeout(() => {
-                                              onUpdateComment(order.id, newComment);
-                                            }, 100);
-                                          }}
-                                          type="button"
-                                          title={priority.label}
-                                        >
-                                          <span className="text-lg">{priority.num}</span>
-                                          <span className="text-xs mt-1 opacity-90">{priority.label.slice(0, 3)}</span>
-                                       </button>
-                                     );
-                                   })}
-                                 </div>
-                                 
-                                 {/* زر الإغلاق */}
-                                 <div className="flex justify-center mt-4">
-                                   <button
-                                     onClick={() => setSelectedOrderForComment(null)}
-                                     className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium text-sm transition-colors"
-                                   >
-                                     {isRTL ? "إغلاق" : "Close"}
-                                   </button>
                                  </div>
                                </div>
                            </div>
