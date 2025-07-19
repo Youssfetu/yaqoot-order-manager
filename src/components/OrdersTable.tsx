@@ -668,7 +668,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       'Confirmé': 'bg-green-500',
       'En cours': 'bg-yellow-500',
       'Livré': 'bg-emerald-500',
-      'Reporté': 'bg-blue-700',
+      'Reporté': 'bg-cyan-500',
       'Annulé': 'bg-red-500',
       'Refusé': 'bg-red-600',
       'Numéro erroné': 'bg-orange-500',
