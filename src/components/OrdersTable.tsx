@@ -63,22 +63,22 @@ interface OrdersTableProps {
 
 const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUpdateStatus, onUpdatePhone, onUpdatePrice, onReorderOrders, tableSettings }) => {
   const { t, isRTL } = useLanguage();
-  const [zoomLevel, setZoomLevel] = useState(1);
-  const [isPanning, setIsPanning] = useState(false);
-  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
-  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [showScrollbar, setShowScrollbar] = useState(false);
-  const [editingCell, setEditingCell] = useState<string | null>(null);
-  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
-  const [isResizing, setIsResizing] = useState(false);
-  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
-  const [recentlyScannedOrders, setRecentlyScannedOrders] = useState<Set<string>>(new Set());
-  const [scannedOrdersTimer, setScannedOrdersTimer] = useState<Map<string, NodeJS.Timeout>>(new Map());
-  const [permanentlyScannedOrders, setPermanentlyScannedOrders] = useState<Set<string>>(new Set());
-  const [touchVelocity, setTouchVelocity] = useState({ x: 0, y: 0 });
-  const [lastTouchTime, setLastTouchTime] = useState(0);
-  const [lastTouchPosition, setLastTouchPosition] = useState({ x: 0, y: 0 });
-  const [columnWidths, setColumnWidths] = useState({
+  const [zoomLevel, setZoomLevel] = React.useState(1);
+  const [isPanning, setIsPanning] = React.useState(false);
+  const [panStart, setPanStart] = React.useState({ x: 0, y: 0 });
+  const [panOffset, setPanOffset] = React.useState({ x: 0, y: 0 });
+  const [showScrollbar, setShowScrollbar] = React.useState(false);
+  const [editingCell, setEditingCell] = React.useState<string | null>(null);
+  const [openDropdownId, setOpenDropdownId] = React.useState<string | null>(null);
+  const [isResizing, setIsResizing] = React.useState(false);
+  const [resizingColumn, setResizingColumn] = React.useState<string | null>(null);
+  const [recentlyScannedOrders, setRecentlyScannedOrders] = React.useState<Set<string>>(new Set());
+  const [scannedOrdersTimer, setScannedOrdersTimer] = React.useState<Map<string, NodeJS.Timeout>>(new Map());
+  const [permanentlyScannedOrders, setPermanentlyScannedOrders] = React.useState<Set<string>>(new Set());
+  const [touchVelocity, setTouchVelocity] = React.useState({ x: 0, y: 0 });
+  const [lastTouchTime, setLastTouchTime] = React.useState(0);
+  const [lastTouchPosition, setLastTouchPosition] = React.useState({ x: 0, y: 0 });
+  const [columnWidths, setColumnWidths] = React.useState({
     code: 12,      // 12%
     vendeur: 20,   // 20%
     numero: 16,    // 16%
@@ -88,11 +88,11 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   });
 
   // Google Sheets style comment editing
-  const [selectedOrderForComment, setSelectedOrderForComment] = useState<Order | null>(null);
-  const [liveCommentText, setLiveCommentText] = useState<string>('');
+  const [selectedOrderForComment, setSelectedOrderForComment] = React.useState<Order | null>(null);
+  const [liveCommentText, setLiveCommentText] = React.useState<string>('');
 
   // إضافة حالة للحوار التأكيدي
-  const [confirmDialog, setConfirmDialog] = useState<{
+  const [confirmDialog, setConfirmDialog] = React.useState<{
     isOpen: boolean;
     orderId: string;
     orderCode: string;
@@ -103,7 +103,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   });
 
   // إضافة حالة لعرض أيقونات التفاعل مع رقم الهاتف
-  const [phoneActionsPopup, setPhoneActionsPopup] = useState<{
+  const [phoneActionsPopup, setPhoneActionsPopup] = React.useState<{
     isOpen: boolean;
     phoneNumber: string;
     orderId: string;
@@ -115,7 +115,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     position: { x: 0, y: 0 }
   });
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   
   // DND Kit sensors - optimized for mobile
   const sensors = useSensors(
@@ -140,8 +140,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
       onReorderOrders(newOrders);
     }
   };
-  const momentumAnimationRef = useRef<number | null>(null);
-  const resizeStartPosRef = useRef<{ x: number; initialWidth: number }>({ x: 0, initialWidth: 0 });
+  const momentumAnimationRef = React.useRef<number | null>(null);
+  const resizeStartPosRef = React.useRef<{ x: number; initialWidth: number }>({ x: 0, initialWidth: 0 });
 
   const statusOptions = [
     'Confirmé',
@@ -161,7 +161,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   // Enhanced tracking for recently scanned orders - show animation only once then keep permanent state
-  useEffect(() => {
+  React.useEffect(() => {
     console.log('Current orders scan status:', orders.map(o => ({ id: o.id, code: o.code, isScanned: o.isScanned })));
     
     orders.forEach(order => {
@@ -238,7 +238,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   }, [orders, permanentlyScannedOrders]);
 
   // Cleanup timers on unmount
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
       scannedOrdersTimer.forEach(timer => clearTimeout(timer));
       if (momentumAnimationRef.current) {
@@ -383,7 +383,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   };
 
   // Check if scrollbar should be visible
-  useEffect(() => {
+  React.useEffect(() => {
     const checkScrollbarVisibility = () => {
       if (containerRef.current) {
         const container = containerRef.current;
@@ -402,7 +402,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
   }, [zoomLevel, orders]);
 
   // Enhanced keyboard shortcuts for zoom with focus point preservation
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         if (e.key === '=' || e.key === '+') {
