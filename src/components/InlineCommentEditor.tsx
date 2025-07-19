@@ -114,8 +114,8 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
         <div className="absolute -top-12 left-0 right-0 bg-white border border-gray-200 rounded-md shadow-lg p-2 z-[999]">
           <div className="flex gap-1 justify-center">
             {[
-              { num: 1, color: "red", label: isRTL ? "عاجل جداً" : "Very Urgent" },
-              { num: 2, color: "orange", label: isRTL ? "عاجل" : "Urgent" },
+              { num: 1, color: "orange", label: isRTL ? "عاجل جداً" : "Very Urgent" },
+              { num: 2, color: "red", label: isRTL ? "عاجل" : "Urgent" },
               { num: 3, color: "yellow", label: isRTL ? "مهم" : "Important" },
               { num: 4, color: "blue", label: isRTL ? "عادي" : "Normal" },
               { num: 5, color: "gray", label: isRTL ? "مؤجل" : "Delayed" },
@@ -134,8 +134,8 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
                   className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs transition-all duration-200",
                     "hover:scale-110 active:scale-95 border border-white/20 focus:outline-none",
-                    priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
                     priority.color === "orange" && (isSelected ? "bg-orange-600 shadow-lg scale-105" : "bg-orange-500 shadow-md opacity-80 hover:opacity-100"),
+                    priority.color === "red" && (isSelected ? "bg-red-600 shadow-lg scale-105" : "bg-red-500 shadow-md opacity-80 hover:opacity-100"),
                     priority.color === "yellow" && (isSelected ? "bg-yellow-600 shadow-lg scale-105" : "bg-yellow-500 shadow-md opacity-80 hover:opacity-100"),
                     priority.color === "blue" && (isSelected ? "bg-blue-600 shadow-lg scale-105" : "bg-blue-500 shadow-md opacity-80 hover:opacity-100"),
                     priority.color === "gray" && (isSelected ? "bg-gray-600 shadow-lg scale-105" : "bg-gray-500 shadow-md opacity-80 hover:opacity-100"),
@@ -174,8 +174,8 @@ const InlineCommentEditor: React.FC<InlineCommentEditorProps> = ({
         {priority && priority >= 1 && priority <= 7 && (
           <div className={cn(
             "flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-sm border",
-            priority === 1 && "bg-red-500 text-white border-red-600",
-            priority === 2 && "bg-orange-500 text-white border-orange-600",
+            priority === 1 && "bg-orange-500 text-white border-orange-600",
+            priority === 2 && "bg-red-500 text-white border-red-600",
             priority === 3 && "bg-yellow-500 text-white border-yellow-600", 
             priority === 4 && "bg-blue-500 text-white border-blue-600",
             priority === 5 && "bg-gray-500 text-white border-gray-600",

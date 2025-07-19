@@ -83,7 +83,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({ orders, onUpdateComment, onUp
     code: 12,      // 12%
     vendeur: 20,   // 20%
     numero: 16,    // 16%
-    prix: 10,      // 10%
+    prix: 8,       // 8%
     status: 12,    // 12%
     comment: 30    // 30%
    });
